@@ -1,9 +1,8 @@
 import { Command } from 'commander';
+import { intro, outro, select, confirm, isCancel } from '@clack/prompts';
 import { builtinAgents } from '../builtins/agents/index.js';
 import { builtinProviders } from '../builtins/providers/index.js';
 import { getProviderKeys, getEnabledState, setEnabledState } from '../config/state.js';
-import type { AgentDefinition } from '../types/agent.js';
-import type { ProviderDefinition } from '../types/provider.js';
 
 /**
  * 创建 enable 命令
@@ -42,18 +41,39 @@ export function createEnableCommand(): Command {
         process.exit(1);
       }
 
-      // TODO: 交互式模型选择
-      console.log(`\n${agent.displayName} 需要配置以下模型:\n`);
+      // 交互式模型选择
+      intro(`为 ${agent.displayName} 启用 ${provider.displayName}`);
+
       const modelAssignments: Record<string, string> = {};
+      const modelOptions = provider.models.map((m) => ({
+        label: m.name,
+        value: m.name,
+        hint: m.description,
+      }));
 
       for (const slot of agent.models) {
-        // 默认选择第一个模型
-        const defaultModel = provider.models[0];
-        modelAssignments[slot.slot] = defaultModel.name;
-        console.log(`  ${slot.slot.padEnd(12)} ${slot.description.padEnd(20)} → ${defaultModel.name}`);
+        const selected = await select({
+          message: `${slot.description} (${slot.slot})`,
+          options: modelOptions,
+        });
+
+        if (isCancel(selected)) {
+          outro('已取消');
+          process.exit(0);
+        }
+
+        modelAssignments[slot.slot] = selected;
       }
 
-      console.log('\n✅ 已启用\n');
+      // 确认
+      const yes = await confirm({
+        message: '确认启用？',
+      });
+
+      if (isCancel(yes) || !yes) {
+        outro('已取消');
+        process.exit(0);
+      }
 
       // 保存启用状态
       const enabledState = await getEnabledState();
@@ -62,6 +82,8 @@ export function createEnableCommand(): Command {
         modelAssignments,
       };
       await setEnabledState(enabledState);
+
+      outro('✅ 已启用');
     });
 
   return cmd;

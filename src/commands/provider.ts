@@ -1,4 +1,5 @@
 import { Command } from 'commander';
+import { intro, outro, password, isCancel } from '@clack/prompts';
 import { builtinProviders } from '../builtins/providers/index.js';
 import { getProviderKeys, setProviderKey } from '../config/state.js';
 import type { ProviderDefinition } from '../types/provider.js';
@@ -22,26 +23,34 @@ export function createProviderCommand(): Command {
     .action(async (name?: string, options?: { key?: string }) => {
       const providers = await loadProviders();
 
-      if (name && options?.key) {
-        // 配置 API Key
-        const provider = providers.find((p) => p.name === name);
-        if (!provider) {
-          console.error(`未找到 Provider: ${name}`);
-          process.exit(1);
-        }
-        await setProviderKey(name, options.key);
-        console.log(`\n✅ 已保存 ${provider.displayName} 的 API Key\n`);
-        return;
-      }
-
       if (name) {
-        // 显示单个 provider 详情
         const provider = providers.find((p) => p.name === name);
         if (!provider) {
           console.error(`未找到 Provider: ${name}`);
           process.exit(1);
         }
-        await displayProviderDetail(provider);
+
+        if (options?.key) {
+          // 直接配置 API Key
+          await setProviderKey(name, options.key);
+          console.log(`\n✅ 已保存 ${provider.displayName} 的 API Key\n`);
+        } else {
+          // 交互式配置 API Key
+          intro(`配置 ${provider.displayName} 的 API Key`);
+
+          const key = await password({
+            message: '输入 API Key',
+            mask: '*',
+          });
+
+          if (isCancel(key)) {
+            outro('已取消');
+            process.exit(0);
+          }
+
+          await setProviderKey(name, key);
+          outro('✅ 已保存');
+        }
       } else {
         // 列出所有 providers
         await displayProviderList(providers);
@@ -59,27 +68,5 @@ async function displayProviderList(providers: ProviderDefinition[]): Promise<voi
     const hasKey = keys[provider.name] ? '✅ 已配置' : '❌ 未配置';
     console.log(`  ${provider.displayName.padEnd(20)} ${hasKey}  (${provider.apiType})`);
   }
-  console.log();
-}
-
-async function displayProviderDetail(provider: ProviderDefinition): Promise<void> {
-  const keys = await getProviderKeys();
-  const hasKey = !!keys[provider.name];
-
-  console.log(`\n${provider.displayName}`);
-  console.log('─'.repeat(40));
-  console.log(`  名称:     ${provider.name}`);
-  console.log(`  API 类型: ${provider.apiType}`);
-  console.log(`  Base URL: ${provider.baseUrl}`);
-  console.log(`  API Key:  ${hasKey ? '✅ 已配置' : '❌ 未配置'}`);
-  console.log();
-
-  if (provider.models.length > 0) {
-    console.log('  可用模型:');
-    for (const model of provider.models) {
-      console.log(`    ${model.name.padEnd(24)} ${model.description}`);
-    }
-  }
-
   console.log();
 }
