@@ -1,0 +1,84 @@
+import { Command } from 'commander';
+import { existsSync } from 'node:fs';
+import { builtinAgents } from '../builtins/agents/index.js';
+import { getEnabledState } from '../config/state.js';
+import { expandHome } from '../utils/path.js';
+import type { AgentDefinition } from '../types/agent.js';
+
+/**
+ * 加载所有 agent 定义（内置 + 用户自定义）
+ */
+async function loadAgents(): Promise<AgentDefinition[]> {
+  // TODO: 加载用户自定义 agent 定义
+  return builtinAgents;
+}
+
+/**
+ * 创建 agent 命令
+ */
+export function createAgentCommand(): Command {
+  const cmd = new Command('agent')
+    .description('智能体管理')
+    .argument('[name]', '智能体名称')
+    .action(async (name?: string) => {
+      const agents = await loadAgents();
+      const enabledState = await getEnabledState();
+
+      if (name) {
+        // 显示单个 agent 详情
+        const agent = agents.find((a) => a.name === name);
+        if (!agent) {
+          console.error(`未找到智能体: ${name}`);
+          process.exit(1);
+        }
+        displayAgentDetail(agent, enabledState);
+      } else {
+        // 列出所有 agent
+        displayAgentList(agents);
+      }
+    });
+
+  return cmd;
+}
+
+function displayAgentList(agents: AgentDefinition[]): void {
+  console.log('\n已识别的智能体:\n');
+  for (const agent of agents) {
+    const configPath = expandHome(agent.configPath);
+    const installed = existsSync(configPath);
+    const status = installed ? '✅ 已安装' : '❌ 未安装';
+    console.log(`  ${agent.displayName.padEnd(20)} ${status}  (${agent.apiType})`);
+  }
+  console.log();
+}
+
+function displayAgentDetail(
+  agent: AgentDefinition,
+  enabledState: Record<string, { provider: string; modelAssignments: Record<string, string> }>,
+): void {
+  const configPath = expandHome(agent.configPath);
+  const installed = existsSync(configPath);
+  const state = enabledState[agent.name];
+
+  console.log(`\n${agent.displayName}`);
+  console.log('─'.repeat(40));
+  console.log(`  名称:     ${agent.name}`);
+  console.log(`  API 类型: ${agent.apiType}`);
+  console.log(`  配置文件: ${agent.configPath}  ${installed ? '✅' : '❌'}`);
+  console.log();
+
+  if (agent.models.length > 0) {
+    console.log('  模型槽位:');
+    for (const model of agent.models) {
+      const assigned = state?.modelAssignments?.[model.slot];
+      const assignment = assigned ? ` → ${assigned}` : '';
+      console.log(`    ${model.slot.padEnd(12)} ${model.description}${assignment}`);
+    }
+  }
+
+  if (state) {
+    console.log(`\n  已启用 Provider: ${state.provider}`);
+  }
+
+  console.log();
+}
