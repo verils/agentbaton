@@ -4,7 +4,7 @@
 
 **一个基于 CLI 的编程智能体配置管理器**
 
-类似于 CC-Switch，支持快速切换和管理多个 AI 编程助手的配置
+为编程智能体配置 Provider，以 TUI 交互式操作为主，同时支持一次性命令
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-blue.svg)](https://www.typescriptlang.org/)
@@ -13,35 +13,46 @@
 
 ## 📖 简介
 
-Agent Baton 是一个强大的命令行工具，用于管理和切换不同 AI 编程智能体的配置。它让你能够在多个 AI 助手之间无缝切换，并内置了对国内主流云服务平台的支持。
+Agent Baton 是一个命令行工具，用于识别本地已安装的编程智能体，并为它们配置云厂商（Provider）的 API 连接。以 TUI 交互式操作为主，同时支持一次性命令。
 
 ### ✨ 主要特性
 
-- 🔄 **多智能体支持**：轻松管理 Claude Code、Codex、Gemini CLI、OpenCode、Qwen、Qoder、Crush 等主流编程智能体
-- ☁️ **国内云平台集成**：内置百炼、火山引擎、腾讯云、智谱、MiniMax、月之暗面、DeepSeek、小米 MiMo 等平台的 API 配置
-- ⚡ **快速切换**：通过简单的命令在不同智能体配置间快速切换
-- 🔧 **配置管理**：集中管理所有智能体的 API 密钥、模型参数和自定义设置
+- 🖥️ **TUI 交互式界面**：以终端交互式操作为主，直观浏览和管理配置，同时支持一次性命令快速操作
+- 🔍 **自动识别**：自动扫描本地已安装的编程智能体，无需手动配置
+- ☁️ **多 Provider 支持**：内置百炼、火山引擎、腾讯云、智谱、MiniMax、月之暗面、DeepSeek、小米 MiMo 等国内主流云厂商
+- ⚡ **一键启用**：配置好 Provider 后，为 Agent 一键启用并写入配置文件
+- 🔧 **API 类型匹配**：自动校验 Agent 与 Provider 的 API 类型兼容性
 - 💻 **CLI 友好**：简洁直观的命令行界面，提升开发效率
 
 ## 🚀 快速开始
 
+### 安装
+
+```bash
+# 使用 npm
+npm install -g @verils/agentbaton
+
+# 使用 pnpm
+pnpm add -g @verils/agentbaton
+
+# 使用 yarn
+yarn global add @verils/agentbaton
+```
+
 ### 基本用法
 
 ```bash
-# 查看所有可用的智能体
-agentbaton list
+# 启动 TUI 交互界面（推荐）
+agentbaton
 
-# 切换到指定智能体
-agentbaton switch claude
+# 查看已识别的智能体
+agentbaton agent
 
-# 查看当前激活的智能体
-agentbaton current
+# 配置 Provider API Key
+agentbaton provider deepseek --key sk-xxxx
 
-# 配置 API 密钥
-agentbaton config set --api-key YOUR_API_KEY
-
-# 添加新的云平台配置
-agentbaton platform add bailian
+# 为智能体启用 Provider
+agentbaton enable claude-code deepseek
 ```
 
 ## 🎯 支持的智能体
@@ -49,17 +60,17 @@ agentbaton platform add bailian
 | 智能体 | 状态 | 说明 |
 |--------|------|------|
 | Claude Code | ✅ | Anthropic 的编程助手 |
-| Codex | ✅ | OpenAI 的代码生成模型 |
+| Codex CLI | ✅ | OpenAI 的代码生成工具 |
 | Gemini CLI | ✅ | Google 的 Gemini 助手 |
 | OpenCode | ✅ | 开源代码助手 |
-| Qwen | ✅ | 阿里云通义千问 |
+| Qwen Code | ✅ | 阿里云通义千问 |
 | Qoder | ✅ | 智能编程助手 |
 | Crush | ✅ | 代码优化工具 |
 
-## ☁️ 支持的云平台
+## ☁️ 支持的 Provider
 
-| 平台 | 状态 | API 支持 |
-|------|------|----------|
+| Provider | 状态 | API 支持 |
+|----------|------|----------|
 | 百炼 (Bailian) | ✅ | 完整支持 |
 | 火山引擎 | ✅ | 完整支持 |
 | 腾讯云 | ✅ | 完整支持 |
@@ -71,59 +82,28 @@ agentbaton platform add bailian
 
 ## 📋 命令参考
 
-### 智能体管理
-
 ```bash
-# 列出所有智能体
-agentbaton list
+agentbaton                                  # 启动 TUI 交互界面
 
-# 切换智能体
-agentbaton switch <name>
+# 智能体
+agentbaton agent                            # 列出已识别的智能体
+agentbaton agent <name>                     # 查看智能体详情及 Provider 状态
 
-# 查看当前智能体
-agentbaton current
+# Provider
+agentbaton provider                         # 列出所有 Provider
+agentbaton provider <name>                  # 查看 Provider 详情
+agentbaton provider <name> --key <key>      # 配置 API Key
 
-# 添加自定义智能体
-agentbaton add <name> --config <path>
-```
-
-### 配置管理
-
-```bash
-# 设置配置项
-agentbaton config set --key value
-
-# 获取配置项
-agentbaton config get <key>
-
-# 删除配置项
-agentbaton config delete <key>
-
-# 导出配置
-agentbaton config export > config.json
-
-# 导入配置
-agentbaton config import config.json
-```
-
-### 平台管理
-
-```bash
-# 列出可用平台
-agentbaton platform list
-
-# 添加平台配置
-agentbaton platform add <platform>
-
-# 更新平台 API 密钥
-agentbaton platform update <platform> --api-key KEY
+# 启用 / 禁用
+agentbaton enable <agent> <provider>        # 为智能体启用 Provider
+agentbaton disable <agent> <provider>       # 禁用 Provider
 ```
 
 ## 🔐 安全说明
 
-- API 密钥存储在本地配置文件中，不会上传到任何服务器
+- API Key 存储在本地配置文件中，不会上传到任何服务器
+- 配置文件默认位置：`~/.agentbaton/`
 - 建议使用环境变量管理敏感信息
-- 配置文件默认位置：`~/.agentbaton/config.json`
 
 ## 🛠️ 开发指南
 
