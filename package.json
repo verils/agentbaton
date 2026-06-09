@@ -23,7 +23,7 @@
     "config",
     "manager"
   ],
-  "author": "Agent Baton Team",
+  "author": "verils@qq.com",
   "license": "MIT",
   "engines": {
     "node": ">=22.0.0"

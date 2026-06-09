@@ -5,6 +5,7 @@ import { createAgentCommand } from './commands/agent.js';
 import { createProviderCommand } from './commands/provider.js';
 import { createEnableCommand } from './commands/enable.js';
 import { createDisableCommand } from './commands/disable.js';
+import { runInteractive } from './commands/interactive.js';
 import { initBatonDirs } from './config/loader.js';
 
 const program = new Command();
@@ -19,6 +20,11 @@ program.addCommand(createAgentCommand());
 program.addCommand(createProviderCommand());
 program.addCommand(createEnableCommand());
 program.addCommand(createDisableCommand());
+
+// 默认动作：交互式配置
+program.action(async () => {
+  await runInteractive();
+});
 
 // 初始化目录结构
 await initBatonDirs();
