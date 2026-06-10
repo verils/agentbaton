@@ -1,10 +1,10 @@
 import { Command } from 'commander';
-import { createAgentCommand } from './commands/agent';
-import { createProviderCommand } from './commands/provider';
-import { createEnableCommand } from './commands/enable';
-import { createDisableCommand } from './commands/disable';
-import { initBatonDirs } from './config/loader';
-import { runPrompt } from './interactive/main-menu';
+import { createAgentCommand } from './commands';
+import { createProviderCommand } from './commands';
+import { createEnableCommand } from './commands';
+import { createDisableCommand } from './commands';
+import { initBatonDirs } from './config';
+import { runPrompt } from './interactive';
 
 const program = new Command();
 
