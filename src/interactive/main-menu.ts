@@ -1,5 +1,5 @@
-import { intro, outro, select, confirm, isCancel } from '@clack/prompts';
 import { existsSync } from 'node:fs';
+import { intro, outro, select, confirm, isCancel } from '@clack/prompts';
 import { builtinAgents } from '../builtins/agents/index.js';
 import { builtinProviders } from '../builtins/providers/index.js';
 import { getProviderKeys, getEnabledState, setEnabledState } from '../config/state.js';
@@ -20,7 +20,7 @@ export async function runPrompt(): Promise<void> {
         { value: 'agent', label: '配置智能体', hint: '启用/禁用供应商、分配模型' },
         { value: 'provider', label: '配置供应商', hint: '配置 API Key、查看模型' },
         { value: 'view', label: '查看配置', hint: '所有智能体和供应商的配置概览' },
-        { value: 'quick', label: '快速配置', hint: '一步到位的配置向导' },
+        { value: 'quick', label: '快速配置', hint: '进入配置向导' },
         { value: 'exit', label: '退出', hint: '' },
       ],
     });

@@ -1,12 +1,10 @@
-#!/usr/bin/env node
-
 import { Command } from 'commander';
 import { createAgentCommand } from './commands/agent.js';
 import { createProviderCommand } from './commands/provider.js';
 import { createEnableCommand } from './commands/enable.js';
 import { createDisableCommand } from './commands/disable.js';
-import { runPrompt } from './commands/interactive.js';
 import { initBatonDirs } from './config/loader.js';
+import { runPrompt } from './interactive/main-menu.js';
 
 const program = new Command();
 
