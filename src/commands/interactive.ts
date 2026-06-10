@@ -1,118 +1,161 @@
-import { intro, outro, select, confirm, isCancel, group } from '@clack/prompts';
+import { intro, outro, select, confirm, isCancel } from '@clack/prompts';
 import { existsSync } from 'node:fs';
 import { builtinAgents } from '../builtins/agents/index.js';
 import { builtinProviders } from '../builtins/providers/index.js';
 import { getProviderKeys, getEnabledState, setEnabledState } from '../config/state.js';
 import { expandHome } from '../utils/path.js';
+import { runAgentFlow } from './interactive-agent.js';
+import { runProviderFlow } from './interactive-provider.js';
 
 /**
- * 交互式配置流程
+ * 交互式配置流程（主菜单）
  */
-export async function runInteractive(): Promise<void> {
+export async function runPrompt(): Promise<void> {
   intro('Agent Baton — 智能体配置管理');
 
-  // 筛选已安装的 agent
+  while (true) {
+    const choice = await select({
+      message: '选择菜单：',
+      options: [
+        { value: 'agent', label: '配置智能体', hint: '启用/禁用供应商、分配模型' },
+        { value: 'provider', label: '配置供应商', hint: '配置 API Key、查看模型' },
+        { value: 'view', label: '查看配置', hint: '所有智能体和供应商的配置概览' },
+        { value: 'quick', label: '快速配置', hint: '一步到位的配置向导' },
+        { value: 'exit', label: '退出', hint: '' },
+      ],
+    });
+
+    if (isCancel(choice) || choice === 'exit') break;
+
+    switch (choice) {
+      case 'agent':
+        await runAgentFlow();
+        break;
+      case 'provider':
+        await runProviderFlow();
+        break;
+      case 'view':
+        await handleViewAll();
+        break;
+      case 'quick':
+        await handleQuickConfig();
+        break;
+    }
+  }
+
+  outro('👋 再见');
+}
+
+/**
+ * 查看配置 — 展示所有智能体和供应商的配置概览
+ */
+async function handleViewAll(): Promise<void> {
+  const keys = await getProviderKeys();
+  const enabledState = await getEnabledState();
+
+  console.log('\n  📋 配置概览');
+  console.log(`  ${'═'.repeat(50)}`);
+
+  // 智能体
+  console.log('\n  🤖 智能体\n');
+  for (const agent of builtinAgents) {
+    const installed = existsSync(expandHome(agent.configPath));
+    const state = enabledState[agent.name];
+    const status = installed ? '✅' : '❌';
+    const provider = state ? state.provider : '—';
+    console.log(`  ${status} ${agent.displayName.padEnd(18)} 供应商: ${provider}`);
+
+    if (state?.modelAssignments) {
+      for (const slot of agent.models) {
+        const model = state.modelAssignments[slot.slot];
+        if (model) {
+          console.log(`     ${slot.description}: ${model}`);
+        }
+      }
+    }
+  }
+
+  // 供应商
+  console.log('\n  🔑 供应商\n');
+  for (const provider of builtinProviders) {
+    const hasKey = keys[provider.name] ? '✅' : '❌';
+    console.log(`  ${hasKey} ${provider.displayName.padEnd(18)} ${provider.models.length} 个模型`);
+  }
+
+  console.log();
+}
+
+/**
+ * 快速配置 — 一步到位的配置向导
+ */
+async function handleQuickConfig(): Promise<void> {
+  const keys = await getProviderKeys();
+
+  // 1. 选择智能体
   const installedAgents = builtinAgents.filter((a) => existsSync(expandHome(a.configPath)));
 
   if (installedAgents.length === 0) {
-    outro('❌ 未检测到已安装的智能体');
-    process.exit(0);
+    console.log('\n  ❌ 没有检测到已安装的智能体\n');
+    return;
   }
 
-  const keys = await getProviderKeys();
-  const configuredProviders = builtinProviders.filter((p) => keys[p.name]);
+  const agentName = await select({
+    message: '选择智能体：',
+    options: installedAgents.map((a) => ({
+      value: a.name,
+      label: a.displayName,
+      hint: a.apiType,
+    })),
+  });
 
-  if (configuredProviders.length === 0) {
-    outro('❌ 未配置任何 Provider 的 API Key');
-    console.log('\n请先配置 Provider:');
-    console.log('  agentbaton provider <name> --key <your-key>\n');
-    process.exit(0);
+  if (isCancel(agentName)) return;
+
+  const agent = installedAgents.find((a) => a.name === agentName)!;
+
+  // 2. 选择兼容且有 API Key 的供应商
+  const compatible = builtinProviders.filter(
+    (p) => p.apiType === agent.apiType && keys[p.name],
+  );
+
+  if (compatible.length === 0) {
+    console.log(`\n  ❌ 没有已配置 API Key 且兼容 ${agent.apiType} 的供应商`);
+    console.log('  请先通过「配置供应商」菜单配置 API Key\n');
+    return;
   }
 
-  try {
-    const result = await group(
-      {
-        agent: () =>
-          select({
-            message: '选择智能体',
-            options: installedAgents.map((a) => ({
-              label: a.displayName,
-              value: a.name,
-              hint: a.apiType,
-            })),
-          }),
-        provider: ({ results }) => {
-          // 根据选中的 agent 筛选兼容的 provider
-          const agent = installedAgents.find((a) => a.name === results.agent)!;
-          const compatible = configuredProviders.filter((p) => p.apiType === agent.apiType);
+  const providerName = await select({
+    message: '选择供应商：',
+    options: compatible.map((p) => ({
+      value: p.name,
+      label: p.displayName,
+      hint: `${p.models.length} 个模型`,
+    })),
+  });
 
-          if (compatible.length === 0) {
-            throw new Error(`没有兼容 ${agent.apiType} 的 Provider`);
-          }
+  if (isCancel(providerName)) return;
 
-          return select({
-            message: '选择 Provider',
-            options: compatible.map((p) => ({
-              label: p.displayName,
-              value: p.name,
-              hint: `${p.models.length} 个模型`,
-            })),
-          });
-        },
-      },
-      {
-        onCancel: () => {
-          outro('已取消');
-          process.exit(0);
-        },
-      },
-    );
+  const provider = compatible.find((p) => p.name === providerName)!;
 
-    const agent = installedAgents.find((a) => a.name === result.agent)!;
-    const provider = builtinProviders.find((p) => p.name === result.provider)!;
-
-    // 模型选择
-    const modelOptions = provider.models.map((m) => ({
-      label: m.name,
-      value: m.name,
-      hint: m.description,
-    }));
-
-    const modelAssignments: Record<string, string> = {};
-
-    for (const slot of agent.models) {
-      const selected = await select({
-        message: `${slot.description} (${slot.slot})`,
-        options: modelOptions,
-      });
-
-      if (isCancel(selected)) {
-        outro('已取消');
-        process.exit(0);
-      }
-
-      modelAssignments[slot.slot] = selected;
-    }
-
-    // 确认
-    const yes = await confirm({ message: '确认启用？' });
-
-    if (isCancel(yes) || !yes) {
-      outro('已取消');
-      process.exit(0);
-    }
-
-    // 保存
-    const enabledState = await getEnabledState();
-    enabledState[agent.name] = {
-      provider: provider.name,
-      modelAssignments,
-    };
-    await setEnabledState(enabledState);
-
-    outro('✅ 配置完成');
-  } catch (err) {
-    outro(`❌ ${err instanceof Error ? err.message : '未知错误'}`);
-    process.exit(1);
+  // 3. 自动分配默认模型（每个槽位取第一个）
+  const modelAssignments: Record<string, string> = {};
+  for (const slot of agent.models) {
+    modelAssignments[slot.slot] = provider.models[0].name;
   }
+
+  // 4. 显示分配结果并确认
+  console.log(`\n  将为 ${agent.displayName} 配置 ${provider.displayName}：`);
+  for (const slot of agent.models) {
+    console.log(`    ${slot.description} (${slot.slot}): ${modelAssignments[slot.slot]}`);
+  }
+  console.log();
+
+  const yes = await confirm({ message: '确认配置？' });
+  if (isCancel(yes) || !yes) return;
+
+  // 5. 保存
+  const enabledState = await getEnabledState();
+  enabledState[agent.name] = { provider: provider.name, modelAssignments };
+  await setEnabledState(enabledState);
+
+  console.log(`\n  ✅ 快速配置完成\n`);
 }

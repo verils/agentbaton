@@ -200,3 +200,55 @@ OpenCode 需要配置模型 → deepseek-chat
 - baton 不维护 agent 的安装/卸载，仅识别已安装的 agent
 - 启用前必须校验 API 类型兼容性
 - agent 定义是纯数据（YAML），不包含适配逻辑
+
+## 交互式菜单
+
+```
+主界面
+|- 智能体：进入智能体列表
+|  |- Claude Code：进入智能体详情
+|     |- 设置 Opus 模型：进入模型搜索选择界面
+|     |- 设置 Sonnet 模型
+|     |- 设置 Haiku 模型
+|  |- Codex
+|     |- 设置模型
+|  |- Gemini CLI
+|     |- 设置模型
+|  |- OpenCode
+|     |- 设置模型
+|     |- （模型槽位）
+|  |- Crush
+|  |- Pi
+|  |- Qwen
+|  |- Qoder
+|  |- Qoder CN
+|  |- 返回
+|- 模型供应商：进入模型供应商列表
+   |- DeepSeek （Builtin）：进入模型供应商详情
+   |  |- DeepSeek V4 Pro：进入模型详情（Builtint不可修改）
+   |  |  |- 模型ID
+   |  |  |- 模型显示名称
+   |  |  |- 上下文大小
+   |  |  |- 返回
+   |  |- DeepSeek V4 Flash
+   |- Xiaomi MiMo （Builtin）
+   |  |- MiMo V2.5 Pro
+   |  |- MiMo V2.5
+   |- 自定义供应商（Custom）
+   |  |- 模型 1
+   |  |  |- 模型ID：修改模型 ID
+   |  |  |- 模型显示名称：修改模型显示名称
+   |  |  |- 上下文大小：设置上下文大小
+   |  |  |- 删除模型：从供应商删除该模型配置
+   |  |  |- 返回
+   |  |- 模型 2
+   |  |  |- ...
+   |  |- 添加模型
+   |  |- 删除模型供应商
+   |  |- 返回
+   |- 添加供应商
+      |- 输入 baseUrl, apiKey, API 类型（openai/anthropic)。完成后停留在该供应商详情
+   |- 返回
+```
+
+### 智能体
