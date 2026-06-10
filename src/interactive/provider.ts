@@ -1,6 +1,6 @@
 import { select, password, isCancel } from '@clack/prompts';
-import { builtinProviders } from '../builtins/providers/index';
-import { getProviderKeys, setProviderKey } from '../config/state';
+import { builtinProviders } from '../builtins/providers';
+import { getProviderKeys, setProviderKey } from '../config';
 
 /**
  * 配置供应商子流程

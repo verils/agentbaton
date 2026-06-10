@@ -4,7 +4,7 @@ import { builtinProviders } from '../builtins/providers';
 import { getProviderKeys, getEnabledState, setEnabledState } from '../config';
 import { isCommandAvailable } from '../utils';
 import { runAgentFlow } from './agent';
-import { runProviderFlow } from './interactive-provider';
+import { runProviderFlow } from './provider';
 
 /**
  * 交互式配置流程（主菜单）
@@ -58,8 +58,7 @@ async function handleViewAll(): Promise<void> {
     const installed = await isCommandAvailable(agent.command);
     const state = enabledState[agent.name];
     const status = installed ? '✅' : '❌';
-    const provider = state ? state.provider : '—';
-    console.log(`    ${status} ${agent.displayName.padEnd(18)} 供应商: ${provider}`);
+    console.log(`    ${status} ${agent.displayName.padEnd(18)}`);
 
     if (state?.modelAssignments) {
       for (const slot of agent.models) {
@@ -75,7 +74,7 @@ async function handleViewAll(): Promise<void> {
   console.log('\n  🔌 模型供应商\n');
   for (const provider of builtinProviders) {
     const hasKey = keys[provider.name] ? '✅' : '❌';
-    console.log(`    ${hasKey} ${provider.displayName.padEnd(18)} ${provider.models.length} 个模型`);
+    console.log(`    ${hasKey} ${provider.displayName.padEnd(18)}`);
   }
 
   console.log();
