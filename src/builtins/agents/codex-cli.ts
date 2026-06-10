@@ -1,8 +1,9 @@
-import type { AgentDefinition } from '../../types/agent';
+import type { AgentDefinition } from '../../types';
 
 export const codexCli: AgentDefinition = {
   name: 'codex-cli',
   displayName: 'Codex CLI',
+  command: 'codex',
   apiType: 'openai',
   configPath: '~/.codex/config.json',
   configFormat: 'json',

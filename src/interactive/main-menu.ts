@@ -1,10 +1,10 @@
 import { existsSync } from 'node:fs';
 import { intro, outro, select, confirm, isCancel } from '@clack/prompts';
-import { builtinAgents } from '../builtins/agents/index';
-import { builtinProviders } from '../builtins/providers/index';
-import { getProviderKeys, getEnabledState, setEnabledState } from '../config/state';
-import { expandHome } from '../utils/path';
-import { runAgentFlow } from './interactive-agent';
+import { builtinAgents } from '../builtins/agents';
+import { builtinProviders } from '../builtins/providers';
+import { getProviderKeys, getEnabledState, setEnabledState } from '../config';
+import { expandHome } from '../utils';
+import { runAgentFlow } from './agent';
 import { runProviderFlow } from './interactive-provider';
 
 /**
@@ -53,9 +53,6 @@ async function handleViewAll(): Promise<void> {
   const keys = await getProviderKeys();
   const enabledState = await getEnabledState();
 
-  console.log('\n  📋 配置概览');
-  console.log(`  ${'═'.repeat(50)}`);
-
   // 智能体
   console.log('\n  🤖 智能体\n');
   for (const agent of builtinAgents) {
@@ -63,23 +60,23 @@ async function handleViewAll(): Promise<void> {
     const state = enabledState[agent.name];
     const status = installed ? '✅' : '❌';
     const provider = state ? state.provider : '—';
-    console.log(`  ${status} ${agent.displayName.padEnd(18)} 供应商: ${provider}`);
+    console.log(`    ${status} ${agent.displayName.padEnd(18)} 供应商: ${provider}`);
 
     if (state?.modelAssignments) {
       for (const slot of agent.models) {
         const model = state.modelAssignments[slot.slot];
         if (model) {
-          console.log(`     ${slot.description}: ${model}`);
+          console.log(`    ${slot.description}: ${model}`);
         }
       }
     }
   }
 
-  // 供应商
-  console.log('\n  🔑 供应商\n');
+  // 模型供应商
+  console.log('\n  🔌 模型供应商\n');
   for (const provider of builtinProviders) {
     const hasKey = keys[provider.name] ? '✅' : '❌';
-    console.log(`  ${hasKey} ${provider.displayName.padEnd(18)} ${provider.models.length} 个模型`);
+    console.log(`    ${hasKey} ${provider.displayName.padEnd(18)} ${provider.models.length} 个模型`);
   }
 
   console.log();

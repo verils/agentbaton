@@ -1,9 +1,10 @@
-import type { AgentDefinition } from '../../types/agent';
+import type { AgentDefinition } from '../../types';
 
 export const geminiCli: AgentDefinition = {
   name: 'gemini-cli',
   displayName: 'Gemini CLI',
-  apiType: 'gemini',
+  command: 'gemini',
+  apiType: 'google',
   configPath: '~/.gemini/settings.json',
   configFormat: 'json',
   models: [

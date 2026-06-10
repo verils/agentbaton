@@ -6,12 +6,14 @@ export interface AgentDefinition {
   name: string;
   /** 显示名称 */
   displayName: string;
+  /** 可执行命令 */
+  command: string;
   /** 使用的 API 协议类型 */
-  apiType: string;
+  apiType: 'openai' | 'anthropic' | 'google';
   /** agent 原生配置文件位置 */
   configPath: string;
   /** 配置文件格式 */
-  configFormat: 'json' | 'yaml' | 'toml';
+  configFormat: 'json' | 'yaml' | 'toml' | string;
   /** 模型槽位定义 */
   models: ModelSlot[];
 }

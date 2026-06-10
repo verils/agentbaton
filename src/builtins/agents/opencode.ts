@@ -1,8 +1,9 @@
-import type { AgentDefinition } from '../../types/agent';
+import type { AgentDefinition } from '../../types';
 
 export const opencode: AgentDefinition = {
   name: 'opencode',
   displayName: 'OpenCode',
+  command: 'opencode',
   apiType: 'openai',
   configPath: '~/.config/opencode/config.json',
   configFormat: 'json',

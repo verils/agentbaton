@@ -1,4 +1,4 @@
-import type { AgentDefinition } from '../../types/agent';
+import type { AgentDefinition } from '../../types';
 import { claudeCode } from './claude-code';
 import { codexCli } from './codex-cli';
 import { geminiCli } from './gemini-cli';

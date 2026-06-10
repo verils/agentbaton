@@ -1,26 +1,27 @@
-import type { AgentDefinition } from '../../types/agent';
+import type { AgentDefinition } from '../../types';
 
 export const claudeCode: AgentDefinition = {
   name: 'claude-code',
   displayName: 'Claude Code',
+  command: 'claude',
   apiType: 'anthropic',
   configPath: '~/.claude/settings.json',
   configFormat: 'json',
   models: [
     {
-      slot: 'main',
-      key: 'model',
-      description: '主模型',
+      slot: 'opus',
+      key: 'Opus',
+      description: 'Claude Opus 模型',
     },
     {
-      slot: 'small_fast',
-      key: 'smallModel',
-      description: '轻量模型（用于简单任务）',
+      slot: 'sonnet',
+      key: 'Sonnet',
+      description: 'Claude Sonnet 模型',
     },
     {
-      slot: 'thinking',
-      key: 'thinkingModel',
-      description: '思考模型（用于推理任务）',
+      slot: 'haiku',
+      key: 'Haiku',
+      description: 'Claude Haiku 模型',
     },
   ],
 };
