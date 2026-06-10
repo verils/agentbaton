@@ -16,6 +16,9 @@ export interface AgentDefinition {
   configFormat: 'json' | 'yaml' | 'toml' | string;
   /** 模型槽位定义 */
   models: ModelSlot[];
+
+  /** 配置智能体的逻辑 */
+  config?(): Promise<void>;
 }
 
 /**
