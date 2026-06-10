@@ -1,9 +1,8 @@
-import { existsSync } from 'node:fs';
 import { intro, outro, select, confirm, isCancel } from '@clack/prompts';
 import { builtinAgents } from '../builtins/agents';
 import { builtinProviders } from '../builtins/providers';
 import { getProviderKeys, getEnabledState, setEnabledState } from '../config';
-import { expandHome } from '../utils';
+import { isCommandAvailable } from '../utils';
 import { runAgentFlow } from './agent';
 import { runProviderFlow } from './interactive-provider';
 
@@ -56,7 +55,7 @@ async function handleViewAll(): Promise<void> {
   // 智能体
   console.log('\n  🤖 智能体\n');
   for (const agent of builtinAgents) {
-    const installed = existsSync(expandHome(agent.configPath));
+    const installed = await isCommandAvailable(agent.command);
     const state = enabledState[agent.name];
     const status = installed ? '✅' : '❌';
     const provider = state ? state.provider : '—';
@@ -89,7 +88,12 @@ async function handleQuickConfig(): Promise<void> {
   const keys = await getProviderKeys();
 
   // 1. 选择智能体
-  const installedAgents = builtinAgents.filter((a) => existsSync(expandHome(a.configPath)));
+  const installedAgents: typeof builtinAgents = [];
+  for (const agent of builtinAgents) {
+    if (await isCommandAvailable(agent.command)) {
+      installedAgents.push(agent);
+    }
+  }
 
   if (installedAgents.length === 0) {
     console.log('\n  ❌ 没有检测到已安装的智能体\n');

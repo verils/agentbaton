@@ -10,13 +10,25 @@ export interface AgentDefinition {
   command: string;
   /** 使用的 API 协议类型 */
   apiType: 'openai' | 'anthropic' | 'google';
-  /** agent 原生配置文件位置 */
-  configPath: string;
+  /** 各平台的配置文件路径 */
+  configPath: PlatformConfigPath;
   /** 配置文件格式 */
   configFormat: 'json' | 'yaml' | 'toml' | string;
   /** 模型槽位定义 */
   models: ModelSlot[];
 }
+
+/**
+ * 平台类型
+ */
+export type Platform = 'linux' | 'windows' | 'macos';
+
+/**
+ * 平台配置路径映射
+ */
+export type PlatformConfigPath = {
+  [key in Platform]: string;
+};
 
 /**
  * 模型槽位

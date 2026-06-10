@@ -5,7 +5,11 @@ export const opencode: AgentDefinition = {
   displayName: 'OpenCode',
   command: 'opencode',
   apiType: 'openai',
-  configPath: '~/.config/opencode/config.json',
+  configPath: {
+    linux: '~/.config/opencode/config.json',
+    macos: '~/Library/Application Support/opencode/config.json',
+    windows: '~/AppData/Roaming/opencode/config.json',
+  },
   configFormat: 'json',
   models: [
     {

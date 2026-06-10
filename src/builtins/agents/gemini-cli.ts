@@ -5,7 +5,11 @@ export const geminiCli: AgentDefinition = {
   displayName: 'Gemini CLI',
   command: 'gemini',
   apiType: 'google',
-  configPath: '~/.gemini/settings.json',
+  configPath: {
+    linux: '~/.gemini/settings.json',
+    macos: '~/.gemini/settings.json',
+    windows: '~/AppData/Roaming/gemini/settings.json',
+  },
   configFormat: 'json',
   models: [
     {

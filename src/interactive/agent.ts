@@ -1,9 +1,8 @@
 import { select, confirm, isCancel } from '@clack/prompts';
-import { existsSync } from 'node:fs';
 import { builtinAgents } from '../builtins/agents';
 import { builtinProviders } from '../builtins/providers';
 import { getProviderKeys, getEnabledState, setEnabledState } from '../config';
-import { expandHome } from '../utils';
+import { isCommandAvailable, getConfigPath, expandHome } from '../utils';
 import type { AgentDefinition } from '../types';
 
 /**
@@ -11,14 +10,16 @@ import type { AgentDefinition } from '../types';
  */
 export async function runAgentFlow(): Promise<void> {
   // 列出所有 agent，标注安装状态
-  const agentOptions = builtinAgents.map((a) => {
-    const installed = existsSync(expandHome(a.configPath));
-    return {
-      value: a.name,
-      label: a.displayName,
-      hint: installed ? '✅ 已安装' : '❌ 未安装',
-    };
-  });
+  const agentOptions = await Promise.all(
+    builtinAgents.map(async (a) => {
+      const installed = await isCommandAvailable(a.command);
+      return {
+        value: a.name,
+        label: a.displayName,
+        hint: installed ? '✅ 已安装' : '❌ 未安装',
+      };
+    })
+  );
 
   const agentName = await select({
     message: '选择智能体：',
@@ -67,12 +68,13 @@ export async function runAgentFlow(): Promise<void> {
 async function handleView(agent: AgentDefinition): Promise<void> {
   const enabledState = await getEnabledState();
   const state = enabledState[agent.name];
-  const installed = existsSync(expandHome(agent.configPath));
+  const installed = await isCommandAvailable(agent.command);
+  const configPath = expandHome(getConfigPath(agent.configPath));
 
   console.log(`\n  ${agent.displayName}`);
   console.log(`  ${'─'.repeat(40)}`);
   console.log(`  安装状态: ${installed ? '✅ 已安装' : '❌ 未安装'}`);
-  console.log(`  配置文件: ${agent.configPath}`);
+  console.log(`  配置文件: ${configPath}`);
   console.log(`  API 类型: ${agent.apiType}`);
 
   if (agent.models.length > 0) {

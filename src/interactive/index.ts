@@ -1,3 +1,3 @@
 export * from './main-menu';
-export * from './interactive-agent';
+export * from './agent';
 export * from './interactive-provider';

@@ -5,7 +5,11 @@ export const claudeCode: AgentDefinition = {
   displayName: 'Claude Code',
   command: 'claude',
   apiType: 'anthropic',
-  configPath: '~/.claude/settings.json',
+  configPath: {
+    linux: '~/.claude/settings.json',
+    macos: '~/.claude/settings.json',
+    windows: '~/.claude/settings.json',
+  },
   configFormat: 'json',
   models: [
     {

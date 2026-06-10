@@ -1,8 +1,7 @@
 import { Command } from 'commander';
-import { existsSync } from 'node:fs';
 import { builtinAgents } from '../builtins/agents/index';
 import { getEnabledState } from '../config/state';
-import { expandHome } from '../utils/path';
+import { isCommandAvailable, getConfigPath, expandHome } from '../utils/path';
 import type { AgentDefinition } from '../types/agent';
 
 /**
@@ -31,40 +30,39 @@ export function createAgentCommand(): Command {
           console.error(`未找到智能体: ${name}`);
           process.exit(1);
         }
-        displayAgentDetail(agent, enabledState);
+        await displayAgentDetail(agent, enabledState);
       } else {
         // 列出所有 agent
-        displayAgentList(agents);
+        await displayAgentList(agents);
       }
     });
 
   return cmd;
 }
 
-function displayAgentList(agents: AgentDefinition[]): void {
+async function displayAgentList(agents: AgentDefinition[]): Promise<void> {
   console.log('\n已识别的智能体:\n');
   for (const agent of agents) {
-    const configPath = expandHome(agent.configPath);
-    const installed = existsSync(configPath);
+    const installed = await isCommandAvailable(agent.command);
     const status = installed ? '✅ 已安装' : '❌ 未安装';
     console.log(`  ${agent.displayName.padEnd(20)} ${status}  (${agent.apiType})`);
   }
   console.log();
 }
 
-function displayAgentDetail(
+async function displayAgentDetail(
   agent: AgentDefinition,
   enabledState: Record<string, { provider: string; modelAssignments: Record<string, string> }>,
-): void {
-  const configPath = expandHome(agent.configPath);
-  const installed = existsSync(configPath);
+): Promise<void> {
+  const installed = await isCommandAvailable(agent.command);
+  const configPath = expandHome(getConfigPath(agent.configPath));
   const state = enabledState[agent.name];
 
   console.log(`\n${agent.displayName}`);
   console.log('─'.repeat(40));
   console.log(`  名称:     ${agent.name}`);
   console.log(`  API 类型: ${agent.apiType}`);
-  console.log(`  配置文件: ${agent.configPath}  ${installed ? '✅' : '❌'}`);
+  console.log(`  配置文件: ${configPath}  ${installed ? '✅' : '❌'}`);
   console.log();
 
   if (agent.models.length > 0) {

@@ -19,7 +19,7 @@ describe('Built-in Agents', () => {
   it('should have gemini-cli agent', () => {
     const geminiCli = builtinAgents.find((a) => a.name === 'gemini-cli');
     expect(geminiCli).toBeDefined();
-    expect(geminiCli?.apiType).toBe('gemini');
+    expect(geminiCli?.apiType).toBe('google');
   });
 });
 

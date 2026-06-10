@@ -5,7 +5,11 @@ export const codexCli: AgentDefinition = {
   displayName: 'Codex CLI',
   command: 'codex',
   apiType: 'openai',
-  configPath: '~/.codex/config.json',
+  configPath: {
+    linux: '~/.codex/config.json',
+    macos: '~/.codex/config.json',
+    windows: '~/.codex/config.json',
+  },
   configFormat: 'json',
   models: [
     {
