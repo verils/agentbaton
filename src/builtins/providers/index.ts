@@ -1,12 +1,12 @@
-import type { ProviderDefinition } from '../../types/provider.js';
-import { bailian } from './bailian.js';
-import { deepseek } from './deepseek.js';
-import { minimax } from './minimax.js';
-import { moonshot } from './moonshot.js';
-import { tencent } from './tencent.js';
-import { volcengine } from './volcengine.js';
-import { xiaomiMimo } from './xiaomi-mimo.js';
-import { zhipu } from './zhipu.js';
+import type { ProviderDefinition } from '../../types/provider';
+import { bailian } from './bailian';
+import { deepseek } from './deepseek';
+import { minimax } from './minimax';
+import { moonshot } from './moonshot';
+import { tencent } from './tencent';
+import { volcengine } from './volcengine';
+import { xiaomiMimo } from './xiaomi-mimo';
+import { zhipu } from './zhipu';
 
 export const builtinProviders: ProviderDefinition[] = [
   bailian,

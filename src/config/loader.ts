@@ -2,7 +2,7 @@ import { readFile, writeFile, mkdir } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { dirname } from 'node:path';
 import { parse as parseYaml, stringify as stringifyYaml } from 'yaml';
-import { paths } from './paths.js';
+import { paths } from './paths';
 
 /**
  * 确保目录存在

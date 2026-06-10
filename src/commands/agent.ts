@@ -1,9 +1,9 @@
 import { Command } from 'commander';
 import { existsSync } from 'node:fs';
-import { builtinAgents } from '../builtins/agents/index.js';
-import { getEnabledState } from '../config/state.js';
-import { expandHome } from '../utils/path.js';
-import type { AgentDefinition } from '../types/agent.js';
+import { builtinAgents } from '../builtins/agents/index';
+import { getEnabledState } from '../config/state';
+import { expandHome } from '../utils/path';
+import type { AgentDefinition } from '../types/agent';
 
 /**
  * 加载所有 agent 定义（内置 + 用户自定义）

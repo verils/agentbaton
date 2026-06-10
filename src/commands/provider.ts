@@ -1,8 +1,8 @@
 import { Command } from 'commander';
 import { intro, outro, password, isCancel } from '@clack/prompts';
-import { builtinProviders } from '../builtins/providers/index.js';
-import { getProviderKeys, setProviderKey } from '../config/state.js';
-import type { ProviderDefinition } from '../types/provider.js';
+import { builtinProviders } from '../builtins/providers/index';
+import { getProviderKeys, setProviderKey } from '../config/state';
+import type { ProviderDefinition } from '../types/provider';
 
 /**
  * 加载所有 provider 定义（内置 + 用户自定义）

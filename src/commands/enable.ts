@@ -1,8 +1,8 @@
 import { Command } from 'commander';
 import { intro, outro, select, confirm, isCancel } from '@clack/prompts';
-import { builtinAgents } from '../builtins/agents/index.js';
-import { builtinProviders } from '../builtins/providers/index.js';
-import { getProviderKeys, getEnabledState, setEnabledState } from '../config/state.js';
+import { builtinAgents } from '../builtins/agents/index';
+import { builtinProviders } from '../builtins/providers/index';
+import { getProviderKeys, getEnabledState, setEnabledState } from '../config/state';
 
 /**
  * 创建 enable 命令

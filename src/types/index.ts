@@ -1,3 +1,3 @@
-export * from './agent.js';
-export * from './provider.js';
-export * from './config.js';
+export * from './agent';
+export * from './provider';
+export * from './config';

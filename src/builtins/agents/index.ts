@@ -1,8 +1,8 @@
-import type { AgentDefinition } from '../../types/agent.js';
-import { claudeCode } from './claude-code.js';
-import { codexCli } from './codex-cli.js';
-import { geminiCli } from './gemini-cli.js';
-import { opencode } from './opencode.js';
+import type { AgentDefinition } from '../../types/agent';
+import { claudeCode } from './claude-code';
+import { codexCli } from './codex-cli';
+import { geminiCli } from './gemini-cli';
+import { opencode } from './opencode';
 
 export const builtinAgents: AgentDefinition[] = [
   claudeCode,

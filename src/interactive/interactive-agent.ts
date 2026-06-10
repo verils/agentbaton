@@ -1,10 +1,10 @@
 import { select, confirm, isCancel } from '@clack/prompts';
 import { existsSync } from 'node:fs';
-import { builtinAgents } from '../builtins/agents/index.js';
-import { builtinProviders } from '../builtins/providers/index.js';
-import { getProviderKeys, getEnabledState, setEnabledState } from '../config/state.js';
-import { expandHome } from '../utils/path.js';
-import type { AgentDefinition } from '../types/agent.js';
+import { builtinAgents } from '../builtins/agents/index';
+import { builtinProviders } from '../builtins/providers/index';
+import { getProviderKeys, getEnabledState, setEnabledState } from '../config/state';
+import { expandHome } from '../utils/path';
+import type { AgentDefinition } from '../types/agent';
 
 /**
  * 配置智能体子流程

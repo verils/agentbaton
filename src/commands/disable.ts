@@ -1,5 +1,5 @@
 import { Command } from 'commander';
-import { getEnabledState, setEnabledState } from '../config/state.js';
+import { getEnabledState, setEnabledState } from '../config/state';
 
 /**
  * 创建 disable 命令

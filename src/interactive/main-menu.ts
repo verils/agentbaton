@@ -1,11 +1,11 @@
 import { existsSync } from 'node:fs';
 import { intro, outro, select, confirm, isCancel } from '@clack/prompts';
-import { builtinAgents } from '../builtins/agents/index.js';
-import { builtinProviders } from '../builtins/providers/index.js';
-import { getProviderKeys, getEnabledState, setEnabledState } from '../config/state.js';
-import { expandHome } from '../utils/path.js';
-import { runAgentFlow } from './interactive-agent.js';
-import { runProviderFlow } from './interactive-provider.js';
+import { builtinAgents } from '../builtins/agents/index';
+import { builtinProviders } from '../builtins/providers/index';
+import { getProviderKeys, getEnabledState, setEnabledState } from '../config/state';
+import { expandHome } from '../utils/path';
+import { runAgentFlow } from './interactive-agent';
+import { runProviderFlow } from './interactive-provider';
 
 /**
  * 交互式配置流程（主菜单）

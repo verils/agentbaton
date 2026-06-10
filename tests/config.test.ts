@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { builtinAgents } from '../src/builtins/agents/index.js';
-import { builtinProviders } from '../src/builtins/providers/index.js';
+import { builtinAgents } from '../src/builtins/agents/index';
+import { builtinProviders } from '../src/builtins/providers/index';
 
 describe('Built-in Agents', () => {
   it('should have claude-code agent', () => {

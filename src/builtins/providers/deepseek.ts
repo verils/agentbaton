@@ -1,4 +1,4 @@
-import type { ProviderDefinition } from '../../types/provider.js';
+import type { ProviderDefinition } from '../../types/provider';
 
 export const deepseek: ProviderDefinition = {
   name: 'deepseek',

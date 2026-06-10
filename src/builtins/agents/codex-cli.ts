@@ -1,4 +1,4 @@
-import type { AgentDefinition } from '../../types/agent.js';
+import type { AgentDefinition } from '../../types/agent';
 
 export const codexCli: AgentDefinition = {
   name: 'codex-cli',

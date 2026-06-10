@@ -8,13 +8,14 @@
     "agentbaton": "dist/cli.js"
   },
   "scripts": {
-    "build": "tsc",
-    "dev": "tsc --watch",
+    "build": "vite build",
+    "clean": "rm -rf dist",
+    "dev": "vite build --watch",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src --ext .ts",
     "start": "node dist/cli.js",
     "test": "vitest run",
-    "test:watch": "vitest",
-    "lint": "eslint src --ext .ts",
-    "clean": "rm -rf dist"
+    "test:watch": "vitest"
   },
   "keywords": [
     "cli",

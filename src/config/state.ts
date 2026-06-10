@@ -1,6 +1,6 @@
-import type { ProviderKeys, EnabledState } from '../types/config.js';
-import { paths } from './paths.js';
-import { readYaml, writeYaml } from './loader.js';
+import type { ProviderKeys, EnabledState } from '../types/config';
+import { paths } from './paths';
+import { readYaml, writeYaml } from './loader';
 
 /**
  * 读取 Provider API Keys

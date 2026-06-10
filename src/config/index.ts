@@ -1,3 +1,3 @@
-export * from './paths.js';
-export * from './loader.js';
-export * from './state.js';
+export * from './paths';
+export * from './loader';
+export * from './state';
