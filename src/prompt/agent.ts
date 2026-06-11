@@ -15,8 +15,7 @@ export async function runAgentPrompt(): Promise<void> {
       const installed = await isCommandAvailable(a.command);
       return {
         value: a.name,
-        label: a.displayName,
-        hint: installed ? '✅ 已安装' : '❌ 未安装',
+        label: `${a.displayName}（${installed ? '✅ 已安装' : '❌ 未安装'}）`,
       };
     })
   );
@@ -35,10 +34,8 @@ export async function runAgentPrompt(): Promise<void> {
     const action = await select({
       message: `${agent.displayName}：`,
       options: [
-        { value: 'view', label: '查看当前配置', hint: '已启用的供应商、模型分配' },
-        { value: 'enable', label: '启用新供应商', hint: '选择供应商并分配模型' },
-        { value: 'switch', label: '切换供应商', hint: '切换到其他已配置的供应商' },
-        { value: 'disable', label: '禁用当前供应商', hint: '移除当前配置' },
+        { value: 'view', label: '查看当前智能体设置' },
+        { value: 'select', label: '选择模型供应商' },
         { value: '__back__', label: '↩ 返回', hint: '' },
       ],
     });
@@ -49,14 +46,8 @@ export async function runAgentPrompt(): Promise<void> {
       case 'view':
         await handleView(agent);
         break;
-      case 'enable':
-        await handleEnable(agent);
-        break;
-      case 'switch':
+      case 'select':
         await handleSwitch(agent);
-        break;
-      case 'disable':
-        await handleDisable(agent);
         break;
     }
   }
@@ -94,53 +85,6 @@ async function handleView(agent: AgentDefinition): Promise<void> {
 
   console.log();
 }
-
-/**
- * 启用新供应商
- */
-async function handleEnable(agent: AgentDefinition): Promise<void> {
-  const keys = await getProviderKeys();
-
-  // 过滤 API 类型兼容且已配置 API Key 的供应商
-  const compatible = builtinProviders.filter(
-    (p) => p.apiType === agent.apiType && keys[p.name],
-  );
-
-  if (compatible.length === 0) {
-    console.log(`\n  ❌ 没有已配置 API Key 且兼容 ${agent.apiType} 的供应商\n`);
-    console.log(`  请先通过「配置供应商」菜单配置 API Key\n`);
-    return;
-  }
-
-  const providerName = await select({
-    message: '选择供应商：',
-    options: compatible.map((p) => ({
-      value: p.name,
-      label: p.displayName,
-      hint: `${p.models.length} 个模型`,
-    })),
-  });
-
-  if (isCancel(providerName)) return;
-
-  const provider = compatible.find((p) => p.name === providerName)!;
-
-  // 逐槽位选择模型
-  const modelAssignments = await selectModels(agent, provider);
-  if (!modelAssignments) return;
-
-  // 确认
-  const yes = await confirm({ message: '确认启用？' });
-  if (isCancel(yes) || !yes) return;
-
-  // 保存
-  const enabledState = await getEnabledState();
-  enabledState[agent.name] = { provider: provider.name, modelAssignments };
-  await setEnabledState(enabledState);
-
-  console.log(`\n  ✅ 已为 ${agent.displayName} 启用 ${provider.displayName}\n`);
-}
-
 /**
  * 切换供应商
  */
@@ -184,31 +128,6 @@ async function handleSwitch(agent: AgentDefinition): Promise<void> {
 
   console.log(`\n  ✅ 已切换到 ${provider.displayName}\n`);
 }
-
-/**
- * 禁用当前供应商
- */
-async function handleDisable(agent: AgentDefinition): Promise<void> {
-  const enabledState = await getEnabledState();
-  const state = enabledState[agent.name];
-
-  if (!state) {
-    console.log('\n  ℹ️  当前没有启用任何供应商\n');
-    return;
-  }
-
-  const yes = await confirm({
-    message: `确认禁用 ${state.provider}？`,
-  });
-
-  if (isCancel(yes) || !yes) return;
-
-  delete enabledState[agent.name];
-  await setEnabledState(enabledState);
-
-  console.log(`\n  ✅ 已禁用 ${state.provider}\n`);
-}
-
 /**
  * 交互式模型选择（公共逻辑）
  */
