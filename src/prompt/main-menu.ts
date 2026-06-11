@@ -3,7 +3,7 @@ import { builtinAgents } from '../agents';
 import { builtinProviders } from '../providers';
 import { getProviderKeys, getEnabledState, setEnabledState } from '../config';
 import { isCommandAvailable } from '../utils';
-import { runAgentFlow } from './agent';
+import { runAgentPrompt } from './agent';
 import { runProviderPrompt } from './provider';
 
 export async function runPrompt(): Promise<void> {
@@ -13,11 +13,11 @@ export async function runPrompt(): Promise<void> {
     const choice = await select({
       message: '选择菜单：',
       options: [
-        { value: 'provider', label: '设置模型供应商', hint: '设置 API Key 和模型' },
-        { value: 'agent', label: '设置智能体', hint: '启用/禁用供应商、分配模型' },
-        { value: 'view', label: '查看设置', hint: '所有智能体和供应商的设置概览' },
-        { value: 'quick', label: '快速设置', hint: '进入设置向导' },
-        { value: 'exit', label: '退出', hint: '' },
+        { value: 'provider', label: '设置模型供应商' },
+        { value: 'agent', label: '设置智能体' },
+        { value: 'view', label: '查看设置' },
+        { value: 'quick', label: '快速设置' },
+        { value: 'exit', label: '退出' },
       ],
     });
 
@@ -25,7 +25,7 @@ export async function runPrompt(): Promise<void> {
 
     switch (choice) {
       case 'agent':
-        await runAgentFlow();
+        await runAgentPrompt();
         break;
       case 'provider':
         await runProviderPrompt();

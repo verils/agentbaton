@@ -19,6 +19,15 @@ export async function setProviderKey(providerName: string, apiKey: string): Prom
 }
 
 /**
+ * 删除 Provider API Key
+ */
+export async function deleteProviderKey(providerName: string): Promise<void> {
+  const keys = await getProviderKeys();
+  delete keys[providerName];
+  await writeYaml(paths.providerKeys, keys);
+}
+
+/**
  * 读取启用状态
  */
 export async function getEnabledState(): Promise<EnabledState> {

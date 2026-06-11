@@ -8,7 +8,7 @@ import type { AgentDefinition } from '../types';
 /**
  * 配置智能体子流程
  */
-export async function runAgentFlow(): Promise<void> {
+export async function runAgentPrompt(): Promise<void> {
   // 列出所有 agent，标注安装状态
   const agentOptions = await Promise.all(
     builtinAgents.map(async (a) => {
