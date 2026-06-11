@@ -1,8 +1,8 @@
 import { ProviderDefinition } from "../types";
 
 export const bailian: ProviderDefinition = {
-  name: 'bailian',
-  displayName: '阿里云百炼',
+  id: 'bailian',
+  name: '阿里云百炼',
   endpoints: {
     'openai': {
       apiType: 'openai',

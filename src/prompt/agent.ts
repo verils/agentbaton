@@ -1,23 +1,23 @@
-import { select, confirm, isCancel } from '@clack/prompts';
-import { builtinAgents } from '../agents';
+import { confirm, isCancel, select } from '@clack/prompts';
 import { builtinProviders } from '../providers';
-import { getProviderKeys, getEnabledState, setEnabledState } from '../config';
-import { isCommandAvailable, getConfigPath, expandHome } from '../utils';
+import { getEnabledState, getProviderKeys, setEnabledState } from '../config';
+import { expandHome, getConfigPath, isCommandAvailable } from '../utils';
 import type { AgentDefinition } from '../types';
+import { detectInstalledAgents } from "../agents/detect";
+import { builtinAgents } from "../agents/builtin";
 
 /**
  * 配置智能体子流程
  */
 export async function runAgentPrompt(): Promise<void> {
+  const installedAgents = await detectInstalledAgents();
+
   // 列出所有 agent，标注安装状态
   const agentOptions = await Promise.all(
-    builtinAgents.map(async (a) => {
-      const installed = await isCommandAvailable(a.command);
-      return {
-        value: a.name,
-        label: `${a.displayName}（${installed ? '已安装 ✅' : '未安装 ❌'}）`,
-      };
-    })
+    installedAgents.map((a) => ({
+      value: a.name,
+      label: `${a.displayName}`,
+    }))
   );
 
   const agentName = await select({
@@ -89,6 +89,7 @@ async function handleView(agent: AgentDefinition): Promise<void> {
 
   console.log();
 }
+
 /**
  * 切换供应商
  */
@@ -100,21 +101,21 @@ async function handleSelectProvider(agent: AgentDefinition): Promise<void> {
   const currentProvider = enabledState[agent.name]?.provider;
 
   const compatible = builtinProviders.filter(
-    (p) => p.apiType === agent.apiType && keys[p.name] && p.name !== currentProvider,
+    (p) => p.apiType === agent.apiType && keys[p.id] && p.id !== currentProvider,
   );
 
   const providerName = await select({
     message: '切换到：',
     options: compatible.map((p) => ({
-      value: p.name,
-      label: p.displayName,
+      value: p.id,
+      label: p.name,
       hint: `${p.models.length} 个模型`,
     })),
   });
 
   if (isCancel(providerName)) return;
 
-  const provider = compatible.find((p) => p.name === providerName)!;
+  const provider = compatible.find((p) => p.id === providerName)!;
 
   const modelAssignments = await selectModels(agent, provider);
   if (!modelAssignments) return;
@@ -122,11 +123,12 @@ async function handleSelectProvider(agent: AgentDefinition): Promise<void> {
   const yes = await confirm({ message: '确认切换？' });
   if (isCancel(yes) || !yes) return;
 
-  enabledState[agent.name] = { provider: provider.name, modelAssignments };
+  enabledState[agent.name] = { provider: provider.id, modelAssignments };
   await setEnabledState(enabledState);
 
-  console.log(`\n  ✅ 已切换到 ${provider.displayName}\n`);
+  console.log(`\n  ✅ 已切换到 ${provider.name}\n`);
 }
+
 /**
  * 交互式模型选择（公共逻辑）
  */

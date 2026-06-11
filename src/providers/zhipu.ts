@@ -1,8 +1,8 @@
 import type { ProviderDefinition } from '../types';
 
 export const zhipu: ProviderDefinition = {
-  name: 'zhipu',
-  displayName: '智谱 AI',
+  id: 'zhipu',
+  name: '智谱 AI',
   apiType: 'openai',
   baseUrl: 'https://open.bigmodel.cn/api/paas/v4',
   models: [

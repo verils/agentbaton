@@ -1,8 +1,8 @@
 import type { ProviderDefinition } from '../types';
 
 export const minimax: ProviderDefinition = {
-  name: 'minimax',
-  displayName: 'MiniMax',
+  id: 'minimax',
+  name: 'MiniMax',
   apiType: 'openai',
   baseUrl: 'https://api.minimax.chat/v1',
   models: [

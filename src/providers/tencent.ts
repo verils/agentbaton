@@ -1,8 +1,8 @@
 import type { ProviderDefinition } from '../types';
 
 export const tencent: ProviderDefinition = {
-  name: 'tencent',
-  displayName: '腾讯云',
+  id: 'tencent',
+  name: '腾讯云',
   apiType: 'openai',
   baseUrl: 'https://api.lkeap.cloud.tencent.com/v1',
   models: [

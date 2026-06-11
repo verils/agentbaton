@@ -1,8 +1,8 @@
 import type { ProviderDefinition } from '../types';
 
 export const volcengine: ProviderDefinition = {
-  name: 'volcengine',
-  displayName: '火山引擎',
+  id: 'volcengine',
+  name: '火山引擎',
   apiType: 'openai',
   baseUrl: 'https://ark.cn-beijing.volces.com/api/v3',
   models: [

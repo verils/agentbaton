@@ -1,10 +1,10 @@
 import { intro, isCancel, outro, select } from '@clack/prompts';
-import { builtinAgents } from '../agents';
 import { builtinProviders } from '../providers';
 import { getEnabledState, getProviderKeys } from '../config';
 import { isCommandAvailable, getStringWidth, padEndWidth } from '../utils';
 import { runAgentPrompt } from './agent';
 import { runProviderPrompt } from './provider';
+import { builtinAgents } from "../agents/builtin";
 
 export async function runPrompt(): Promise<void> {
   intro('Agent Baton — 智能体设置管理');
@@ -66,10 +66,10 @@ async function handleViewAll(): Promise<void> {
 
   // 模型供应商
   console.log('\n  🔌 模型供应商\n');
-  const providerWidth = Math.max(...builtinProviders.map(p => getStringWidth(p.displayName))) + 4;
+  const providerWidth = Math.max(...builtinProviders.map(p => getStringWidth(p.name))) + 4;
   for (const provider of builtinProviders) {
-    const hasKey = keys[provider.name] ? '✅' : '❌';
-    console.log(`    ${padEndWidth(provider.displayName, providerWidth)} ${hasKey}`);
+    const hasKey = keys[provider.id] ? '✅' : '❌';
+    console.log(`    ${padEndWidth(provider.name, providerWidth)} ${hasKey}`);
   }
 
   console.log();

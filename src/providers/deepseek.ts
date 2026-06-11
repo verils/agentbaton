@@ -1,8 +1,8 @@
 import type { ProviderDefinition } from '../types';
 
 export const deepseek: ProviderDefinition = {
-  name: 'deepseek',
-  displayName: 'DeepSeek',
+  id: 'deepseek',
+  name: 'DeepSeek',
   apiType: 'openai',
   baseUrl: 'https://api.deepseek.com',
   models: [

@@ -3,10 +3,10 @@ import { existsSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { homedir } from 'node:os';
 import { paths } from './paths';
-import type { AgentbatonConfig } from '../types';
+import type { Config } from '../types';
 
 /** 默认空配置 */
-const DEFAULT_CONFIG: AgentbatonConfig = {
+const DEFAULT_CONFIG: Config = {
   providerKeys: {},
   enabledAgents: {},
 };
@@ -43,9 +43,9 @@ export async function writeJson(filePath: string, data: unknown): Promise<void> 
 /**
  * 加载统一配置（含从旧 YAML 文件的迁移逻辑）
  */
-export async function loadConfig(): Promise<AgentbatonConfig> {
+export async function loadConfig(): Promise<Config> {
   // 优先读取新配置文件
-  const config = await readJson<AgentbatonConfig>(paths.config);
+  const config = await readJson<Config>(paths.config);
   if (config) {
     return { ...DEFAULT_CONFIG, ...config };
   }
@@ -63,7 +63,7 @@ export async function loadConfig(): Promise<AgentbatonConfig> {
 /**
  * 保存统一配置
  */
-export async function saveConfig(config: AgentbatonConfig): Promise<void> {
+export async function saveConfig(config: Config): Promise<void> {
   await writeJson(paths.config, config);
 }
 
@@ -91,7 +91,7 @@ function parseSimpleYaml(content: string): Record<string, string> {
 /**
  * 从旧 YAML 文件迁移配置
  */
-async function migrateFromYaml(): Promise<AgentbatonConfig | null> {
+async function migrateFromYaml(): Promise<Config | null> {
   const batonDir = join(homedir(), '.agentbaton');
   const oldKeysPath = join(batonDir, 'state', 'provider-keys.yaml');
   const oldEnabledPath = join(batonDir, 'state', 'enabled.yaml');
@@ -103,7 +103,7 @@ async function migrateFromYaml(): Promise<AgentbatonConfig | null> {
     return null;
   }
 
-  const config: AgentbatonConfig = { ...DEFAULT_CONFIG };
+  const config: Config = { ...DEFAULT_CONFIG };
 
   // 迁移 provider keys
   if (hasOldKeys) {

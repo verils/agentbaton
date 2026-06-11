@@ -1,8 +1,8 @@
 import type { ProviderDefinition } from '../types';
 
 export const moonshot: ProviderDefinition = {
-  name: 'moonshot',
-  displayName: '月之暗面',
+  id: 'moonshot',
+  name: '月之暗面',
   apiType: 'openai',
   baseUrl: 'https://api.moonshot.cn/v1',
   models: [

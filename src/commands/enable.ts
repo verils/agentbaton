@@ -1,8 +1,8 @@
 import { Command } from 'commander';
 import { intro, outro, select, confirm, isCancel } from '@clack/prompts';
-import { builtinAgents } from '../agents/index';
 import { builtinProviders } from '../providers/index';
 import { getProviderKeys, getEnabledState, setEnabledState } from '../config/state';
+import { builtinAgents } from "../agents/builtin";
 
 /**
  * 创建 enable 命令
@@ -19,7 +19,7 @@ export function createEnableCommand(): Command {
         process.exit(1);
       }
 
-      const provider = builtinProviders.find((p) => p.name === providerName);
+      const provider = builtinProviders.find((p) => p.id === providerName);
       if (!provider) {
         console.error(`未找到 Provider: ${providerName}`);
         process.exit(1);
@@ -28,21 +28,21 @@ export function createEnableCommand(): Command {
       // 检查 API 类型兼容性
       if (agent.apiType !== provider.apiType) {
         console.error(
-          `\n❌ API 类型不兼容: ${agent.displayName} (${agent.apiType}) 与 ${provider.displayName} (${provider.apiType})\n`,
+          `\n❌ API 类型不兼容: ${agent.displayName} (${agent.apiType}) 与 ${provider.name} (${provider.apiType})\n`,
         );
         process.exit(1);
       }
 
       // 检查 API Key
       const keys = await getProviderKeys();
-      if (!keys[provider.name]) {
-        console.error(`\n❌ 请先配置 ${provider.displayName} 的 API Key:`);
-        console.error(`   agentbaton provider ${provider.name} --key <your-key>\n`);
+      if (!keys[provider.id]) {
+        console.error(`\n❌ 请先配置 ${provider.name} 的 API Key:`);
+        console.error(`   agentbaton provider ${provider.id} --key <your-key>\n`);
         process.exit(1);
       }
 
       // 交互式模型选择
-      intro(`为 ${agent.displayName} 启用 ${provider.displayName}`);
+      intro(`为 ${agent.displayName} 启用 ${provider.name}`);
 
       const modelAssignments: Record<string, string> = {};
       const modelOptions = provider.models.map((m) => ({
@@ -78,7 +78,7 @@ export function createEnableCommand(): Command {
       // 保存启用状态
       const enabledState = await getEnabledState();
       enabledState[agent.name] = {
-        provider: provider.name,
+        provider: provider.id,
         modelAssignments,
       };
       await setEnabledState(enabledState);

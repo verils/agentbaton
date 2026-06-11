@@ -1,9 +1,9 @@
 import { Command } from 'commander';
-import { builtinAgents } from '../agents/index';
 import { getEnabledState } from '../config/state';
 import { isCommandAvailable, getConfigPath, expandHome } from '../utils/path';
 import { getStringWidth, padEndWidth } from '../utils/string';
 import type { AgentDefinition } from '../types/agent';
+import { builtinAgents } from "../agents/builtin";
 
 /**
  * 加载所有 agent 定义（内置 + 用户自定义）

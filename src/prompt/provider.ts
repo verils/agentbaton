@@ -8,8 +8,8 @@ export async function runProviderPrompt(): Promise<void> {
   const keys = await getProviderKeys();
 
   const providerOptions = builtinProviders.map((p) => ({
-    value: p.name,
-    label: `${p.displayName}（${keys[p.name] ? '已设置 ✅' : '未设置 ❌'}）`,
+    value: p.id,
+    label: `${p.name}（${keys[p.id] ? '已设置 ✅' : '未设置 ❌'}）`,
   }));
 
   const providerName = await select({
@@ -24,13 +24,13 @@ export async function runProviderPrompt(): Promise<void> {
     return;
   }
 
-  const provider = builtinProviders.find((p) => p.name === providerName)!;
-  const key = keys[provider.name];
+  const provider = builtinProviders.find((p) => p.id === providerName)!;
+  const key = keys[provider.id];
 
   // 操作子菜单循环
   while (true) {
     const action = await select({
-      message: `${provider.displayName}：`,
+      message: `${provider.name}：`,
       options: [
         { value: 'setApiKey', label: `设置 API Key${key ? `（✅ ${key.slice(0, 6)}...${key.slice(-4)}）` : ''}` },
         { value: 'cleanApiKey', label: `清空 API Key` },
@@ -56,7 +56,7 @@ export async function runProviderPrompt(): Promise<void> {
  */
 async function handleSetApiKey(provider: ProviderDefinition): Promise<void> {
   const key = await password({
-    message: `输入 ${provider.displayName} 的 API Key`,
+    message: `输入 ${provider.name} 的 API Key`,
     mask: '*',
   });
 
@@ -64,11 +64,11 @@ async function handleSetApiKey(provider: ProviderDefinition): Promise<void> {
     return;
   }
 
-  await setProviderKey(provider.name, key);
-  console.log(`\n  ✅ 已保存 ${provider.displayName} 的 API Key\n`);
+  await setProviderKey(provider.id, key);
+  console.log(`\n  ✅ 已保存 ${provider.name} 的 API Key\n`);
 }
 
 async function handleCleanApiKey(provider: ProviderDefinition) {
-  await deleteProviderKey(provider.name);
-  console.log(`\n  🗑️  已清空 ${provider.displayName} 的 API Key\n`);
+  await deleteProviderKey(provider.id);
+  console.log(`\n  🗑️  已清空 ${provider.name} 的 API Key\n`);
 }

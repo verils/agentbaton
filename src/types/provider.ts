@@ -5,15 +5,20 @@ export type ApiType = 'openai' | 'anthropic' | 'google';
  */
 export interface ProviderDefinition {
   /** 唯一标识 */
-  name: string;
+  id: string;
   /** 显示名称 */
-  displayName: string;
+  name: string;
+  /** API 端点 */
+  endpoints?: Record<string, ProviderEndpoint>,
+
+  /** 获取可用模型列表 */
+  fetchModels?(): Promise<ProviderModel[]>
+
   /** 提供的 API 协议类型 */
   apiType?: ApiType;
   /** API 基础地址 */
   baseUrl?: string;
-  /** API 端点 */
-  endpoints?: Record<string, ProviderEndpoint>,
+
   /** 可用模型列表 */
   models: ProviderModel[];
 }

@@ -25,7 +25,7 @@ export function createProviderCommand(): Command {
       const providers = await loadProviders();
 
       if (name) {
-        const provider = providers.find((p) => p.name === name);
+        const provider = providers.find((p) => p.id === name);
         if (!provider) {
           console.error(`未找到 Provider: ${name}`);
           process.exit(1);
@@ -34,10 +34,10 @@ export function createProviderCommand(): Command {
         if (options?.key) {
           // 直接配置 API Key
           await setProviderKey(name, options.key);
-          console.log(`\n✅ 已保存 ${provider.displayName} 的 API Key\n`);
+          console.log(`\n✅ 已保存 ${provider.name} 的 API Key\n`);
         } else {
           // 交互式配置 API Key
-          intro(`配置 ${provider.displayName} 的 API Key`);
+          intro(`配置 ${provider.name} 的 API Key`);
 
           const key = await password({
             message: '输入 API Key',
@@ -65,10 +65,10 @@ async function displayProviderList(providers: ProviderDefinition[]): Promise<voi
   const keys = await getProviderKeys();
 
   console.log('\n可用的 Provider:\n');
-  const width = Math.max(...providers.map(p => getStringWidth(p.displayName))) + 4;
+  const width = Math.max(...providers.map(p => getStringWidth(p.name))) + 4;
   for (const provider of providers) {
-    const hasKey = keys[provider.name] ? '✅ 已配置' : '❌ 未配置';
-    console.log(`  ${padEndWidth(provider.displayName, width)} ${hasKey}  (${provider.apiType})`);
+    const hasKey = keys[provider.id] ? '✅ 已配置' : '❌ 未配置';
+    console.log(`  ${padEndWidth(provider.name, width)} ${hasKey}  (${provider.apiType})`);
   }
   console.log();
 }
