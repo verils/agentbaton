@@ -4,7 +4,7 @@ import { isCommandAvailable, getStringWidth, padEndWidth } from '../utils';
 import { openAgentMenu } from './agent';
 import { openProviderMenu } from './provider';
 import { builtinAgents } from "../agents/builtin";
-import { providerTemplates } from "../providers/template";
+import { providerTemplates } from "../provider/template";
 
 export async function runPrompt(): Promise<void> {
   intro('Agent Baton — 智能体设置管理');

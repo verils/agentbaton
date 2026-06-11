@@ -4,7 +4,7 @@ import { expandHome, getConfigPath, isCommandAvailable } from '../utils';
 import type { AgentDefinition, Provider } from '../types';
 import { detectInstalledAgents } from "../agents/detect";
 import { builtinAgents } from "../agents/builtin";
-import { providerTemplates } from "../providers/template";
+import { providerTemplates } from "../provider/template";
 
 /**
  * 配置智能体子流程

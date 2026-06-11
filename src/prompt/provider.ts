@@ -2,7 +2,7 @@ import { randomUUID } from 'node:crypto';
 import { isCancel, password, select } from '@clack/prompts';
 import { loadConfig, saveConfig } from '../config';
 import { backOption } from "./back";
-import { findProviderTemplate, providerTemplates } from "../providers/template";
+import { findProviderTemplate, providerTemplates } from "../provider/template";
 import { Config } from "../types";
 
 /**
