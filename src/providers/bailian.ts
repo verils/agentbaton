@@ -1,10 +1,18 @@
-import type { ProviderDefinition } from '../../types/provider';
+import { ProviderDefinition } from "../types";
 
 export const bailian: ProviderDefinition = {
   name: 'bailian',
-  displayName: '百炼 (Bailian)',
-  apiType: 'openai',
-  baseUrl: 'https://dashscope.aliyuncs.com/compatible-mode/v1',
+  displayName: '阿里云百炼',
+  endpoints: {
+    'openai': {
+      apiType: 'openai',
+      baseUrl: 'https://dashscope.aliyuncs.com/compatible-mode/v1',
+    },
+    'anthropic': {
+      apiType: 'anthropic',
+      baseUrl: 'https://dashscope.aliyuncs.com/apps/anthropic',
+    }
+  },
   models: [
     {
       name: 'qwen-turbo',

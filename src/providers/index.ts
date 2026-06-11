@@ -1,4 +1,4 @@
-import type { ProviderDefinition } from '../../types/provider';
+import type { ProviderDefinition } from '../types';
 import { bailian } from './bailian';
 import { deepseek } from './deepseek';
 import { minimax } from './minimax';

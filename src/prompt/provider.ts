@@ -11,13 +11,15 @@ export async function runProviderFlow(): Promise<void> {
 
   const providerOptions = builtinProviders.map((p) => ({
     value: p.name,
-    label: p.displayName,
-    hint: keys[p.name] ? '✅ 已配置 Key' : '❌ 未配置 Key',
+    label: `${p.displayName}（${keys[p.name] ? '✅ 已配置' : '❌ 未配置'}）`,
   }));
 
   const providerName = await select({
     message: '选择供应商：',
-    options: [...providerOptions, { value: '__back__', label: '↩ 返回', hint: '' }],
+    options: [
+      ...providerOptions,
+      { value: '__back__', label: '↩ 返回', hint: '' }
+    ],
   });
 
   if (isCancel(providerName) || providerName === '__back__') return;

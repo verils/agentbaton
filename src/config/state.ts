@@ -1,4 +1,4 @@
-import type { ProviderKeys, EnabledState } from '../types/config';
+import type { ProviderKeys, EnabledState } from '../types';
 import { paths } from './paths';
 import { readYaml, writeYaml } from './loader';
 

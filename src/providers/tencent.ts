@@ -1,4 +1,4 @@
-import type { ProviderDefinition } from '../../types/provider';
+import type { ProviderDefinition } from '../types';
 
 export const tencent: ProviderDefinition = {
   name: 'tencent',

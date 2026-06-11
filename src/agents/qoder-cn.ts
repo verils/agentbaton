@@ -1,4 +1,4 @@
-import type { AgentDefinition } from '../../types';
+import type { AgentDefinition } from '../types';
 
 export const qoderCn: AgentDefinition = {
   name: 'qoder-cn',
