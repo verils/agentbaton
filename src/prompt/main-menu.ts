@@ -4,22 +4,19 @@ import { builtinProviders } from '../providers';
 import { getProviderKeys, getEnabledState, setEnabledState } from '../config';
 import { isCommandAvailable } from '../utils';
 import { runAgentFlow } from './agent';
-import { runProviderFlow } from './provider';
+import { runProviderPrompt } from './provider';
 
-/**
- * 交互式配置流程（主菜单）
- */
 export async function runPrompt(): Promise<void> {
-  intro('Agent Baton — 智能体配置管理');
+  intro('Agent Baton — 智能体设置管理');
 
   while (true) {
     const choice = await select({
       message: '选择菜单：',
       options: [
-        { value: 'provider', label: '配置模型供应商', hint: '配置 API Key、查看模型' },
-        { value: 'agent', label: '配置智能体', hint: '启用/禁用供应商、分配模型' },
-        { value: 'view', label: '查看配置', hint: '所有智能体和供应商的配置概览' },
-        { value: 'quick', label: '快速配置', hint: '进入配置向导' },
+        { value: 'provider', label: '设置模型供应商', hint: '设置 API Key 和模型' },
+        { value: 'agent', label: '设置智能体', hint: '启用/禁用供应商、分配模型' },
+        { value: 'view', label: '查看设置', hint: '所有智能体和供应商的设置概览' },
+        { value: 'quick', label: '快速设置', hint: '进入设置向导' },
         { value: 'exit', label: '退出', hint: '' },
       ],
     });
@@ -31,7 +28,7 @@ export async function runPrompt(): Promise<void> {
         await runAgentFlow();
         break;
       case 'provider':
-        await runProviderFlow();
+        await runProviderPrompt();
         break;
       case 'view':
         await handleViewAll();

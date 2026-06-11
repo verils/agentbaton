@@ -11,7 +11,7 @@ export const bailian: ProviderDefinition = {
     'anthropic': {
       apiType: 'anthropic',
       baseUrl: 'https://dashscope.aliyuncs.com/apps/anthropic',
-    }
+    },
   },
   models: [
     {
@@ -26,5 +26,5 @@ export const bailian: ProviderDefinition = {
       name: 'qwen-max',
       description: '通义千问 Max',
     },
-  ],
+  ]
 };

@@ -1,3 +1,5 @@
+export type ApiType = 'openai' | 'anthropic' | 'google';
+
 /**
  * Provider 定义接口
  */
@@ -7,7 +9,7 @@ export interface ProviderDefinition {
   /** 显示名称 */
   displayName: string;
   /** 提供的 API 协议类型 */
-  apiType?: string;
+  apiType?: ApiType;
   /** API 基础地址 */
   baseUrl?: string;
   /** API 端点 */
@@ -16,13 +18,13 @@ export interface ProviderDefinition {
   models: ProviderModel[];
 }
 
+
 interface ProviderEndpoint {
   /** 提供的 API 协议类型 */
-  apiType: string;
+  apiType: ApiType;
   /** API 基础地址 */
   baseUrl: string;
 }
-
 
 /**
  * Provider 模型

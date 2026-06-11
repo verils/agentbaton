@@ -1,3 +1,5 @@
+import { ApiType } from "./provider";
+
 /**
  * Agent 定义接口
  */
@@ -9,7 +11,7 @@ export interface AgentDefinition {
   /** 可执行命令 */
   command: string;
   /** 使用的 API 协议类型 */
-  apiType: 'openai' | 'anthropic' | 'google';
+  apiType: ApiType;
   /** 各平台的配置文件路径 */
   configPath: PlatformConfigPath;
   /** 配置文件格式 */
