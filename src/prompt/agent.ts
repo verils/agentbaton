@@ -1,7 +1,7 @@
 import { confirm, isCancel, select } from '@clack/prompts';
-import { getEnabledState, getProviderKeys, setEnabledState } from '../config';
+import { getEnabledState, setEnabledState } from '../config';
 import { expandHome, getConfigPath, isCommandAvailable } from '../utils';
-import type { AgentDefinition } from '../types';
+import type { AgentDefinition, Provider } from '../types';
 import { detectInstalledAgents } from "../agents/detect";
 import { builtinAgents } from "../agents/builtin";
 import { providerTemplates } from "../providers/template";
@@ -94,7 +94,7 @@ async function handleView(agent: AgentDefinition): Promise<void> {
  * 切换供应商
  */
 async function handleSelectProvider(agent: AgentDefinition): Promise<void> {
-  const keys = await getProviderKeys();
+  const keys: Record<string, Provider> = {};
 
   // 所有兼容且有 API Key 的供应商（排除当前已启用的）
   const enabledState = await getEnabledState();

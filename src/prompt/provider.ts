@@ -39,31 +39,7 @@ export async function openProviderMenu(): Promise<void> {
 }
 
 async function handleAddProvider() {
-  const type = await select({
-    message: '选择模型供应商类型',
-    options: [
-      { value: 'template', label: '从模板添加' },
-      { value: 'custom', label: '自定义' },
-      backOption,
-    ]
-  });
-
-  if (isCancel(type) || type === 'back') {
-    return;
-  }
-
-  switch (type) {
-    case 'template':
-      await handleAddTemplateProvider()
-      return;
-    default:
-      await handleAddCustomProvider();
-      break;
-  }
-}
-
-async function handleAddTemplateProvider() {
-  const providerOptions = providerTemplates.map(p => ({
+  const providerTemplateOptions = providerTemplates.map(p => ({
     value: p.id,
     label: p.name
   }));
@@ -71,7 +47,8 @@ async function handleAddTemplateProvider() {
   const choice = await select({
     message: '选择模型供应商',
     options: [
-      ...providerOptions,
+      ...providerTemplateOptions,
+      { value: 'custom', label: '自定义模型供应商' },
       backOption,
     ]
   });
@@ -80,7 +57,18 @@ async function handleAddTemplateProvider() {
     return;
   }
 
-  const providerTemplate = findProviderTemplate(choice);
+  switch (choice) {
+    case 'custom':
+      await handleAddCustomProvider();
+      break;
+    default:
+      await handleAddTemplateProvider(choice)
+      return;
+  }
+}
+
+async function handleAddTemplateProvider(providerTemplateId: string) {
+  const providerTemplate = findProviderTemplate(providerTemplateId);
   const apiKey = await password({
     message: `输入 ${providerTemplate.name} 的 API Key`,
     mask: '*',
@@ -174,6 +162,5 @@ async function addProvider(providerTemplateId: string, apiKey: string) {
     });
   }
 
-  config.providerKeys[template.id] = apiKey;
   await saveConfig(config);
 }

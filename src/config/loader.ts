@@ -9,7 +9,6 @@ import type { Config } from '../types';
 const DEFAULT_CONFIG: Config = {
   agents: {},
   providers: [],
-  providerKeys: {},
   enabledAgents: {},
 };
 
@@ -51,14 +50,6 @@ export async function loadConfig(): Promise<Config> {
   if (config) {
     return { ...DEFAULT_CONFIG, ...config };
   }
-
-  // 新配置不存在，尝试从旧 YAML 文件迁移
-  const migrated = await migrateFromYaml();
-  if (migrated) {
-    await saveConfig(migrated);
-    return migrated;
-  }
-
   return { ...DEFAULT_CONFIG };
 }
 
@@ -106,27 +97,6 @@ async function migrateFromYaml(): Promise<Config | null> {
   }
 
   const config: Config = { ...DEFAULT_CONFIG };
-
-  // 迁移 provider keys
-  if (hasOldKeys) {
-    const content = await readFile(oldKeysPath, 'utf-8');
-    config.providerKeys = parseSimpleYaml(content);
-  }
-
-  // 迁移 enabled state（结构为 YAML 嵌套格式，简单解析）
-  if (hasOldEnabled) {
-    const content = await readFile(oldEnabledPath, 'utf-8');
-    // enabled.yaml 结构较复杂，使用 JSON.parse 的 fallback
-    // 如果是空文件或无效内容，跳过
-    try {
-      const state = JSON.parse(content);
-      if (state && typeof state === 'object') {
-        config.enabledAgents = state;
-      }
-    } catch {
-      // YAML 嵌套格式无法简单解析，跳过
-    }
-  }
 
   // 清理旧文件和空目录
   try {

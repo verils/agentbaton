@@ -1,5 +1,5 @@
 import { intro, isCancel, outro, select } from '@clack/prompts';
-import { getEnabledState, getProviderKeys } from '../config';
+import { getEnabledState, loadConfig } from '../config';
 import { isCommandAvailable, getStringWidth, padEndWidth } from '../utils';
 import { openAgentMenu } from './agent';
 import { openProviderMenu } from './provider';
@@ -42,7 +42,7 @@ export async function runPrompt(): Promise<void> {
  * 查看配置 — 展示所有智能体和供应商的配置概览
  */
 async function handleViewAll(): Promise<void> {
-  const keys = await getProviderKeys();
+  const config = await loadConfig();
   const enabledState = await getEnabledState();
 
   // 智能体
@@ -67,9 +67,8 @@ async function handleViewAll(): Promise<void> {
   // 模型供应商
   console.log('\n  🔌 模型供应商\n');
   const providerWidth = Math.max(...providerTemplates.map(p => getStringWidth(p.name))) + 4;
-  for (const provider of providerTemplates) {
-    const hasKey = keys[provider.id] ? '✅' : '❌';
-    console.log(`    ${padEndWidth(provider.name, providerWidth)} ${hasKey}`);
+  for (const provider of config.providers) {
+    console.log(`    ${provider.name}`);
   }
 
   console.log();

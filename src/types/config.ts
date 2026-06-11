@@ -11,9 +11,7 @@ export interface Config {
   /** 已添加的模型供应商 */
   providers: Provider[];
 
-  /** Provider API Key 存储：provider_name → api_key */
-  providerKeys: Record<string, string>;
-  /** Agent-Provider 启用状态：agent_name → { provider, modelAssignments } */
+  /** @deprecated Agent-Provider 启用状态：agent_name → { provider, modelAssignments } */
   enabledAgents: Record<string, EnabledAgent>;
 }
 
@@ -22,7 +20,7 @@ interface Agent {
   name: string;
 }
 
-interface Provider {
+export interface Provider {
   /** UUID，避免冲突 */
   id: string;
   /** 模型供应商名称 */
@@ -56,9 +54,6 @@ export interface EnabledAgent {
   provider: string;
   modelAssignments: Record<string, string>;
 }
-
-/** @deprecated 使用 AgentbatonConfig['providerKeys'] 代替 */
-export type ProviderKeys = Config['providerKeys'];
 
 /** @deprecated 使用 AgentbatonConfig['enabledAgents'] 代替 */
 export type EnabledState = Config['enabledAgents'];
