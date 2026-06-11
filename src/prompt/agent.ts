@@ -84,7 +84,6 @@ async function handleView(agent: AgentDefinition): Promise<void> {
 
   console.log(`\n  ${agent.displayName}`);
   console.log(`  ${'─'.repeat(40)}`);
-  console.log(`  安装状态: ${installed ? '已安装 ✅' : '未安装 ❌'}`);
   console.log(`  配置文件: ${configPath}`);
   console.log(`  API 类型: ${agent.apiType}`);
 
