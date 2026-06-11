@@ -3,16 +3,26 @@ import type { ProviderTemplate } from '../types';
 export const deepseek: ProviderTemplate = {
   id: 'deepseek',
   name: 'DeepSeek',
-  apiType: 'openai',
-  baseUrl: 'https://api.deepseek.com',
+  endpoints: {
+    'openai': {
+      apiType: 'openai',
+      baseUrl: 'https://api.deepseek.com'
+    },
+    'anthropic': {
+      apiType: 'anthropic',
+      baseUrl: 'https://api.deepseek.com/anthropic'
+    }
+  },
   models: [
     {
-      name: 'deepseek-chat',
-      description: 'DeepSeek Chat',
+      id: 'deepseek-v4-pro',
+      name: 'DeepSeek-V4-Pro',
+      contextWindowSize: 1000000
     },
     {
-      name: 'deepseek-reasoner',
-      description: 'DeepSeek Reasoner',
+      id: 'deepseek-v4-flash',
+      name: 'DeepSeek-V4-Flash',
+      contextWindowSize: 1000000
     },
   ],
 };

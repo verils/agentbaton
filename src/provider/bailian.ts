@@ -1,4 +1,4 @@
-import { ProviderTemplate } from "../types";
+import { ProviderModel, ProviderTemplate } from "../types";
 
 export const bailian: ProviderTemplate = {
   id: 'bailian',
@@ -13,18 +13,29 @@ export const bailian: ProviderTemplate = {
       baseUrl: 'https://dashscope.aliyuncs.com/apps/anthropic',
     },
   },
+  async fetchModels(): Promise<ProviderModel[]> {
+    return []
+  },
   models: [
     {
-      name: 'qwen-turbo',
-      description: '通义千问 Turbo',
+      id: 'qwen3.7-max',
+      name: 'Qwen3.7-Max',
+      contextWindowSize: 1000000
     },
     {
-      name: 'qwen-plus',
-      description: '通义千问 Plus',
+      id: 'qwen3.7-plus',
+      name: 'qwen3.7-plus',
+      contextWindowSize: 1000000
     },
     {
-      name: 'qwen-max',
-      description: '通义千问 Max',
+      id: 'qwen3.6-flash',
+      name: 'qwen3.6-flash',
+      contextWindowSize: 1000000
     },
+    {
+      id: 'glm-5.1',
+      name: 'GLM-5.1',
+      contextWindowSize: 256000
+    }
   ]
 };
