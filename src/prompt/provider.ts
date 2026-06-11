@@ -1,5 +1,5 @@
 import { select, password, isCancel } from '@clack/prompts';
-import { builtinProviders } from '../builtins/providers';
+import { builtinProviders } from '../providers';
 import { getProviderKeys, setProviderKey } from '../config';
 
 /**

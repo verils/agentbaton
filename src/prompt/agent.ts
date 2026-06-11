@@ -1,6 +1,6 @@
 import { select, confirm, isCancel } from '@clack/prompts';
-import { builtinAgents } from '../builtins/agents';
-import { builtinProviders } from '../builtins/providers';
+import { builtinAgents } from '../agents';
+import { builtinProviders } from '../providers';
 import { getProviderKeys, getEnabledState, setEnabledState } from '../config';
 import { isCommandAvailable, getConfigPath, expandHome } from '../utils';
 import type { AgentDefinition } from '../types';

@@ -1,7 +1,7 @@
 import { Command } from 'commander';
 import { intro, outro, select, confirm, isCancel } from '@clack/prompts';
-import { builtinAgents } from '../builtins/agents/index';
-import { builtinProviders } from '../builtins/providers/index';
+import { builtinAgents } from '../agents/index';
+import { builtinProviders } from '../providers/index';
 import { getProviderKeys, getEnabledState, setEnabledState } from '../config/state';
 
 /**

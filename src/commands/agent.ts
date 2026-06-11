@@ -1,5 +1,5 @@
 import { Command } from 'commander';
-import { builtinAgents } from '../builtins/agents/index';
+import { builtinAgents } from '../agents/index';
 import { getEnabledState } from '../config/state';
 import { isCommandAvailable, getConfigPath, expandHome } from '../utils/path';
 import type { AgentDefinition } from '../types/agent';

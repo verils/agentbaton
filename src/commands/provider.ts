@@ -1,6 +1,6 @@
 import { Command } from 'commander';
 import { intro, outro, password, isCancel } from '@clack/prompts';
-import { builtinProviders } from '../builtins/providers/index';
+import { builtinProviders } from '../providers/index';
 import { getProviderKeys, setProviderKey } from '../config/state';
 import type { ProviderDefinition } from '../types/provider';
 
