@@ -2,7 +2,7 @@ import { intro, isCancel, outro, select } from '@clack/prompts';
 import { builtinAgents } from '../agents';
 import { builtinProviders } from '../providers';
 import { getEnabledState, getProviderKeys } from '../config';
-import { isCommandAvailable } from '../utils';
+import { isCommandAvailable, getStringWidth, padEndWidth } from '../utils';
 import { runAgentPrompt } from './agent';
 import { runProviderPrompt } from './provider';
 
@@ -13,8 +13,8 @@ export async function runPrompt(): Promise<void> {
     const choice = await select({
       message: '选择菜单：',
       options: [
-        { value: 'provider', label: '设置模型供应商' },
         { value: 'agent', label: '设置智能体' },
+        { value: 'provider', label: '设置模型供应商' },
         { value: 'view', label: '查看当前设置' },
         { value: 'exit', label: '退出' },
       ],
@@ -47,11 +47,12 @@ async function handleViewAll(): Promise<void> {
 
   // 智能体
   console.log('\n  🤖 智能体\n');
+  const agentWidth = Math.max(...builtinAgents.map(a => getStringWidth(a.displayName))) + 4;
   for (const agent of builtinAgents) {
     const installed = await isCommandAvailable(agent.command);
     const state = enabledState[agent.name];
     const status = installed ? '✅' : '❌';
-    console.log(`    ${agent.displayName.padEnd(18)} ${status}`);
+    console.log(`    ${padEndWidth(agent.displayName, agentWidth)} ${status}`);
 
     if (state?.modelAssignments) {
       for (const slot of agent.models) {
@@ -65,9 +66,10 @@ async function handleViewAll(): Promise<void> {
 
   // 模型供应商
   console.log('\n  🔌 模型供应商\n');
+  const providerWidth = Math.max(...builtinProviders.map(p => getStringWidth(p.displayName))) + 4;
   for (const provider of builtinProviders) {
     const hasKey = keys[provider.name] ? '✅' : '❌';
-    console.log(`    ${provider.displayName.padEnd(18)} ${hasKey}`);
+    console.log(`    ${padEndWidth(provider.displayName, providerWidth)} ${hasKey}`);
   }
 
   console.log();

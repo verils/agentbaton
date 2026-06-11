@@ -3,7 +3,6 @@ import { createAgentCommand } from './commands';
 import { createProviderCommand } from './commands';
 import { createEnableCommand } from './commands';
 import { createDisableCommand } from './commands';
-import { initBatonDirs } from './config';
 import { runPrompt } from './prompt';
 
 const program = new Command();
@@ -23,9 +22,6 @@ program.addCommand(createDisableCommand());
 program.action(async () => {
   await runPrompt();
 });
-
-// 初始化目录结构
-await initBatonDirs();
 
 // 解析命令行参数
 await program.parseAsync(process.argv);

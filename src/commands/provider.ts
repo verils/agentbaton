@@ -3,6 +3,7 @@ import { intro, outro, password, isCancel } from '@clack/prompts';
 import { builtinProviders } from '../providers/index';
 import { getProviderKeys, setProviderKey } from '../config/state';
 import type { ProviderDefinition } from '../types/provider';
+import { getStringWidth, padEndWidth } from '../utils';
 
 /**
  * 加载所有 provider 定义（内置 + 用户自定义）
@@ -64,9 +65,10 @@ async function displayProviderList(providers: ProviderDefinition[]): Promise<voi
   const keys = await getProviderKeys();
 
   console.log('\n可用的 Provider:\n');
+  const width = Math.max(...providers.map(p => getStringWidth(p.displayName))) + 4;
   for (const provider of providers) {
     const hasKey = keys[provider.name] ? '✅ 已配置' : '❌ 未配置';
-    console.log(`  ${provider.displayName.padEnd(20)} ${hasKey}  (${provider.apiType})`);
+    console.log(`  ${padEndWidth(provider.displayName, width)} ${hasKey}  (${provider.apiType})`);
   }
   console.log();
 }

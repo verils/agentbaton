@@ -35,7 +35,8 @@ export async function runAgentPrompt(): Promise<void> {
       message: `${agent.displayName}：`,
       options: [
         { value: 'view', label: '查看当前设置' },
-        { value: 'select', label: '选择模型供应商' },
+        { value: 'selectProvider', label: '设置模型供应商' },
+        { value: 'selectModel', label: '设置模型' },
         { value: '__back__', label: '↩ 返回', hint: '' },
       ],
     });
@@ -46,8 +47,11 @@ export async function runAgentPrompt(): Promise<void> {
       case 'view':
         await handleView(agent);
         break;
-      case 'select':
-        await handleSwitch(agent);
+      case 'selectProvider':
+        await handleSelectProvider(agent);
+        break;
+      case 'selectModel':
+        await handleSelectProvider(agent);
         break;
     }
   }
@@ -69,7 +73,7 @@ async function handleView(agent: AgentDefinition): Promise<void> {
   console.log(`  API 类型: ${agent.apiType}`);
 
   if (agent.models.length > 0) {
-    console.log('\n  模型设置:');
+    console.log('\n  模型:');
     for (const slot of agent.models) {
       const assigned = state?.modelAssignments?.[slot.slot];
       const display = assigned ? `→ ${assigned}` : '—';
@@ -88,7 +92,7 @@ async function handleView(agent: AgentDefinition): Promise<void> {
 /**
  * 切换供应商
  */
-async function handleSwitch(agent: AgentDefinition): Promise<void> {
+async function handleSelectProvider(agent: AgentDefinition): Promise<void> {
   const keys = await getProviderKeys();
 
   // 所有兼容且有 API Key 的供应商（排除当前已启用的）
@@ -98,11 +102,6 @@ async function handleSwitch(agent: AgentDefinition): Promise<void> {
   const compatible = builtinProviders.filter(
     (p) => p.apiType === agent.apiType && keys[p.name] && p.name !== currentProvider,
   );
-
-  if (compatible.length === 0) {
-    console.log('\n  ❌ 没有其他可切换的供应商\n');
-    return;
-  }
 
   const providerName = await select({
     message: '切换到：',

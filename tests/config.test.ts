@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { builtinAgents } from '../src/builtins/agents/index';
-import { builtinProviders } from '../src/builtins/providers/index';
+import { builtinAgents } from '../src/agents/index';
+import { builtinProviders } from '../src/providers/index';
 
 describe('Built-in Agents', () => {
   it('should have claude-code agent', () => {
@@ -35,6 +35,6 @@ describe('Built-in Providers', () => {
   it('should have bailian provider', () => {
     const bailian = builtinProviders.find((p) => p.name === 'bailian');
     expect(bailian).toBeDefined();
-    expect(bailian?.displayName).toBe('百炼 (Bailian)');
+    expect(bailian?.displayName).toBe('阿里云百炼');
   });
 });

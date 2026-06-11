@@ -2,6 +2,7 @@ import { Command } from 'commander';
 import { builtinAgents } from '../agents/index';
 import { getEnabledState } from '../config/state';
 import { isCommandAvailable, getConfigPath, expandHome } from '../utils/path';
+import { getStringWidth, padEndWidth } from '../utils/string';
 import type { AgentDefinition } from '../types/agent';
 
 /**
@@ -42,10 +43,11 @@ export function createAgentCommand(): Command {
 
 async function displayAgentList(agents: AgentDefinition[]): Promise<void> {
   console.log('\n已识别的智能体:\n');
+  const width = Math.max(...agents.map(a => getStringWidth(a.displayName))) + 4;
   for (const agent of agents) {
     const installed = await isCommandAvailable(agent.command);
     const status = installed ? '✅ 已安装' : '❌ 未安装';
-    console.log(`  ${agent.displayName.padEnd(20)} ${status}  (${agent.apiType})`);
+    console.log(`  ${padEndWidth(agent.displayName, width)} ${status}  (${agent.apiType})`);
   }
   console.log();
 }
@@ -67,10 +69,11 @@ async function displayAgentDetail(
 
   if (agent.models.length > 0) {
     console.log('  模型设置:');
+    const slotWidth = Math.max(...agent.models.map(m => getStringWidth(m.slot))) + 4;
     for (const model of agent.models) {
       const assigned = state?.modelAssignments?.[model.slot];
       const assignment = assigned ? ` → ${assigned}` : '';
-      console.log(`    ${model.slot.padEnd(12)} ${model.description}${assignment}`);
+      console.log(`    ${padEndWidth(model.slot, slotWidth)} ${model.description}${assignment}`);
     }
   }
 

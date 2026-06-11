@@ -1,42 +1,45 @@
 import type { ProviderKeys, EnabledState } from '../types';
-import { paths } from './paths';
-import { readYaml, writeYaml } from './loader';
+import { loadConfig, saveConfig } from './loader';
 
 /**
  * 读取 Provider API Keys
  */
 export async function getProviderKeys(): Promise<ProviderKeys> {
-  return (await readYaml<ProviderKeys>(paths.providerKeys)) ?? {};
+  const config = await loadConfig();
+  return config.providerKeys;
 }
 
 /**
  * 保存 Provider API Key
  */
 export async function setProviderKey(providerName: string, apiKey: string): Promise<void> {
-  const keys = await getProviderKeys();
-  keys[providerName] = apiKey;
-  await writeYaml(paths.providerKeys, keys);
+  const config = await loadConfig();
+  config.providerKeys[providerName] = apiKey;
+  await saveConfig(config);
 }
 
 /**
  * 删除 Provider API Key
  */
 export async function deleteProviderKey(providerName: string): Promise<void> {
-  const keys = await getProviderKeys();
-  delete keys[providerName];
-  await writeYaml(paths.providerKeys, keys);
+  const config = await loadConfig();
+  delete config.providerKeys[providerName];
+  await saveConfig(config);
 }
 
 /**
  * 读取启用状态
  */
 export async function getEnabledState(): Promise<EnabledState> {
-  return (await readYaml<EnabledState>(paths.enabled)) ?? {};
+  const config = await loadConfig();
+  return config.enabledAgents;
 }
 
 /**
  * 保存启用状态
  */
 export async function setEnabledState(state: EnabledState): Promise<void> {
-  await writeYaml(paths.enabled, state);
+  const config = await loadConfig();
+  config.enabledAgents = state;
+  await saveConfig(config);
 }

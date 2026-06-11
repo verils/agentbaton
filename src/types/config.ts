@@ -1,30 +1,25 @@
 /**
- * Baton 自身配置
+ * 统一配置文件结构
+ *
+ * 所有配置存储在 ~/.agentbaton/config.json 中
  */
-export interface BatonConfig {
-  /** 自定义 agent 定义目录 */
-  agentsDir?: string;
-  /** 自定义 provider 定义目录 */
-  providersDir?: string;
-  /** 状态文件目录 */
-  stateDir?: string;
+export interface AgentbatonConfig {
+  /** Provider API Key 存储：provider_name → api_key */
+  providerKeys: Record<string, string>;
+  /** Agent-Provider 启用状态：agent_name → { provider, modelAssignments } */
+  enabledAgents: Record<string, EnabledAgent>;
 }
 
 /**
- * Provider API Key 存储
+ * 单个 Agent 的启用状态
  */
-export interface ProviderKeys {
-  /** provider_name → api_key */
-  [providerName: string]: string;
+export interface EnabledAgent {
+  provider: string;
+  modelAssignments: Record<string, string>;
 }
 
-/**
- * Agent-Provider 启用状态映射
- */
-export interface EnabledState {
-  /** agent_name → { provider_name, modelAssignments } */
-  [agentName: string]: {
-    provider: string;
-    modelAssignments: Record<string, string>;
-  };
-}
+/** @deprecated 使用 AgentbatonConfig['providerKeys'] 代替 */
+export type ProviderKeys = AgentbatonConfig['providerKeys'];
+
+/** @deprecated 使用 AgentbatonConfig['enabledAgents'] 代替 */
+export type EnabledState = AgentbatonConfig['enabledAgents'];
