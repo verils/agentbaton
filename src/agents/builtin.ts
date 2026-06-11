@@ -9,12 +9,5 @@ import { qwenCode } from "./qwen-code";
 import { mimoCode } from "./mimocode";
 
 export const builtinAgents: AgentDefinition[] = [
-  claudeCode,
-  codexCli,
-  geminiCli,
-  opencode,
-  qoder,
-  qoderCn,
-  qwenCode,
-  mimoCode,
+  claudeCode
 ];

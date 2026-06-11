@@ -14,18 +14,29 @@ export const claudeCode: AgentDefinition = {
   models: [
     {
       slot: 'opus',
-      key: 'Opus',
+      name: 'Opus',
       description: 'Claude Opus 模型',
     },
     {
       slot: 'sonnet',
-      key: 'Sonnet',
+      name: 'Sonnet',
       description: 'Claude Sonnet 模型',
     },
     {
       slot: 'haiku',
-      key: 'Haiku',
+      name: 'Haiku',
       description: 'Claude Haiku 模型',
     },
   ],
+  parseConfig(config) {
+    return {
+      models: {
+        opus: (config.Opus as string) ?? '',
+        sonnet: (config.Sonnet as string) ?? '',
+        haiku: (config.Haiku as string) ?? '',
+      },
+      baseUrl: config.baseUrl as string | undefined,
+      apiKey: config.apiKey as string | undefined,
+    };
+  },
 };

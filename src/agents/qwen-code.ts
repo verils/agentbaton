@@ -14,8 +14,15 @@ export const qwenCode: AgentDefinition = {
   models: [
     {
       slot: 'default',
-      key: 'model',
+      name: 'model',
       description: '默认模型',
     },
   ],
+  parseConfig(config) {
+    return {
+      models: { default: (config.model as string) ?? '' },
+      baseUrl: config.baseUrl as string | undefined,
+      apiKey: config.apiKey as string | undefined,
+    };
+  },
 };

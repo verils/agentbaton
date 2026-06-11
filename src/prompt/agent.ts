@@ -1,5 +1,5 @@
 import { confirm, isCancel, select } from '@clack/prompts';
-import { getEnabledState, setEnabledState } from '../config';
+import { getEnabledState, readJson, setEnabledState } from '../config';
 import { expandHome, getConfigPath, isCommandAvailable } from '../utils';
 import type { AgentDefinition, Provider } from '../types';
 import { detectInstalledAgents } from "../agents/detect";
@@ -58,13 +58,29 @@ export async function openAgentMenu(): Promise<void> {
 }
 
 /**
- * 查看当前配置
+ * 读取智能体配置文件内容
+ */
+async function readAgentConfig(agent: AgentDefinition): Promise<Record<string, unknown> | null> {
+  const configPath = expandHome(getConfigPath(agent.configPath));
+  return readJson<Record<string, unknown>>(configPath);
+}
+
+/**
+ * 脱敏 API Key：仅显示前 4 位和后 4 位
+ */
+function maskApiKey(key: string): string {
+  if (key.length <= 8) return '****';
+  return `${key.slice(0, 4)}****${key.slice(-4)}`;
+}
+
+/**
+ * 查看当前配置（从智能体配置文件读取）
  */
 async function handleView(agent: AgentDefinition): Promise<void> {
-  const enabledState = await getEnabledState();
-  const state = enabledState[agent.name];
   const installed = await isCommandAvailable(agent.command);
   const configPath = expandHome(getConfigPath(agent.configPath));
+  const rawConfig = await readAgentConfig(agent);
+  const summary = rawConfig ? agent.parseConfig(rawConfig) : null;
 
   console.log(`\n  ${agent.displayName}`);
   console.log(`  ${'─'.repeat(40)}`);
@@ -72,19 +88,25 @@ async function handleView(agent: AgentDefinition): Promise<void> {
   console.log(`  配置文件: ${configPath}`);
   console.log(`  API 类型: ${agent.apiType}`);
 
+  if (summary?.apiKey) {
+    console.log(`  API Key: ${maskApiKey(summary.apiKey)}`);
+  }
+
+  if (summary?.baseUrl) {
+    console.log(`  Base URL: ${summary.baseUrl}`);
+  }
+
   if (agent.models.length > 0) {
     console.log('\n  模型:');
     for (const slot of agent.models) {
-      const assigned = state?.modelAssignments?.[slot.slot];
-      const display = assigned ? `→ ${assigned}` : '—';
+      const value = summary?.models?.[slot.slot];
+      const display = value ? `→ ${value}` : '—';
       console.log(`    ${slot.description} (${slot.slot}): ${display}`);
     }
   }
 
-  if (state) {
-    console.log(`\n  已启用供应商: ${state.provider}`);
-  } else {
-    console.log('\n  尚未启用任何供应商');
+  if (!rawConfig) {
+    console.log('\n  配置文件不存在或无法读取');
   }
 
   console.log();
