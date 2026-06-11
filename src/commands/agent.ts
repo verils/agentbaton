@@ -66,7 +66,7 @@ async function displayAgentDetail(
   console.log();
 
   if (agent.models.length > 0) {
-    console.log('  模型槽位:');
+    console.log('  模型设置:');
     for (const model of agent.models) {
       const assigned = state?.modelAssignments?.[model.slot];
       const assignment = assigned ? ` → ${assigned}` : '';

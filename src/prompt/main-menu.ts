@@ -15,7 +15,7 @@ export async function runPrompt(): Promise<void> {
       options: [
         { value: 'provider', label: '设置模型供应商' },
         { value: 'agent', label: '设置智能体' },
-        { value: 'view', label: '查看设置' },
+        { value: 'view', label: '查看当前设置' },
         { value: 'exit', label: '退出' },
       ],
     });
@@ -51,7 +51,7 @@ async function handleViewAll(): Promise<void> {
     const installed = await isCommandAvailable(agent.command);
     const state = enabledState[agent.name];
     const status = installed ? '✅' : '❌';
-    console.log(`    ${status} ${agent.displayName.padEnd(18)}`);
+    console.log(`    ${agent.displayName.padEnd(18)} ${status}`);
 
     if (state?.modelAssignments) {
       for (const slot of agent.models) {
@@ -67,7 +67,7 @@ async function handleViewAll(): Promise<void> {
   console.log('\n  🔌 模型供应商\n');
   for (const provider of builtinProviders) {
     const hasKey = keys[provider.name] ? '✅' : '❌';
-    console.log(`    ${hasKey} ${provider.displayName.padEnd(18)}`);
+    console.log(`    ${provider.displayName.padEnd(18)} ${hasKey}`);
   }
 
   console.log();

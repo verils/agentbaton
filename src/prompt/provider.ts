@@ -9,7 +9,7 @@ export async function runProviderPrompt(): Promise<void> {
 
   const providerOptions = builtinProviders.map((p) => ({
     value: p.name,
-    label: `${p.displayName}（${keys[p.name] ? '✅ 已设置' : '❌ 未设置'}）`,
+    label: `${p.displayName}（${keys[p.name] ? '已设置 ✅' : '未设置 ❌'}）`,
   }));
 
   const providerName = await select({
@@ -33,7 +33,7 @@ export async function runProviderPrompt(): Promise<void> {
       message: `${provider.displayName}：`,
       options: [
         { value: 'setApiKey', label: `设置 API Key${key ? `（✅ ${key.slice(0, 6)}...${key.slice(-4)}）` : ''}` },
-        { value: 'cleanApiKey', label: `清空 API Key${key ? `（✅ ${key.slice(0, 6)}...${key.slice(-4)}）` : ''}` },
+        { value: 'cleanApiKey', label: `清空 API Key` },
         { value: '__back__', label: '↩ 返回', hint: '' },
       ],
     });

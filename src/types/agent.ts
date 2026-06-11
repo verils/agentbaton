@@ -16,7 +16,7 @@ export interface AgentDefinition {
   configPath: PlatformConfigPath;
   /** 配置文件格式 */
   configFormat: 'json' | 'yaml' | 'toml' | string;
-  /** 模型槽位定义 */
+  /** 模型定义 */
   models: ModelSlot[];
 
   /** 配置智能体的逻辑 */

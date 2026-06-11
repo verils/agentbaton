@@ -15,7 +15,7 @@ export async function runAgentPrompt(): Promise<void> {
       const installed = await isCommandAvailable(a.command);
       return {
         value: a.name,
-        label: `${a.displayName}（${installed ? '✅ 已安装' : '❌ 未安装'}）`,
+        label: `${a.displayName}（${installed ? '已安装 ✅' : '未安装 ❌'}）`,
       };
     })
   );
@@ -34,7 +34,7 @@ export async function runAgentPrompt(): Promise<void> {
     const action = await select({
       message: `${agent.displayName}：`,
       options: [
-        { value: 'view', label: '查看当前智能体设置' },
+        { value: 'view', label: '查看当前设置' },
         { value: 'select', label: '选择模型供应商' },
         { value: '__back__', label: '↩ 返回', hint: '' },
       ],
@@ -64,12 +64,12 @@ async function handleView(agent: AgentDefinition): Promise<void> {
 
   console.log(`\n  ${agent.displayName}`);
   console.log(`  ${'─'.repeat(40)}`);
-  console.log(`  安装状态: ${installed ? '✅ 已安装' : '❌ 未安装'}`);
+  console.log(`  安装状态: ${installed ? '已安装 ✅' : '未安装 ❌'}`);
   console.log(`  配置文件: ${configPath}`);
   console.log(`  API 类型: ${agent.apiType}`);
 
   if (agent.models.length > 0) {
-    console.log('\n  模型槽位:');
+    console.log('\n  模型设置:');
     for (const slot of agent.models) {
       const assigned = state?.modelAssignments?.[slot.slot];
       const display = assigned ? `→ ${assigned}` : '—';
