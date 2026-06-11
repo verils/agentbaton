@@ -16,8 +16,8 @@ export async function runPrompt(): Promise<void> {
     const choice = await select({
       message: '选择菜单：',
       options: [
+        { value: 'provider', label: '配置模型供应商', hint: '配置 API Key、查看模型' },
         { value: 'agent', label: '配置智能体', hint: '启用/禁用供应商、分配模型' },
-        { value: 'provider', label: '配置供应商', hint: '配置 API Key、查看模型' },
         { value: 'view', label: '查看配置', hint: '所有智能体和供应商的配置概览' },
         { value: 'quick', label: '快速配置', hint: '进入配置向导' },
         { value: 'exit', label: '退出', hint: '' },

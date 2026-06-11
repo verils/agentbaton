@@ -4,7 +4,7 @@ import { createProviderCommand } from './commands';
 import { createEnableCommand } from './commands';
 import { createDisableCommand } from './commands';
 import { initBatonDirs } from './config';
-import { runPrompt } from './interactive';
+import { runPrompt } from './prompt';
 
 const program = new Command();
 
