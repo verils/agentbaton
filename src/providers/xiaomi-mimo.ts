@@ -1,6 +1,6 @@
-import type { ProviderDefinition } from '../types';
+import type { ProviderTemplate } from '../types';
 
-export const xiaomiMimo: ProviderDefinition = {
+export const xiaomiMimo: ProviderTemplate = {
   id: 'xiaomi-mimo',
   name: '小米 MiMo',
   apiType: 'openai',

@@ -1,16 +1,16 @@
 import { Command } from 'commander';
 import { intro, outro, password, isCancel } from '@clack/prompts';
-import { builtinProviders } from '../providers/index';
 import { getProviderKeys, setProviderKey } from '../config/state';
-import type { ProviderDefinition } from '../types/provider';
+import type { ProviderTemplate } from '../types/provider';
 import { getStringWidth, padEndWidth } from '../utils';
+import { providerTemplates } from "../providers/template";
 
 /**
  * 加载所有 provider 定义（内置 + 用户自定义）
  */
-async function loadProviders(): Promise<ProviderDefinition[]> {
+async function loadProviders(): Promise<ProviderTemplate[]> {
   // TODO: 加载用户自定义 provider 定义
-  return builtinProviders;
+  return providerTemplates;
 }
 
 /**
@@ -61,7 +61,7 @@ export function createProviderCommand(): Command {
   return cmd;
 }
 
-async function displayProviderList(providers: ProviderDefinition[]): Promise<void> {
+async function displayProviderList(providers: ProviderTemplate[]): Promise<void> {
   const keys = await getProviderKeys();
 
   console.log('\n可用的 Provider:\n');

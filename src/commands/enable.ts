@@ -1,8 +1,8 @@
 import { Command } from 'commander';
 import { intro, outro, select, confirm, isCancel } from '@clack/prompts';
-import { builtinProviders } from '../providers/index';
 import { getProviderKeys, getEnabledState, setEnabledState } from '../config/state';
 import { builtinAgents } from "../agents/builtin";
+import { providerTemplates } from "../providers/template";
 
 /**
  * 创建 enable 命令
@@ -19,7 +19,7 @@ export function createEnableCommand(): Command {
         process.exit(1);
       }
 
-      const provider = builtinProviders.find((p) => p.id === providerName);
+      const provider = providerTemplates.find((p) => p.id === providerName);
       if (!provider) {
         console.error(`未找到 Provider: ${providerName}`);
         process.exit(1);

@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { builtinProviders } from '../src/providers/index';
 import { builtinAgents } from "../src/agents/builtin";
+import { providerTemplates } from "../src/providers/builtin";
 
 describe('Built-in Agents', () => {
   it('should have claude-code agent', () => {
@@ -25,7 +25,7 @@ describe('Built-in Agents', () => {
 
 describe('Built-in Providers', () => {
   it('should have deepseek provider', () => {
-    const deepseek = builtinProviders.find((p) => p.id === 'deepseek');
+    const deepseek = providerTemplates.find((p) => p.id === 'deepseek');
     expect(deepseek).toBeDefined();
     expect(deepseek?.name).toBe('DeepSeek');
     expect(deepseek?.apiType).toBe('openai');
@@ -33,7 +33,7 @@ describe('Built-in Providers', () => {
   });
 
   it('should have bailian provider', () => {
-    const bailian = builtinProviders.find((p) => p.id === 'bailian');
+    const bailian = providerTemplates.find((p) => p.id === 'bailian');
     expect(bailian).toBeDefined();
     expect(bailian?.name).toBe('阿里云百炼');
   });

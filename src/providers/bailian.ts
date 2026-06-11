@@ -1,6 +1,6 @@
-import { ProviderDefinition } from "../types";
+import { ProviderTemplate } from "../types";
 
-export const bailian: ProviderDefinition = {
+export const bailian: ProviderTemplate = {
   id: 'bailian',
   name: '阿里云百炼',
   endpoints: {

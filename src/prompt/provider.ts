@@ -1,74 +1,121 @@
 import { isCancel, password, select } from '@clack/prompts';
-import { builtinProviders } from '../providers';
-import { getProviderKeys, setProviderKey, deleteProviderKey } from '../config';
-import { ProviderDefinition } from "../types";
+import { loadConfig } from '../config';
+import { backOption } from "./back";
+import { providerTemplates } from "../providers/template";
+import { Config } from "../types";
+import { findProviderTemplate } from "../providers/template";
 
-export async function runProviderPrompt(): Promise<void> {
-  // 列出所有供应商，标注 API Key 状态
-  const keys = await getProviderKeys();
-
-  const providerOptions = builtinProviders.map((p) => ({
+/**
+ * 进入模型供应商设置菜单
+ */
+export async function openProviderMenu(): Promise<void> {
+  const config = await loadConfig();
+  const providerOptions = config.providers.map((p) => ({
     value: p.id,
-    label: `${p.name}（${keys[p.id] ? '已设置 ✅' : '未设置 ❌'}）`,
+    label: `${p.name}`,
   }));
 
-  const providerName = await select({
+  const providerChoice = await select({
     message: '选择供应商：',
     options: [
       ...providerOptions,
-      { value: '__back__', label: '↩ 返回', hint: '' }
+      { value: 'addCustomProvider', label: '添加模型供应商' },
+      backOption
     ],
   });
 
-  if (isCancel(providerName) || providerName === '__back__') {
+  if (isCancel(providerChoice) || providerChoice === 'back') {
     return;
   }
 
-  const provider = builtinProviders.find((p) => p.id === providerName)!;
-  const key = keys[provider.id];
+  switch (providerChoice) {
+    case 'addCustomProvider':
+      await handleAddCustomProvider()
+      return;
+    default:
+      await handleAddProvider(providerChoice, config);
+      break;
+  }
+}
+
+async function handleAddProvider(providerTemplateId: string, config: Config) {
+  const provider = providerTemplates.find((p) => p.id === providerTemplateId)!;
+
+  const providerTemplate = findProviderTemplate(providerTemplateId);
+  const apiKey = await password({
+    message: `输入 ${providerTemplate.name} 的 API Key`,
+    mask: '*',
+  });
+
+  if (isCancel(apiKey)) {
+    return;
+  }
+
+  await addProvider(providerTemplate.id, apiKey);
+  console.log(`\n  ✅ 已保存 ${providerTemplate.name} 的 API Key\n`);
 
   // 操作子菜单循环
   while (true) {
     const action = await select({
       message: `${provider.name}：`,
       options: [
-        { value: 'setApiKey', label: `设置 API Key${key ? `（✅ ${key.slice(0, 6)}...${key.slice(-4)}）` : ''}` },
-        { value: 'cleanApiKey', label: `清空 API Key` },
-        { value: '__back__', label: '↩ 返回', hint: '' },
+        {
+          value: 'setApiKey',
+          label: '设置 API Key'
+        },
+        {
+          value: 'cleanApiKey',
+          label: '清除 API Key'
+        },
+        backOption,
       ],
     });
 
-    if (isCancel(action) || action === '__back__') return;
+    if (isCancel(action) || action === 'back') {
+      return;
+    }
 
     switch (action) {
       case 'setApiKey':
-        await handleSetApiKey(provider);
         break;
       case 'cleanApiKey':
-        await handleCleanApiKey(provider);
         break;
     }
   }
 }
 
-/**
- * 配置 API Key
- */
-async function handleSetApiKey(provider: ProviderDefinition): Promise<void> {
-  const key = await password({
-    message: `输入 ${provider.name} 的 API Key`,
-    mask: '*',
+async function handleAddCustomProvider() {
+  const providerOptions = providerTemplates.map(p => ({
+    value: p.id,
+    label: p.name
+  }));
+
+  const choice = await select({
+    message: '选择模型供应商',
+    options: [
+      ...providerOptions,
+      backOption,
+    ]
   });
 
-  if (isCancel(key)) {
+  if (isCancel(choice) || choice === 'back') {
     return;
   }
 
-  await setProviderKey(provider.id, key);
-  console.log(`\n  ✅ 已保存 ${provider.name} 的 API Key\n`);
+  const providerTemplate = findProviderTemplate(choice);
+  const apiKey = await password({
+    message: `输入 ${providerTemplate.name} 的 API Key`,
+    mask: '*',
+  });
+
+  if (isCancel(apiKey)) {
+    return;
+  }
+
+  await addProvider(providerTemplate.id, apiKey);
+  console.log(`\n  ✅ 已保存 ${providerTemplate.name} 的 API Key\n`);
 }
 
-async function handleCleanApiKey(provider: ProviderDefinition) {
-  await deleteProviderKey(provider.id);
-  console.log(`\n  🗑️  已清空 ${provider.name} 的 API Key\n`);
+async function addProvider(providerTemplateId: string, apiKey: string) {
+  // TODO
 }

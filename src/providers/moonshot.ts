@@ -1,6 +1,6 @@
-import type { ProviderDefinition } from '../types';
+import type { ProviderTemplate } from '../types';
 
-export const moonshot: ProviderDefinition = {
+export const moonshot: ProviderTemplate = {
   id: 'moonshot',
   name: '月之暗面',
   apiType: 'openai',

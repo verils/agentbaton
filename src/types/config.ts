@@ -27,6 +27,8 @@ interface Provider {
   id: string;
   /** 模型供应商名称 */
   name: string;
+  /** API Key */
+  apiKey: string;
   /** API 接入端点 */
   endpoints: Endpoint[];
   /** 模型列表 */
@@ -34,7 +36,7 @@ interface Provider {
 }
 
 interface Endpoint {
-  apiType: ApiType;
+  type: ApiType;
   baseUrl: string;
 }
 

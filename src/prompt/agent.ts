@@ -1,15 +1,15 @@
 import { confirm, isCancel, select } from '@clack/prompts';
-import { builtinProviders } from '../providers';
 import { getEnabledState, getProviderKeys, setEnabledState } from '../config';
 import { expandHome, getConfigPath, isCommandAvailable } from '../utils';
 import type { AgentDefinition } from '../types';
 import { detectInstalledAgents } from "../agents/detect";
 import { builtinAgents } from "../agents/builtin";
+import { providerTemplates } from "../providers/template";
 
 /**
  * 配置智能体子流程
  */
-export async function runAgentPrompt(): Promise<void> {
+export async function openAgentMenu(): Promise<void> {
   const installedAgents = await detectInstalledAgents();
 
   // 列出所有 agent，标注安装状态
@@ -100,7 +100,7 @@ async function handleSelectProvider(agent: AgentDefinition): Promise<void> {
   const enabledState = await getEnabledState();
   const currentProvider = enabledState[agent.name]?.provider;
 
-  const compatible = builtinProviders.filter(
+  const compatible = providerTemplates.filter(
     (p) => p.apiType === agent.apiType && keys[p.id] && p.id !== currentProvider,
   );
 
@@ -134,7 +134,7 @@ async function handleSelectProvider(agent: AgentDefinition): Promise<void> {
  */
 async function selectModels(
   agent: AgentDefinition,
-  provider: { name: string; displayName: string; models: { name: string; description: string }[] },
+  provider: { name: string; models: { name: string; description: string }[] },
 ): Promise<Record<string, string> | null> {
   const modelOptions = provider.models.map((m) => ({
     label: m.name,

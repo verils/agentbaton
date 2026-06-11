@@ -1,6 +1,6 @@
-import type { ProviderDefinition } from '../types';
+import type { ProviderTemplate } from '../types';
 
-export const volcengine: ProviderDefinition = {
+export const volcengine: ProviderTemplate = {
   id: 'volcengine',
   name: '火山引擎',
   apiType: 'openai',

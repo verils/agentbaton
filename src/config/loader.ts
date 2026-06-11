@@ -7,6 +7,8 @@ import type { Config } from '../types';
 
 /** 默认空配置 */
 const DEFAULT_CONFIG: Config = {
+  agents: {},
+  providers: [],
   providerKeys: {},
   enabledAgents: {},
 };

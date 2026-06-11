@@ -1,6 +1,6 @@
-import type { ProviderDefinition } from '../types';
+import type { ProviderTemplate } from '../types';
 
-export const deepseek: ProviderDefinition = {
+export const deepseek: ProviderTemplate = {
   id: 'deepseek',
   name: 'DeepSeek',
   apiType: 'openai',
