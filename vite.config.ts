@@ -13,6 +13,7 @@ export default defineConfig({
       // 外部化所有 Node.js 内置模块和依赖
       external: [
         // Node.js 内置模块
+        'node:crypto',
         'node:os',
         'node:path',
         'node:fs',
