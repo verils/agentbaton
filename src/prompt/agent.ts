@@ -2,9 +2,9 @@ import { confirm, isCancel, select } from '@clack/prompts';
 import { getEnabledState, readJson, setEnabledState } from '../config';
 import { expandHome, getConfigPath, isCommandAvailable } from '../utils';
 import type { AgentDefinition, Provider } from '../types';
-import { detectInstalledAgents } from "../agents/detect";
-import { builtinAgents } from "../agents/builtin";
 import { providerPresets } from "../provider/presets";
+import { detectInstalledAgents } from "../agent/detect";
+import { builtinAgents } from "../agent/builtin";
 
 /**
  * 配置智能体子流程
@@ -77,7 +77,6 @@ function maskApiKey(key: string): string {
  * 查看当前配置（从智能体配置文件读取）
  */
 async function handleView(agent: AgentDefinition): Promise<void> {
-  const installed = await isCommandAvailable(agent.command);
   const configPath = expandHome(getConfigPath(agent.configPath));
   const rawConfig = await readAgentConfig(agent);
   const summary = rawConfig ? agent.parseConfig(rawConfig) : null;
@@ -138,7 +137,7 @@ async function handleSelectProvider(agent: AgentDefinition): Promise<void> {
 
   const provider = compatible.find((p) => p.id === providerName)!;
 
-  const modelAssignments = await selectModels(agent, provider);
+  const modelAssignments = await selectModels(agent, provider as { name: string; models: { name: string; description: string }[] });
   if (!modelAssignments) return;
 
   const yes = await confirm({ message: '确认切换？' });

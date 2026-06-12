@@ -5,6 +5,8 @@ import { backOption } from "./back";
 import { findProviderPreset, providerPresets } from "../provider/presets";
 import { Config } from "../types";
 
+const DEFAULT_CONTEXT_WINDOW = 256000;
+
 /**
  * 进入模型供应商设置菜单
  */
@@ -62,12 +64,12 @@ async function handleAddProvider() {
       await handleAddCustomProvider();
       break;
     default:
-      await handleAddTemplateProvider(choice)
+      await handleAddPresetProvider(choice)
       return;
   }
 }
 
-async function handleAddTemplateProvider(providerPresetId: string) {
+async function handleAddPresetProvider(providerPresetId: string) {
   const providerPreset = findProviderPreset(providerPresetId);
 
   let pricingId: string | undefined;
@@ -148,6 +150,7 @@ async function handleModifyProvider(providerId: string, config: Config) {
   }
 }
 
+
 async function addProvider(providerPresetId: string, apiKey: string, pricingId?: string) {
   const config = await loadConfig();
   const preset = findProviderPreset(providerPresetId);
@@ -163,8 +166,8 @@ async function addProvider(providerPresetId: string, apiKey: string, pricingId?:
 
   const models: Config['providers'][number]['models'] = preset.models.map((m) => ({
     id: m.name,
-    name: m.description,
-    contextWindowSize: 256000,
+    name: m.description!,
+    contextWindowSize: DEFAULT_CONTEXT_WINDOW,
   }));
 
   const existing = config.providers.find((p) => p.name === preset.id);

@@ -3,8 +3,8 @@ import { getEnabledState, loadConfig } from '../config';
 import { isCommandAvailable, getStringWidth, padEndWidth } from '../utils';
 import { openAgentMenu } from './agent';
 import { openProviderMenu } from './provider';
-import { builtinAgents } from "../agents/builtin";
 import { providerPresets } from "../provider/presets";
+import { builtinAgents } from "../agent/builtin";
 
 export async function runPrompt(): Promise<void> {
   intro('Agent Baton — 智能体设置管理');
