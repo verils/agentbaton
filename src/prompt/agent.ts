@@ -32,14 +32,15 @@ export async function openAgentMenu(): Promise<void> {
 
   const agent = builtinAgents.find((a) => a.id === agentId)!;
 
+  await displayAgentConfig(agent);
+
   // 操作子菜单循环
   while (true) {
     const action = await select({
       message: `${agent.name}：`,
       options: [
-        { value: 'view', label: '查看当前设置' },
-        { value: 'selectProvider', label: '设置模型供应商' },
-        { value: 'selectModel', label: '设置模型' },
+        { value: 'chooseProvider', label: '设置模型供应商' },
+        { value: 'chooseModel', label: '设置模型' },
         backOption,
       ],
     });
@@ -49,14 +50,11 @@ export async function openAgentMenu(): Promise<void> {
     }
 
     switch (action) {
-      case 'view':
-        await handleView(agent);
+      case 'chooseProvider':
+        await handleChooseProvider(agent);
         break;
-      case 'selectProvider':
-        await handleSelectProvider(agent);
-        break;
-      case 'selectModel':
-        await handleSelectProvider(agent);
+      case 'chooseModel':
+        await handleChooseProvider(agent);
         break;
     }
   }
@@ -69,9 +67,7 @@ function getCurrentModel(agentConfig: AgentConfig | null, slot: string): string 
 /**
  * 查看当前配置（从智能体配置文件读取）
  */
-async function handleView(agent: AgentDefinition): Promise<void> {
-  log.message(agent.name);
-
+async function displayAgentConfig(agent: AgentDefinition): Promise<void> {
   const info: string[] = [];
 
   const configPath = expandHome(getConfigPath(agent.configPaths));
@@ -86,10 +82,10 @@ async function handleView(agent: AgentDefinition): Promise<void> {
     info.push(`API Key: ${maskApiKey(agentConfig.apiKey)}`);
   }
 
-  info.push(`模型：`);
+  info.push(`\n模型：`);
   for (const slot of agent.models) {
     const modelId = getCurrentModel(agentConfig, slot.slot);
-    info.push(`  ${slot.name}：${(modelId ? `${modelId}` : '（获取失败）')}`);
+    info.push(`${slot.name}：${(modelId ? `${modelId}` : '（获取失败）')}`);
   }
 
   log.message(info);
@@ -98,7 +94,7 @@ async function handleView(agent: AgentDefinition): Promise<void> {
 /**
  * 切换供应商
  */
-async function handleSelectProvider(agent: AgentDefinition): Promise<void> {
+async function handleChooseProvider(agent: AgentDefinition): Promise<void> {
   const keys: Record<string, Provider> = {};
 
   // 所有兼容且有 API Key 的供应商（排除当前已启用的）

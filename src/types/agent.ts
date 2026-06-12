@@ -1,5 +1,4 @@
 import { ApiType } from "./provider";
-import { Model } from "./model";
 
 /**
  * Agent 定义接口

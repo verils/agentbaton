@@ -1,4 +1,4 @@
-import { AgentConfig, AgentDefinition, AgentModel, Model } from '../types';
+import { AgentConfig, AgentDefinition, AgentModel } from '../types';
 import { expandHome, getConfigPath } from "../utils";
 import { readJson } from "../config";
 
