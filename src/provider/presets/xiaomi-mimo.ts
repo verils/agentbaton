@@ -3,16 +3,36 @@ import type { ProviderPreset } from '../../types';
 export const xiaomiMimo: ProviderPreset = {
   id: 'xiaomi-mimo',
   name: '小米 MiMo',
-  endpoints: {
-    'openai': {
-      apiType: 'openai',
-      baseUrl: 'https://api.xiaomimimo.com/v1'
+  pricing: [
+    {
+      id: 'default',
+      name: '按量付费 API',
+      endpoints: {
+        'openai': {
+          apiType: 'openai',
+          baseUrl: 'https://api.xiaomimimo.com/v1'
+        },
+        'anthropic': {
+          apiType: 'anthropic',
+          baseUrl: 'https://api.xiaomimimo.com/anthropic'
+        }
+      }
     },
-    'anthropic': {
-      apiType: 'anthropic',
-      baseUrl: 'https://api.xiaomimimo.com/anthropic'
+    {
+      id: 'token-plan',
+      name: 'Token Plan',
+      endpoints: {
+        'openai': {
+          apiType: 'openai',
+          baseUrl: 'https://token-plan-cn.xiaomimimo.com/v1'
+        },
+        'anthropic': {
+          apiType: 'anthropic',
+          baseUrl: 'https://token-plan-cn.xiaomimimo.com/anthropic'
+        }
+      }
     }
-  },
+  ],
   models: [
     {
       id: 'mimo-v2.5-pro',

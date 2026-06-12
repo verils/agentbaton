@@ -8,8 +8,9 @@ export interface ProviderPreset {
   id: string;
   /** 显示名称 */
   name: string;
-  /** API 端点 */
-  endpoints?: Record<string, ProviderEndpoint>,
+
+  /** 定价方案，每个方案包含不同的 API 端点 */
+  pricing?: ProviderPricing[];
 
   /** 获取可用模型列表 */
   fetchModels?(): Promise<ProviderModel[]>
@@ -23,6 +24,14 @@ export interface ProviderPreset {
   models: ProviderModel[];
 }
 
+export interface ProviderPricing {
+  /** 付费模式 ID */
+  id: string;
+  /** 付费模式名称 */
+  name: string;
+  /** API 端点 */
+  endpoints: Record<string, ProviderEndpoint>;
+}
 
 interface ProviderEndpoint {
   /** 提供的 API 协议类型 */

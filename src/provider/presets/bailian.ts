@@ -3,16 +3,50 @@ import { ProviderModel, ProviderPreset } from "../../types";
 export const bailian: ProviderPreset = {
   id: 'bailian',
   name: '阿里云百炼',
-  endpoints: {
-    'openai': {
-      apiType: 'openai',
-      baseUrl: 'https://dashscope.aliyuncs.com/compatible-mode/v1',
+  pricing: [
+    {
+      id: 'default',
+      name: '按量付费 API',
+      endpoints: {
+        'openai': {
+          apiType: 'openai',
+          baseUrl: 'https://dashscope.aliyuncs.com/compatible-mode/v1',
+        },
+        'anthropic': {
+          apiType: 'anthropic',
+          baseUrl: 'https://dashscope.aliyuncs.com/apps/anthropic',
+        },
+      }
     },
-    'anthropic': {
-      apiType: 'anthropic',
-      baseUrl: 'https://dashscope.aliyuncs.com/apps/anthropic',
+    {
+      id: 'coding-plan',
+      name: 'Coding Plan',
+      endpoints: {
+        'openai': {
+          apiType: 'openai',
+          baseUrl: 'https://coding.dashscope.aliyuncs.com/v1',
+        },
+        'anthropic': {
+          apiType: 'anthropic',
+          baseUrl: 'https://coding.dashscope.aliyuncs.com/apps/anthropic',
+        },
+      }
     },
-  },
+    {
+      id: 'token-plan',
+      name: 'Token Plan',
+      endpoints: {
+        'openai': {
+          apiType: 'openai',
+          baseUrl: 'https://token-plan.cn-beijing.maas.aliyuncs.com/compatible-mode/v1',
+        },
+        'anthropic': {
+          apiType: 'anthropic',
+          baseUrl: 'https://token-plan.cn-beijing.maas.aliyuncs.com/apps/anthropic',
+        },
+      }
+    }
+  ],
   async fetchModels(): Promise<ProviderModel[]> {
     return []
   },

@@ -135,8 +135,9 @@ async function addProvider(providerPresetId: string, apiKey: string) {
   const config = await loadConfig();
   const preset = findProviderPreset(providerPresetId);
 
-  const endpoints: Config['providers'][number]['endpoints'] = preset.endpoints
-    ? Object.values(preset.endpoints).map((e) => ({ type: e.apiType, baseUrl: e.baseUrl }))
+  const defaultPricing = preset.pricing?.find(p => p.id === 'default');
+  const endpoints: Config['providers'][number]['endpoints'] = defaultPricing
+    ? Object.values(defaultPricing.endpoints).map((e) => ({ type: e.apiType, baseUrl: e.baseUrl }))
     : preset.apiType && preset.baseUrl
       ? [{ type: preset.apiType, baseUrl: preset.baseUrl }]
       : [];
