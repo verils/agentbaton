@@ -69,6 +69,23 @@ async function handleAddProvider() {
 
 async function handleAddTemplateProvider(providerPresetId: string) {
   const providerPreset = findProviderPreset(providerPresetId);
+
+  let pricingId: string | undefined;
+  if (providerPreset.pricing && providerPreset.pricing.length > 1) {
+    const choice = await select({
+      message: `选择 ${providerPreset.name} 的付费模式`,
+      options: providerPreset.pricing.map(p => ({
+        value: p.id,
+        label: p.name,
+      })),
+    });
+
+    if (isCancel(choice) || choice === 'back') {
+      return;
+    }
+    pricingId = choice as string;
+  }
+
   const apiKey = await password({
     message: `输入 ${providerPreset.name} 的 API Key`,
     mask: '*',
@@ -78,7 +95,7 @@ async function handleAddTemplateProvider(providerPresetId: string) {
     return;
   }
 
-  await addProvider(providerPreset.id, apiKey);
+  await addProvider(providerPreset.id, apiKey, pricingId);
   console.log(`\n  ✅ 已保存 ${providerPreset.name} 的 API Key\n`);
 }
 
@@ -131,13 +148,15 @@ async function handleModifyProvider(providerId: string, config: Config) {
   }
 }
 
-async function addProvider(providerPresetId: string, apiKey: string) {
+async function addProvider(providerPresetId: string, apiKey: string, pricingId?: string) {
   const config = await loadConfig();
   const preset = findProviderPreset(providerPresetId);
 
-  const defaultPricing = preset.pricing?.find(p => p.id === 'default');
-  const endpoints: Config['providers'][number]['endpoints'] = defaultPricing
-    ? Object.values(defaultPricing.endpoints).map((e) => ({ type: e.apiType, baseUrl: e.baseUrl }))
+  const pricing = pricingId
+    ? preset.pricing?.find(p => p.id === pricingId)
+    : preset.pricing?.find(p => p.id === 'default') ?? preset.pricing?.[0];
+  const endpoints: Config['providers'][number]['endpoints'] = pricing
+    ? Object.values(pricing.endpoints).map((e) => ({ type: e.apiType, baseUrl: e.baseUrl }))
     : preset.apiType && preset.baseUrl
       ? [{ type: preset.apiType, baseUrl: preset.baseUrl }]
       : [];
