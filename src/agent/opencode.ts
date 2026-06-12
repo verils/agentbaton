@@ -1,11 +1,11 @@
 import type { AgentDefinition } from '../types';
 
 export const opencode: AgentDefinition = {
-  name: 'opencode',
-  displayName: 'OpenCode',
+  id: 'opencode',
+  name: 'OpenCode',
   command: 'opencode',
   apiType: 'openai',
-  configPath: {
+  configPaths: {
     linux: '~/.config/opencode/config.json',
     macos: '~/Library/Application Support/opencode/config.json',
     windows: '~/AppData/Roaming/opencode/config.json',

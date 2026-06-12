@@ -19,7 +19,9 @@ export async function runPrompt(): Promise<void> {
       ],
     });
 
-    if (isCancel(choice) || choice === 'exit') break;
+    if (isCancel(choice) || choice === 'exit') {
+      break;
+    }
 
     switch (choice) {
       case 'agent':
@@ -46,12 +48,12 @@ async function handleViewAll(): Promise<void> {
 
   // 智能体
   console.log('\n  🤖 智能体\n');
-  const agentWidth = Math.max(...builtinAgents.map(a => getStringWidth(a.displayName))) + 4;
+  const agentWidth = Math.max(...builtinAgents.map(a => getStringWidth(a.name))) + 4;
   for (const agent of builtinAgents) {
     const installed = await isCommandAvailable(agent.command);
-    const state = enabledState[agent.name];
+    const state = enabledState[agent.id];
     const status = installed ? '✅' : '❌';
-    console.log(`    ${padEndWidth(agent.displayName, agentWidth)} ${status}`);
+    console.log(`    ${padEndWidth(agent.name, agentWidth)} ${status}`);
 
     if (state?.modelAssignments) {
       for (const slot of agent.models) {

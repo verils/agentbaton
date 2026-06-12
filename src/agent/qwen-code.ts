@@ -1,11 +1,11 @@
 import type { AgentDefinition } from '../types';
 
 export const qwenCode: AgentDefinition = {
-  name: 'qwen-code',
-  displayName: 'Qwen Code',
+  id: 'qwen-code',
+  name: 'Qwen Code',
   command: 'qwen',
   apiType: 'openai',
-  configPath: {
+  configPaths: {
     linux: '~/.config/qwen/config.json',
     macos: '~/Library/Application Support/Qwen/config.json',
     windows: '~/AppData/Roaming/Qwen/config.json',

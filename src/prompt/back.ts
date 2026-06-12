@@ -1,1 +1,1 @@
-export const backOption = { value: 'back', label: '↩ 返回' };
+export const backOption = { value: '__back__', label: '↩ 返回' };

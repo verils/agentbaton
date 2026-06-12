@@ -1,11 +1,26 @@
-import type { AgentDefinition } from '../types';
+import { AgentConfig, AgentDefinition, AgentModel, Model } from '../types';
+import { expandHome, getConfigPath } from "../utils";
+import { readJson } from "../config";
+
+interface AnthropicConfig {
+  env: {
+    "ANTHROPIC_API_KEY": string,
+    "ANTHROPIC_BASE_URL": string,
+    "ANTHROPIC_DEFAULT_HAIKU_MODEL": string,
+    "ANTHROPIC_DEFAULT_HAIKU_MODEL_NAME": string,
+    "ANTHROPIC_DEFAULT_OPUS_MODEL": string,
+    "ANTHROPIC_DEFAULT_OPUS_MODEL_NAME": string,
+    "ANTHROPIC_DEFAULT_SONNET_MODEL": string,
+    "ANTHROPIC_DEFAULT_SONNET_MODEL_NAME": string,
+  }
+}
 
 export const claudeCode: AgentDefinition = {
-  name: 'claude-code',
-  displayName: 'Claude Code',
+  id: 'claude-code',
+  name: 'Claude Code',
   command: 'claude',
   apiType: 'anthropic',
-  configPath: {
+  configPaths: {
     linux: '~/.claude/settings.json',
     macos: '~/.claude/settings.json',
     windows: '~/.claude/settings.json',
@@ -14,29 +29,49 @@ export const claudeCode: AgentDefinition = {
   models: [
     {
       slot: 'opus',
-      name: 'Opus',
+      name: 'Claude Opus',
       description: 'Claude Opus 模型',
     },
     {
       slot: 'sonnet',
-      name: 'Sonnet',
+      name: 'Claude Sonnet',
       description: 'Claude Sonnet 模型',
     },
     {
       slot: 'haiku',
-      name: 'Haiku',
+      name: 'Claude Haiku',
       description: 'Claude Haiku 模型',
     },
   ],
-  parseConfig(config) {
+  async parseConfig(): Promise<AgentConfig> {
+    const configPath = expandHome(getConfigPath(this.configPaths));
+    const anthropicConfig = await readJson<AnthropicConfig>(configPath);
+    const env = anthropicConfig?.env;
+
+    const models: AgentModel[] = [];
+    if (env?.ANTHROPIC_DEFAULT_OPUS_MODEL) {
+      models.push({
+        slot: 'opus',
+        id: env.ANTHROPIC_DEFAULT_OPUS_MODEL,
+      });
+    }
+    if (env?.ANTHROPIC_DEFAULT_SONNET_MODEL) {
+      models.push({
+        slot: 'sonnet',
+        id: env.ANTHROPIC_DEFAULT_SONNET_MODEL,
+      });
+    }
+    if (env?.ANTHROPIC_DEFAULT_HAIKU_MODEL) {
+      models.push({
+        slot: 'haiku',
+        id: env.ANTHROPIC_DEFAULT_HAIKU_MODEL,
+      });
+    }
+
     return {
-      models: {
-        opus: (config.Opus as string) ?? '',
-        sonnet: (config.Sonnet as string) ?? '',
-        haiku: (config.Haiku as string) ?? '',
-      },
-      baseUrl: config.baseUrl as string | undefined,
-      apiKey: config.apiKey as string | undefined,
+      baseUrl: env?.ANTHROPIC_BASE_URL,
+      apiKey: env?.ANTHROPIC_API_KEY,
+      models: models,
     };
   },
 };

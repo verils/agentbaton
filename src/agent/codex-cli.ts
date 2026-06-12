@@ -1,11 +1,11 @@
 import type { AgentDefinition } from '../types';
 
 export const codexCli: AgentDefinition = {
-  name: 'codex-cli',
-  displayName: 'Codex CLI',
+  id: 'codex-cli',
+  name: 'Codex CLI',
   command: 'codex',
   apiType: 'openai',
-  configPath: {
+  configPaths: {
     linux: '~/.codex/config.json',
     macos: '~/.codex/config.json',
     windows: '~/.codex/config.json',

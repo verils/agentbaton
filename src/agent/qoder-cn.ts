@@ -1,11 +1,11 @@
 import type { AgentDefinition } from '../types';
 
 export const qoderCn: AgentDefinition = {
-  name: 'qoder-cn',
-  displayName: 'Qoder CN',
+  id: 'qoder-cn',
+  name: 'Qoder CN',
   command: 'qoder-cn',
   apiType: 'openai',
-  configPath: {
+  configPaths: {
     linux: '~/.config/qoder-cn/config.json',
     macos: '~/Library/Application Support/QoderCN/config.json',
     windows: '~/AppData/Roaming/QoderCN/config.json',

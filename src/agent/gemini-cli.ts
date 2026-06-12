@@ -1,11 +1,11 @@
 import type { AgentDefinition } from '../types';
 
 export const geminiCli: AgentDefinition = {
-  name: 'gemini-cli',
-  displayName: 'Gemini CLI',
+  id: 'gemini-cli',
+  name: 'Gemini CLI',
   command: 'gemini',
   apiType: 'google',
-  configPath: {
+  configPaths: {
     linux: '~/.gemini/settings.json',
     macos: '~/.gemini/settings.json',
     windows: '~/AppData/Roaming/gemini/settings.json',

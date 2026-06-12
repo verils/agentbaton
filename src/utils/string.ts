@@ -51,3 +51,13 @@ export function padEndWidth(str: string, targetWidth: number): string {
   const padding = Math.max(0, targetWidth - currentWidth);
   return str + ' '.repeat(padding);
 }
+
+/**
+ * 脱敏 API Key：仅显示前 4 位和后 4 位
+ */
+export function maskApiKey(key: string): string {
+  if (key.length <= 8) {
+    return '****';
+  }
+  return `${key.slice(0, 4)}****${key.slice(-4)}`;
+}
