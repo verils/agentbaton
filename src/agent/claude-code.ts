@@ -74,4 +74,15 @@ export const claudeCode: AgentDefinition = {
       models: models,
     };
   },
+  async saveConfig(config: AgentConfig) {
+    const configPath = expandHome(getConfigPath(this.configPaths));
+    const anthropicConfig = await readJson<Record<string, unknown>>(configPath) ?? {};
+    const envElement = anthropicConfig?.['env'] as Record<string, string> ?? {};
+    if (config.baseUrl) {
+      envElement['ANTHROPIC_BASE_URL'] = config.baseUrl;
+    }
+    if (config.apiKey) {
+      envElement['ANTHROPIC_API_KEY'] = config.apiKey;
+    }
+  }
 };

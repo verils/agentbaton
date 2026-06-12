@@ -3,15 +3,14 @@ import { isCancel, password, select } from '@clack/prompts';
 import { loadConfig, saveConfig } from '../config';
 import { backOption } from "./back";
 import { findProviderPreset, providerPresets } from "../provider/presets";
-import { Config } from "../types";
+import { AgentBatonConfig } from "../types";
 
 const DEFAULT_CONTEXT_WINDOW = 256000;
 
 /**
  * 进入模型供应商设置菜单
  */
-export async function openProviderMenu(): Promise<void> {
-  const config = await loadConfig();
+export async function openProviderMenu(config: AgentBatonConfig): Promise<void> {
   const providerOptions = config.providers.map((p) => ({
     value: p.id,
     label: `${p.name}`,
@@ -26,7 +25,7 @@ export async function openProviderMenu(): Promise<void> {
     ],
   });
 
-  if (isCancel(providerChoice) || providerChoice === 'back') {
+  if (isCancel(providerChoice) || providerChoice === backOption.value) {
     return;
   }
 
@@ -55,7 +54,7 @@ async function handleAddProvider() {
     ]
   });
 
-  if (isCancel(choice) || choice === 'back') {
+  if (isCancel(choice) || choice === backOption.value) {
     return;
   }
 
@@ -105,7 +104,7 @@ async function handleAddCustomProvider() {
 
 }
 
-async function handleModifyProvider(providerId: string, config: Config) {
+async function handleModifyProvider(providerId: string, config: AgentBatonConfig) {
   const provider = config.providers.find(p => p.id === providerId) !!;
 
   // 操作子菜单循环
@@ -133,7 +132,7 @@ async function handleModifyProvider(providerId: string, config: Config) {
       ],
     });
 
-    if (isCancel(action) || action === 'back') {
+    if (isCancel(action) || action === backOption.value) {
       return;
     }
 
@@ -158,13 +157,13 @@ async function addProvider(providerPresetId: string, apiKey: string, pricingId?:
   const pricing = pricingId
     ? preset.pricing?.find(p => p.id === pricingId)
     : preset.pricing?.find(p => p.id === 'default') ?? preset.pricing?.[0];
-  const endpoints: Config['providers'][number]['endpoints'] = pricing
+  const endpoints: AgentBatonConfig['providers'][number]['endpoints'] = pricing
     ? Object.values(pricing.endpoints).map((e) => ({ type: e.apiType, baseUrl: e.baseUrl }))
     : preset.apiType && preset.baseUrl
       ? [{ type: preset.apiType, baseUrl: preset.baseUrl }]
       : [];
 
-  const models: Config['providers'][number]['models'] = preset.models.map((m) => ({
+  const models: AgentBatonConfig['providers'][number]['models'] = preset.models.map((m) => ({
     id: m.name,
     name: m.description!,
     contextWindowSize: DEFAULT_CONTEXT_WINDOW,

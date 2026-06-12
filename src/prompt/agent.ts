@@ -1,16 +1,15 @@
 import { confirm, isCancel, log, select } from '@clack/prompts';
-import { getEnabledState, setEnabledState } from '../config';
 import { expandHome, getConfigPath, maskApiKey } from '../utils';
-import type { AgentConfig, AgentDefinition, Provider } from '../types';
-import { providerPresets } from "../provider/presets";
+import type { Agent, AgentBatonConfig, AgentConfig, AgentDefinition } from '../types';
 import { detectInstalledAgents } from "../agent/detect";
-import { builtinAgents } from "../agent/builtin";
+import { findAgent } from "../agent/builtin";
 import { backOption } from "./back";
+import { saveConfig } from "../config";
 
 /**
  * 配置智能体子流程
  */
-export async function openAgentMenu(): Promise<void> {
+export async function openAgentMenu(config: AgentBatonConfig): Promise<void> {
   const installedAgents = await detectInstalledAgents();
 
   // 列出所有 agent，标注安装状态
@@ -30,7 +29,7 @@ export async function openAgentMenu(): Promise<void> {
     return;
   }
 
-  const agent = builtinAgents.find((a) => a.id === agentId)!;
+  const agent = findAgent(agentId)!;
 
   await displayAgentConfig(agent);
 
@@ -51,10 +50,10 @@ export async function openAgentMenu(): Promise<void> {
 
     switch (action) {
       case 'chooseProvider':
-        await handleChooseProvider(agent);
+        await handleChooseProvider(agent, config);
         break;
       case 'chooseModel':
-        await handleChooseProvider(agent);
+        await handleChooseModel(agent);
         break;
     }
   }
@@ -81,56 +80,59 @@ async function displayAgentConfig(agent: AgentDefinition): Promise<void> {
   if (agentConfig?.apiKey) {
     info.push(`API Key: ${maskApiKey(agentConfig.apiKey)}`);
   }
+  log.message(info);
 
-  info.push(`\n模型：`);
+
+  const models: string[] = [];
+  models.push(`模型：`);
   for (const slot of agent.models) {
     const modelId = getCurrentModel(agentConfig, slot.slot);
-    info.push(`${slot.name}：${(modelId ? `${modelId}` : '（获取失败）')}`);
+    models.push(`${slot.name}：${(modelId ? `${modelId}` : '（获取失败）')}`);
   }
 
-  log.message(info);
+  log.message(models);
 }
 
 /**
  * 切换供应商
  */
-async function handleChooseProvider(agent: AgentDefinition): Promise<void> {
-  const keys: Record<string, Provider> = {};
+async function handleChooseProvider(agent: AgentDefinition, config: AgentBatonConfig): Promise<void> {
+  const compatibleProviders = config.providers
+    .filter(p => p.endpoints.find(e => e.type === agent.apiType));
 
-  // 所有兼容且有 API Key 的供应商（排除当前已启用的）
-  const enabledState = await getEnabledState();
-  const currentProvider = enabledState[agent.id]?.provider;
-
-  const compatible = providerPresets.filter(
-    (p) => p.apiType === agent.apiType && keys[p.id] && p.id !== currentProvider,
-  );
-
-  const providerName = await select({
+  const providerId = await select({
     message: '切换到：',
-    options: compatible.map((p) => ({
+    options: compatibleProviders.map((p) => ({
       value: p.id,
       label: p.name,
-      hint: `${p.models.length} 个模型`,
     })),
   });
 
-  if (isCancel(providerName)) return;
+  if (isCancel(providerId)) {
+    return;
+  }
 
-  const provider = compatible.find((p) => p.id === providerName)!;
-
-  const modelAssignments = await selectModels(agent, provider as {
-    name: string;
-    models: { name: string; description: string }[]
-  });
-  if (!modelAssignments) return;
+  const provider = compatibleProviders.find((p) => p.id === providerId)!;
 
   const yes = await confirm({ message: '确认切换？' });
-  if (isCancel(yes) || !yes) return;
+  if (isCancel(yes) || !yes) {
+    return;
+  }
 
-  enabledState[agent.id] = { provider: provider.id, modelAssignments };
-  await setEnabledState(enabledState);
+  const configAgent: Agent = config.agents[agent.id] ?? { id: agent.id };
+  configAgent.currentProvider = providerId;
+  await saveConfig(config)
 
-  console.log(`\n  ✅ 已切换到 ${provider.name}\n`);
+  agent.saveConfig({
+    baseUrl: provider.endpoints.find(e => e.type === agent.apiType)?.baseUrl,
+    apiKey: provider.apiKey,
+  });
+
+  log.success(`✅ 已切换到 ${provider.name}`);
+}
+
+async function handleChooseModel(agent: AgentDefinition) {
+
 }
 
 /**

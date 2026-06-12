@@ -13,8 +13,12 @@ export const builtinAgents: AgentDefinition[] = [
   codexCli,
   geminiCli,
   opencode,
+  mimoCode,
   qoder,
   qoderCn,
-  qwenCode,
-  mimoCode
+  qwenCode
 ];
+
+export function findAgent(id: string): AgentDefinition {
+  return builtinAgents.find(a => a.id === id)!;
+}

@@ -1,20 +1,24 @@
-import { intro, isCancel, outro, select } from '@clack/prompts';
-import { getEnabledState, loadConfig } from '../config';
+import { intro, isCancel, log, outro, select } from '@clack/prompts';
+import { loadConfig } from '../config';
 import { getStringWidth, isCommandAvailable, padEndWidth } from '../utils';
 import { openAgentMenu } from './agent';
 import { openProviderMenu } from './provider';
 import { builtinAgents } from "../agent/builtin";
+import { AgentBatonConfig } from "../types";
 
 export async function runPrompt(): Promise<void> {
-  intro('Agent Baton — 智能体设置管理');
+  const config = await loadConfig();
+
+  intro('AgentBaton — 智能体设置管理');
+
+  await displayInfo(config);
 
   while (true) {
     const choice = await select({
       message: '选择菜单：',
       options: [
-        { value: 'agent', label: '设置智能体' },
-        { value: 'provider', label: '设置模型供应商' },
-        { value: 'view', label: '查看当前设置' },
+        { value: 'agent', label: '智能体' },
+        { value: 'provider', label: '模型供应商' },
         { value: 'exit', label: '退出' },
       ],
     });
@@ -25,51 +29,35 @@ export async function runPrompt(): Promise<void> {
 
     switch (choice) {
       case 'agent':
-        await openAgentMenu();
+        await openAgentMenu(config);
         break;
       case 'provider':
-        await openProviderMenu();
-        break;
-      case 'view':
-        await handleViewAll();
+        await openProviderMenu(config);
         break;
     }
   }
 
-  outro('👋 再见');
+  outro('再见 👋');
 }
 
 /**
  * 查看配置 — 展示所有智能体和供应商的配置概览
  */
-async function handleViewAll(): Promise<void> {
-  const config = await loadConfig();
-  const enabledState = await getEnabledState();
-
-  // 智能体
-  console.log('\n  🤖 智能体\n');
-  const agentWidth = Math.max(...builtinAgents.map(a => getStringWidth(a.name))) + 4;
+async function displayInfo(config: AgentBatonConfig): Promise<void> {
+  log.info('智能体 🤖');
+  const agents = []
+  const agentWidth = Math.max(...builtinAgents.map(a => getStringWidth(a.name)));
   for (const agent of builtinAgents) {
     const installed = await isCommandAvailable(agent.command);
-    const state = enabledState[agent.id];
     const status = installed ? '✅' : '❌';
-    console.log(`    ${padEndWidth(agent.name, agentWidth)} ${status}`);
-
-    if (state?.modelAssignments) {
-      for (const slot of agent.models) {
-        const model = state.modelAssignments[slot.slot];
-        if (model) {
-          console.log(`    ${slot.description}: ${model}`);
-        }
-      }
-    }
+    agents.push(`${padEndWidth(agent.name, agentWidth)} ${status}`)
   }
+  log.message(agents);
 
-  // 模型供应商
-  console.log('\n  🔌 模型供应商\n');
+  log.info('模型供应商 🔌');
+  const providers = []
   for (const provider of config.providers) {
-    console.log(`    ${provider.name}`);
+    providers.push(`${provider.name}`)
   }
-
-  console.log();
+  log.message(providers);
 }

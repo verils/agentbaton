@@ -19,11 +19,11 @@ export interface AgentDefinition {
   /** 模型定义 */
   models: AgentModelSlot[];
 
-  /** 从配置文件内容中解析出配置摘要 */
-  parseConfig(config?: Record<string, unknown>): Promise<AgentConfig> | AgentConfig | null;
+  /** 从智能体配置文件内容中解析出配置 */
+  parseConfig(unused?: Record<string, unknown>): Promise<AgentConfig> | AgentConfig | null;
 
-  /** 配置智能体的逻辑 */
-  config?(): Promise<void>;
+  /** 保存配置到智能体配置文件 */
+  saveConfig(config: AgentConfig): Promise<void> | void;
 }
 
 /**
@@ -66,5 +66,5 @@ export interface AgentConfig {
   /** API 密钥（原值） */
   apiKey?: string;
   /** 各槽位的模型值：slot → model value */
-  models: AgentModel[];
+  models?: AgentModel[];
 }

@@ -6,19 +6,17 @@ import { Model } from "./model";
  *
  * 所有配置存储在 ~/.agentbaton/config.json 中
  */
-export interface Config {
+export interface AgentBatonConfig {
   /** 已设置的智能体 */
   agents: Record<string, Agent>;
   /** 已添加的模型供应商 */
   providers: Provider[];
-
-  /** @deprecated Agent-Provider 启用状态：agent_name → { provider, modelAssignments } */
-  enabledAgents: Record<string, EnabledAgent>;
 }
 
-interface Agent {
+export interface Agent {
   id: string;
-  name: string;
+  currentProvider: string;
+  modelAssignments: Record<string, string>;
 }
 
 export interface Provider {
@@ -46,6 +44,3 @@ export interface EnabledAgent {
   provider: string;
   modelAssignments: Record<string, string>;
 }
-
-/** @deprecated 使用 AgentbatonConfig['enabledAgents'] 代替 */
-export type EnabledState = Config['enabledAgents'];
