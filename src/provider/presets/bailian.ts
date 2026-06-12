@@ -6,7 +6,7 @@ export const bailian: ProviderPreset = {
   pricing: [
     {
       id: 'default',
-      name: '按量付费 API',
+      name: '按量付费',
       endpoints: {
         'openai': {
           apiType: 'openai',
