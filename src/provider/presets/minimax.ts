@@ -1,6 +1,6 @@
-import type { ProviderTemplate } from '../types';
+import type { ProviderPreset } from '../../types';
 
-export const minimax: ProviderTemplate = {
+export const minimax: ProviderPreset = {
   id: 'minimax',
   name: 'MiniMax',
   apiType: 'openai',

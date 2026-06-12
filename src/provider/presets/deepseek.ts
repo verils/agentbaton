@@ -1,6 +1,6 @@
-import type { ProviderTemplate } from '../types';
+import type { ProviderPreset } from '../../types';
 
-export const deepseek: ProviderTemplate = {
+export const deepseek: ProviderPreset = {
   id: 'deepseek',
   name: 'DeepSeek',
   endpoints: {

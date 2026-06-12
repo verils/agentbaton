@@ -1,4 +1,4 @@
-import type { ProviderTemplate } from "../types";
+import type { ProviderPreset } from "../../types";
 import { bailian } from "./bailian";
 import { deepseek } from "./deepseek";
 import { minimax } from "./minimax";
@@ -8,7 +8,7 @@ import { volcengine } from "./volcengine";
 import { xiaomiMimo } from "./xiaomi-mimo";
 import { zhipu } from "./zhipu";
 
-export const providerTemplates: ProviderTemplate[] = [
+export const providerPresets: ProviderPreset[] = [
   bailian,
   deepseek,
   minimax,
@@ -19,6 +19,6 @@ export const providerTemplates: ProviderTemplate[] = [
   zhipu,
 ];
 
-export function findProviderTemplate(providerTemplateId: string) {
-  return providerTemplates.find(t => t.id === providerTemplateId) !!
+export function findProviderPreset(providerPresetId: string) {
+  return providerPresets.find(t => t.id === providerPresetId) !!
 }

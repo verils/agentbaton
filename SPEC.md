@@ -54,10 +54,10 @@ interface AgentConfigSummary {
 }
 ```
 
-### ProviderTemplate
+### ProviderPreset
 
 ```typescript
-interface ProviderTemplate {
+interface ProviderPreset {
   id: string;
   name: string;
   endpoints?: Record<string, ProviderEndpoint>;

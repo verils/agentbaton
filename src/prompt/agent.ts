@@ -4,7 +4,7 @@ import { expandHome, getConfigPath, isCommandAvailable } from '../utils';
 import type { AgentDefinition, Provider } from '../types';
 import { detectInstalledAgents } from "../agents/detect";
 import { builtinAgents } from "../agents/builtin";
-import { providerTemplates } from "../provider/template";
+import { providerPresets } from "../provider/presets";
 
 /**
  * 配置智能体子流程
@@ -121,7 +121,7 @@ async function handleSelectProvider(agent: AgentDefinition): Promise<void> {
   const enabledState = await getEnabledState();
   const currentProvider = enabledState[agent.name]?.provider;
 
-  const compatible = providerTemplates.filter(
+  const compatible = providerPresets.filter(
     (p) => p.apiType === agent.apiType && keys[p.id] && p.id !== currentProvider,
   );
 

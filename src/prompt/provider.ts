@@ -2,7 +2,7 @@ import { randomUUID } from 'node:crypto';
 import { isCancel, password, select } from '@clack/prompts';
 import { loadConfig, saveConfig } from '../config';
 import { backOption } from "./back";
-import { findProviderTemplate, providerTemplates } from "../provider/template";
+import { findProviderPreset, providerPresets } from "../provider/presets";
 import { Config } from "../types";
 
 /**
@@ -39,7 +39,7 @@ export async function openProviderMenu(): Promise<void> {
 }
 
 async function handleAddProvider() {
-  const providerTemplateOptions = providerTemplates.map(p => ({
+  const providerPresetOptions = providerPresets.map(p => ({
     value: p.id,
     label: p.name
   }));
@@ -47,7 +47,7 @@ async function handleAddProvider() {
   const choice = await select({
     message: '选择模型供应商',
     options: [
-      ...providerTemplateOptions,
+      ...providerPresetOptions,
       { value: 'custom', label: '自定义模型供应商' },
       backOption,
     ]
@@ -67,10 +67,10 @@ async function handleAddProvider() {
   }
 }
 
-async function handleAddTemplateProvider(providerTemplateId: string) {
-  const providerTemplate = findProviderTemplate(providerTemplateId);
+async function handleAddTemplateProvider(providerPresetId: string) {
+  const providerPreset = findProviderPreset(providerPresetId);
   const apiKey = await password({
-    message: `输入 ${providerTemplate.name} 的 API Key`,
+    message: `输入 ${providerPreset.name} 的 API Key`,
     mask: '*',
   });
 
@@ -78,8 +78,8 @@ async function handleAddTemplateProvider(providerTemplateId: string) {
     return;
   }
 
-  await addProvider(providerTemplate.id, apiKey);
-  console.log(`\n  ✅ 已保存 ${providerTemplate.name} 的 API Key\n`);
+  await addProvider(providerPreset.id, apiKey);
+  console.log(`\n  ✅ 已保存 ${providerPreset.name} 的 API Key\n`);
 }
 
 async function handleAddCustomProvider() {
@@ -131,23 +131,23 @@ async function handleModifyProvider(providerId: string, config: Config) {
   }
 }
 
-async function addProvider(providerTemplateId: string, apiKey: string) {
+async function addProvider(providerPresetId: string, apiKey: string) {
   const config = await loadConfig();
-  const template = findProviderTemplate(providerTemplateId);
+  const preset = findProviderPreset(providerPresetId);
 
-  const endpoints: Config['providers'][number]['endpoints'] = template.endpoints
-    ? Object.values(template.endpoints).map((e) => ({ type: e.apiType, baseUrl: e.baseUrl }))
-    : template.apiType && template.baseUrl
-      ? [{ type: template.apiType, baseUrl: template.baseUrl }]
+  const endpoints: Config['providers'][number]['endpoints'] = preset.endpoints
+    ? Object.values(preset.endpoints).map((e) => ({ type: e.apiType, baseUrl: e.baseUrl }))
+    : preset.apiType && preset.baseUrl
+      ? [{ type: preset.apiType, baseUrl: preset.baseUrl }]
       : [];
 
-  const models: Config['providers'][number]['models'] = template.models.map((m) => ({
+  const models: Config['providers'][number]['models'] = preset.models.map((m) => ({
     id: m.name,
     name: m.description,
-    contextWindowSize: 0,
+    contextWindowSize: 256000,
   }));
 
-  const existing = config.providers.find((p) => p.name === template.id);
+  const existing = config.providers.find((p) => p.name === preset.id);
   if (existing) {
     existing.apiKey = apiKey;
     existing.endpoints = endpoints;
@@ -155,7 +155,7 @@ async function addProvider(providerTemplateId: string, apiKey: string) {
   } else {
     config.providers.push({
       id: randomUUID(),
-      name: template.name,
+      name: preset.name,
       apiKey,
       endpoints,
       models,

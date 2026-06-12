@@ -3,7 +3,7 @@ export type ApiType = 'openai' | 'anthropic' | 'google';
 /**
  * Provider 定义接口
  */
-export interface ProviderTemplate {
+export interface ProviderPreset {
   /** 唯一标识 */
   id: string;
   /** 显示名称 */

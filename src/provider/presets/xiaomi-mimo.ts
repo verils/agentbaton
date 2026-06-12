@@ -1,6 +1,6 @@
-import type { ProviderTemplate } from '../types';
+import type { ProviderPreset } from '../../types';
 
-export const xiaomiMimo: ProviderTemplate = {
+export const xiaomiMimo: ProviderPreset = {
   id: 'xiaomi-mimo',
   name: '小米 MiMo',
   endpoints: {

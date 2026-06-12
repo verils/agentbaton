@@ -4,7 +4,7 @@ import { isCommandAvailable, getStringWidth, padEndWidth } from '../utils';
 import { openAgentMenu } from './agent';
 import { openProviderMenu } from './provider';
 import { builtinAgents } from "../agents/builtin";
-import { providerTemplates } from "../provider/template";
+import { providerPresets } from "../provider/presets";
 
 export async function runPrompt(): Promise<void> {
   intro('Agent Baton — 智能体设置管理');
@@ -66,7 +66,7 @@ async function handleViewAll(): Promise<void> {
 
   // 模型供应商
   console.log('\n  🔌 模型供应商\n');
-  const providerWidth = Math.max(...providerTemplates.map(p => getStringWidth(p.name))) + 4;
+  const providerWidth = Math.max(...providerPresets.map(p => getStringWidth(p.name))) + 4;
   for (const provider of config.providers) {
     console.log(`    ${provider.name}`);
   }

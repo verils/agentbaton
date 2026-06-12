@@ -1,6 +1,6 @@
-import type { ProviderTemplate } from '../types';
+import type { ProviderPreset } from '../../types';
 
-export const zhipu: ProviderTemplate = {
+export const zhipu: ProviderPreset = {
   id: 'zhipu',
   name: '智谱 AI',
   apiType: 'openai',

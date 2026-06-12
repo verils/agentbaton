@@ -1,6 +1,6 @@
-import type { ProviderTemplate } from '../types';
+import type { ProviderPreset } from '../../types';
 
-export const tencent: ProviderTemplate = {
+export const tencent: ProviderPreset = {
   id: 'tencent',
   name: '腾讯云',
   apiType: 'openai',
