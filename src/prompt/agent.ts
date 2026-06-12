@@ -1,6 +1,6 @@
 import { confirm, isCancel, select } from '@clack/prompts';
 import { getEnabledState, readJson, setEnabledState } from '../config';
-import { expandHome, getConfigPath, isCommandAvailable } from '../utils';
+import { expandHome, getConfigPath } from '../utils';
 import type { AgentDefinition, Provider } from '../types';
 import { providerPresets } from "../provider/presets";
 import { detectInstalledAgents } from "../agent/detect";

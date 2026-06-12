@@ -1,9 +1,8 @@
 import { intro, isCancel, outro, select } from '@clack/prompts';
 import { getEnabledState, loadConfig } from '../config';
-import { isCommandAvailable, getStringWidth, padEndWidth } from '../utils';
+import { getStringWidth, isCommandAvailable, padEndWidth } from '../utils';
 import { openAgentMenu } from './agent';
 import { openProviderMenu } from './provider';
-import { providerPresets } from "../provider/presets";
 import { builtinAgents } from "../agent/builtin";
 
 export async function runPrompt(): Promise<void> {
@@ -66,7 +65,6 @@ async function handleViewAll(): Promise<void> {
 
   // 模型供应商
   console.log('\n  🔌 模型供应商\n');
-  const providerWidth = Math.max(...providerPresets.map(p => getStringWidth(p.name))) + 4;
   for (const provider of config.providers) {
     console.log(`    ${provider.name}`);
   }
