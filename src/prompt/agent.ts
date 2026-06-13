@@ -1,6 +1,6 @@
-import { confirm, isCancel, log, select } from '@clack/prompts';
+import { confirm, isCancel, log, select, text } from '@clack/prompts';
 import { expandHome, getCurrentPlatformConfigPath, maskApiKey } from '../utils';
-import type { Agent, AgentBatonConfig, AgentConfig, AgentDefinition } from '../types';
+import type { Agent, AgentBatonConfig, AgentConfig, AgentDefinition, AgentModel } from '../types';
 import { detectInstalledAgents } from "../agent/detect";
 import { findAgent } from "../agent/builtin";
 import { backOption } from "./back";
@@ -53,7 +53,7 @@ export async function openAgentMenu(config: AgentBatonConfig): Promise<void> {
         await handleChooseProvider(agent, config);
         break;
       case 'chooseModel':
-        await handleChooseModel(agent);
+        await handleChooseModel(agent, config);
         break;
     }
   }
@@ -103,6 +103,11 @@ async function handleChooseProvider(agent: AgentDefinition, config: AgentBatonCo
   const compatibleProviders = config.providers
     .filter(p => p.endpoints.find(e => e.type === agent.apiType));
 
+  if (compatibleProviders.length === 0) {
+    log.warn(`没有兼容 ${agent.apiType} 类型的供应商，请先添加模型供应商`);
+    return;
+  }
+
   const providerId = await select({
     message: '切换到：',
     options: compatibleProviders.map((p) => ({
@@ -123,50 +128,96 @@ async function handleChooseProvider(agent: AgentDefinition, config: AgentBatonCo
   }
 
   const configAgent: Agent = config.agents[agent.id] ?? { id: agent.id, currentProvider: '', modelSlots: {} };
+
+  // 保存当前供应商的模型槽位到 history
+  if (configAgent.currentProvider && Object.keys(configAgent.modelSlots).length > 0) {
+    if (!configAgent.history) configAgent.history = {};
+    configAgent.history[configAgent.currentProvider] = { ...configAgent.modelSlots };
+  }
+
+  // 切换到新供应商，尝试恢复历史模型槽位
   configAgent.currentProvider = providerId;
+  configAgent.modelSlots = configAgent.history?.[providerId] ? { ...configAgent.history[providerId] } : {};
   config.agents[agent.id] = configAgent;
+
+  try {
+    await saveConfig(config);
+
+    const models: AgentModel[] = Object.entries(configAgent.modelSlots).map(([slot, id]) => ({ slot, id }));
+    await agent.saveConfig({
+      baseUrl: provider.endpoints.find(e => e.type === agent.apiType)?.baseUrl,
+      apiKey: provider.apiKey,
+      models,
+    });
+    log.success(`✅ ${agent.name} 已切换到 ${provider.name}`);
+
+    // 恢复的槽位为空且有模型槽位定义时，提示用户配置模型
+    if (Object.keys(configAgent.modelSlots).length === 0 && agent.models.length > 0) {
+      const configure = await confirm({ message: '当前供应商尚未配置模型，是否立即设置？' });
+      if (!isCancel(configure) && configure) {
+        await handleChooseModel(agent, config);
+      }
+    }
+  } catch (e) {
+    log.error(`切换失败：${e instanceof Error ? e.message : String(e)}`);
+  }
+}
+
+async function handleChooseModel(agent: AgentDefinition, config: AgentBatonConfig): Promise<void> {
+  const agentAssignment = config.agents[agent.id];
+  if (!agentAssignment?.currentProvider) {
+    log.warn('请先设置模型供应商');
+    return;
+  }
+
+  const provider = config.providers.find(p => p.id === agentAssignment.currentProvider);
+  if (!provider) {
+    log.error('当前绑定的供应商不存在，请重新设置');
+    return;
+  }
+
+  const modelOptions = [
+    ...provider.models.map((m) => ({
+      label: m.name,
+      value: m.id,
+    })),
+    { label: '手动输入', value: '__manual__' },
+  ];
+
+  const modelAssignments: AgentModel[] = [];
+
+  for (const slot of agent.models) {
+    const selected = await select({
+      message: `${slot.name} (${slot.slot})`,
+      options: modelOptions,
+    });
+
+    if (isCancel(selected)) return;
+
+    let modelId = selected as string;
+    if (modelId === '__manual__') {
+      const manual = await text({
+        message: `输入 ${slot.name} 的模型 ID`,
+        placeholder: '例如: gpt-4o',
+      });
+      if (isCancel(manual)) return;
+      modelId = manual as string;
+    }
+
+    modelAssignments.push({ slot: slot.slot, id: modelId });
+  }
+
+  agentAssignment.modelSlots = Object.fromEntries(modelAssignments.map(m => [m.slot, m.id]));
 
   try {
     await saveConfig(config);
     await agent.saveConfig({
       baseUrl: provider.endpoints.find(e => e.type === agent.apiType)?.baseUrl,
       apiKey: provider.apiKey,
+      models: modelAssignments,
     });
-    log.success(`✅ ${agent.name} 已切换到 ${provider.name}`);
+    log.success(`✅ ${agent.name} 模型已更新`);
   } catch (e) {
-    log.error(`切换失败：${e instanceof Error ? e.message : String(e)}`);
+    log.error(`保存模型失败：${e instanceof Error ? e.message : String(e)}`);
   }
-}
-
-async function handleChooseModel(agent: AgentDefinition) {
-
-}
-
-/**
- * 交互式模型选择（公共逻辑）
- */
-async function selectModels(
-  agent: AgentDefinition,
-  provider: { name: string; models: { name: string; description: string }[] },
-): Promise<Record<string, string> | null> {
-  const modelOptions = provider.models.map((m) => ({
-    label: m.name,
-    value: m.name,
-    hint: m.description,
-  }));
-
-  const modelAssignments: Record<string, string> = {};
-
-  for (const slot of agent.models) {
-    const selected = await select({
-      message: `${slot.description} (${slot.slot})`,
-      options: modelOptions,
-    });
-
-    if (isCancel(selected)) return null;
-
-    modelAssignments[slot.slot] = selected;
-  }
-
-  return modelAssignments;
 }

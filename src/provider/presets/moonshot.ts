@@ -7,16 +7,16 @@ export const moonshot: ProviderPreset = {
   baseUrl: 'https://api.moonshot.cn/v1',
   models: [
     {
-      name: 'moonshot-v1-8k',
-      description: 'Moonshot V1 8K',
+      id: 'moonshot-v1-8k',
+      name: 'Moonshot V1 8K',
     },
     {
-      name: 'moonshot-v1-32k',
-      description: 'Moonshot V1 32K',
+      id: 'moonshot-v1-32k',
+      name: 'Moonshot V1 32K',
     },
     {
-      name: 'moonshot-v1-128k',
-      description: 'Moonshot V1 128K',
+      id: 'moonshot-v1-128k',
+      name: 'Moonshot V1 128K',
     },
   ],
 };

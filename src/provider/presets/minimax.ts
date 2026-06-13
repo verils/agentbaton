@@ -7,8 +7,8 @@ export const minimax: ProviderPreset = {
   baseUrl: 'https://api.minimax.chat/v1',
   models: [
     {
-      name: 'MiniMax-Text-01',
-      description: 'MiniMax Text 01',
+      id: 'MiniMax-Text-01',
+      name: 'MiniMax Text 01',
     },
   ],
 };

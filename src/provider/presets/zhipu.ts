@@ -7,12 +7,12 @@ export const zhipu: ProviderPreset = {
   baseUrl: 'https://open.bigmodel.cn/api/paas/v4',
   models: [
     {
-      name: 'glm-4-flash',
-      description: 'GLM-4 Flash',
+      id: 'glm-4-flash',
+      name: 'GLM-4 Flash',
     },
     {
-      name: 'glm-4-plus',
-      description: 'GLM-4 Plus',
+      id: 'glm-4-plus',
+      name: 'GLM-4 Plus',
     },
   ],
 };

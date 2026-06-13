@@ -44,12 +44,10 @@ interface ProviderEndpoint {
  * Provider 模型
  */
 export interface ProviderModel {
-  /** 模型名称 */
-  id?: string;
-  /** 模型名称 */
+  /** API 模型 ID */
+  id: string;
+  /** 显示名称 */
   name: string;
-  /** 模型描述 */
-  description?: string;
   /** 上下文窗口大小 */
   contextWindowSize?: number;
 }

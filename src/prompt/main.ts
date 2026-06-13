@@ -31,9 +31,11 @@ export async function runPrompt(): Promise<void> {
     switch (choice) {
       case 'agent':
         await openAgentMenu(config);
+        await displayInfo(config);
         break;
       case 'provider':
         await openProviderMenu(config);
+        await displayInfo(config);
         break;
       case 'display':
         await displayInfo(config);
@@ -59,10 +61,14 @@ async function displayInfo(config: AgentBatonConfig): Promise<void> {
   log.message(agents);
 
   log.info('模型供应商 🔌');
-  const providerWidth = Math.max(...config.providers.map(a => getStringWidth(a.name)));
-  const providers = []
-  for (const provider of config.providers) {
-    providers.push(`${padEndWidth(provider.name, providerWidth)} （${maskApiKey(provider.apiKey)}）`)
+  if (config.providers.length === 0) {
+    log.message('  （暂无供应商，请先添加）');
+  } else {
+    const providerWidth = Math.max(...config.providers.map(a => getStringWidth(a.name)));
+    const providers = []
+    for (const provider of config.providers) {
+      providers.push(`${padEndWidth(provider.name, providerWidth)} （${maskApiKey(provider.apiKey)}）`)
+    }
+    log.message(providers);
   }
-  log.message(providers);
 }

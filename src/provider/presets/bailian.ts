@@ -90,7 +90,7 @@ export const bailian: ProviderPreset = {
 
         if (res.ok) {
           const json = await res.json() as { data: { id: string }[] };
-          return json.data.map((m) => ({ name: m.id }));
+          return json.data.map((m) => ({ id: m.id, name: m.id }));
         }
       } catch {
       }

@@ -7,12 +7,12 @@ export const tencent: ProviderPreset = {
   baseUrl: 'https://api.lkeap.cloud.tencent.com/v1',
   models: [
     {
-      name: 'deepseek-r1',
-      description: 'DeepSeek R1',
+      id: 'deepseek-r1',
+      name: 'DeepSeek R1',
     },
     {
-      name: 'deepseek-v3',
-      description: 'DeepSeek V3',
+      id: 'deepseek-v3',
+      name: 'DeepSeek V3',
     },
   ],
 };

@@ -7,12 +7,12 @@ export const volcengine: ProviderPreset = {
   baseUrl: 'https://ark.cn-beijing.volces.com/api/v3',
   models: [
     {
-      name: 'doubao-1.5-pro-32k',
-      description: '豆包 1.5 Pro 32K',
+      id: 'doubao-1.5-pro-32k',
+      name: '豆包 1.5 Pro 32K',
     },
     {
-      name: 'doubao-1.5-pro-128k',
-      description: '豆包 1.5 Pro 128K',
+      id: 'doubao-1.5-pro-128k',
+      name: '豆包 1.5 Pro 128K',
     },
   ],
 };
