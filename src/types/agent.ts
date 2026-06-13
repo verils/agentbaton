@@ -23,7 +23,7 @@ export interface AgentDefinition {
   models: AgentModelSlot[];
 
   /** 从智能体配置文件内容中解析出配置 */
-  parseConfig(unused?: Record<string, unknown>): Promise<AgentConfig | null>;
+  parseConfig(): Promise<AgentConfig | null>;
 
   /** 保存配置到智能体配置文件 */
   saveConfig(config: AgentConfig): Promise<void>;

@@ -6,9 +6,9 @@ export const qwenCode: AgentDefinition = {
   command: 'qwen',
   apiType: 'openai',
   home: {
-    linux: '~/.config/qwen/config.json',
-    macos: '~/Library/Application Support/Qwen/config.json',
-    windows: '~/AppData/Roaming/Qwen/config.json',
+    linux: '~/.qwen',
+    macos: '~/.qwen',
+    windows: '~/.qwen',
   },
   models: [
     {
