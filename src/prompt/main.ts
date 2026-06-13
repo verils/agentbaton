@@ -1,6 +1,6 @@
 import { intro, isCancel, log, outro, select } from '@clack/prompts';
 import { loadConfig } from '../config';
-import { getStringWidth, isCommandAvailable, padEndWidth } from '../utils';
+import { getStringWidth, isCommandAvailable, maskApiKey, padEndWidth } from '../utils';
 import { openAgentMenu } from './agent';
 import { openProviderMenu } from './provider';
 import { builtinAgents } from "../agent/builtin";
@@ -49,19 +49,20 @@ export async function runPrompt(): Promise<void> {
  */
 async function displayInfo(config: AgentBatonConfig): Promise<void> {
   log.info('智能体 🤖');
-  const agents = []
   const agentWidth = Math.max(...builtinAgents.map(a => getStringWidth(a.name)));
+  const agents = []
   for (const agent of builtinAgents) {
     const installed = await isCommandAvailable(agent.command);
-    const status = installed ? '✅' : '❌';
-    agents.push(`${padEndWidth(agent.name, agentWidth)} ${status}`)
+    const status = installed ? '✅ 已安装' : '❌ 未安装';
+    agents.push(`${padEndWidth(agent.name, agentWidth)} （${status}）`)
   }
   log.message(agents);
 
   log.info('模型供应商 🔌');
+  const providerWidth = Math.max(...config.providers.map(a => getStringWidth(a.name)));
   const providers = []
   for (const provider of config.providers) {
-    providers.push(`${provider.name}`)
+    providers.push(`${padEndWidth(provider.name, providerWidth)} （${maskApiKey(provider.apiKey)}）`)
   }
   log.message(providers);
 }

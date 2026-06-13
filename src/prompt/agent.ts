@@ -31,10 +31,10 @@ export async function openAgentMenu(config: AgentBatonConfig): Promise<void> {
 
   const agent = findAgent(agentId)!;
 
-  await displayAgentConfig(agent);
-
   // 操作子菜单循环
   while (true) {
+    await displayAgentConfig(agent);
+
     const action = await select({
       message: `${agent.name}：`,
       options: [
@@ -129,7 +129,7 @@ async function handleChooseProvider(agent: AgentDefinition, config: AgentBatonCo
     apiKey: provider.apiKey,
   });
 
-  log.success(`✅ 已切换到 ${provider.name}`);
+  log.success(`✅ ${agent.name} 已切换到 ${provider.name}`);
 }
 
 async function handleChooseModel(agent: AgentDefinition) {
