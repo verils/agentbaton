@@ -30,7 +30,7 @@ export interface AgentDefinition {
   parseConfig(unused?: Record<string, unknown>): Promise<AgentConfig | null>;
 
   /** 保存配置到智能体配置文件 */
-  saveConfig(config: AgentConfig): Promise<void> | void;
+  saveConfig(config: AgentConfig): Promise<void>;
 }
 
 /**
