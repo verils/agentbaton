@@ -11,12 +11,12 @@ import { mimoCode } from "./mimocode";
 export const builtinAgents: AgentDefinition[] = [
   claudeCode,
   codexCli,
-  geminiCli,
-  opencode,
-  mimoCode,
-  qoder,
-  qoderCn,
-  qwenCode
+  // geminiCli,
+  // opencode,
+  // mimoCode,
+  // qoder,
+  // qoderCn,
+  // qwenCode
 ];
 
 export function findAgent(id: string): AgentDefinition {

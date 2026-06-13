@@ -1,7 +1,6 @@
-import { readFile, writeFile, mkdir, rm } from 'node:fs/promises';
+import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
-import { dirname, join } from 'node:path';
-import { homedir } from 'node:os';
+import { dirname } from 'node:path';
 import { paths } from './paths';
 import type { AgentBatonConfig } from '../types';
 
@@ -57,65 +56,4 @@ export async function loadConfig(): Promise<AgentBatonConfig> {
  */
 export async function saveConfig(config: AgentBatonConfig): Promise<void> {
   await writeJson(paths.config, config);
-}
-
-/**
- * 解析简单的 YAML key: value 格式（仅支持扁平键值对）
- */
-function parseSimpleYaml(content: string): Record<string, string> {
-  const result: Record<string, string> = {};
-  for (const line of content.split('\n')) {
-    const trimmed = line.trim();
-    if (!trimmed || trimmed.startsWith('#')) continue;
-    const colonIndex = trimmed.indexOf(':');
-    if (colonIndex === -1) continue;
-    const key = trimmed.slice(0, colonIndex).trim();
-    let value = trimmed.slice(colonIndex + 1).trim();
-    // 去除引号
-    if ((value.startsWith('"') && value.endsWith('"')) || (value.startsWith("'") && value.endsWith("'"))) {
-      value = value.slice(1, -1);
-    }
-    result[key] = value;
-  }
-  return result;
-}
-
-/**
- * 从旧 YAML 文件迁移配置
- */
-async function migrateFromYaml(): Promise<AgentBatonConfig | null> {
-  const batonDir = join(homedir(), '.agentbaton');
-  const oldKeysPath = join(batonDir, 'state', 'provider-keys.yaml');
-  const oldEnabledPath = join(batonDir, 'state', 'enabled.yaml');
-
-  const hasOldKeys = existsSync(oldKeysPath);
-  const hasOldEnabled = existsSync(oldEnabledPath);
-
-  if (!hasOldKeys && !hasOldEnabled) {
-    return null;
-  }
-
-  const config: AgentBatonConfig = { ...DEFAULT_CONFIG };
-
-  // 清理旧文件和空目录
-  try {
-    if (hasOldKeys) await rm(oldKeysPath);
-    if (hasOldEnabled) await rm(oldEnabledPath);
-
-    const stateDir = join(batonDir, 'state');
-    const agentsDir = join(batonDir, 'agents');
-    const providersDir = join(batonDir, 'providers');
-
-    for (const dir of [ stateDir, agentsDir, providersDir ]) {
-      try {
-        await rm(dir, { recursive: false });
-      } catch {
-        // 目录非空或不存在，忽略
-      }
-    }
-  } catch {
-    // 清理失败不影响迁移
-  }
-
-  return config;
 }
