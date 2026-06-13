@@ -5,12 +5,11 @@ export const opencode: AgentDefinition = {
   name: 'OpenCode',
   command: 'opencode',
   apiType: 'openai',
-  configPaths: {
+  home: {
     linux: '~/.config/opencode/config.json',
     macos: '~/Library/Application Support/opencode/config.json',
     windows: '~/AppData/Roaming/opencode/config.json',
   },
-  configFormat: 'json',
   models: [
     {
       slot: 'default',
@@ -18,11 +17,8 @@ export const opencode: AgentDefinition = {
       description: '默认模型',
     },
   ],
-  parseConfig(config) {
-    return {
-      models: { default: (config.model as string) ?? '' },
-      baseUrl: config.baseUrl as string | undefined,
-      apiKey: config.apiKey as string | undefined,
-    };
+  async parseConfig() {
+    return null;
   },
+  async saveConfig() {},
 };

@@ -5,12 +5,11 @@ export const qoder: AgentDefinition = {
   name: 'Qoder',
   command: 'qoder',
   apiType: 'openai',
-  configPaths: {
+  home: {
     linux: '~/.config/qoder/config.json',
     macos: '~/Library/Application Support/Qoder/config.json',
     windows: '~/AppData/Roaming/Qoder/config.json',
   },
-  configFormat: 'json',
   models: [
     {
       slot: 'default',
@@ -18,11 +17,8 @@ export const qoder: AgentDefinition = {
       description: '默认模型',
     },
   ],
-  parseConfig(config) {
-    return {
-      models: { default: (config.model as string) ?? '' },
-      baseUrl: config.baseUrl as string | undefined,
-      apiKey: config.apiKey as string | undefined,
-    };
+  async parseConfig() {
+    return null;
   },
+  async saveConfig() {},
 };

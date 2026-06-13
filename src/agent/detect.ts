@@ -3,7 +3,8 @@ import { isCommandAvailable } from "../utils";
 import { AgentDefinition } from "../types";
 
 export async function detectInstalledAgents(): Promise<AgentDefinition[]> {
-  return await Promise.all(
-    builtinAgents.filter(async (a) => await isCommandAvailable(a.command))
+  const results = await Promise.all(
+    builtinAgents.map(async (a) => ({ agent: a, available: await isCommandAvailable(a.command) }))
   );
+  return results.filter((r) => r.available).map((r) => r.agent);
 }

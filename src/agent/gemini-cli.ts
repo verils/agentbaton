@@ -5,12 +5,11 @@ export const geminiCli: AgentDefinition = {
   name: 'Gemini CLI',
   command: 'gemini',
   apiType: 'google',
-  configPaths: {
+  home: {
     linux: '~/.gemini/settings.json',
     macos: '~/.gemini/settings.json',
     windows: '~/AppData/Roaming/gemini/settings.json',
   },
-  configFormat: 'json',
   models: [
     {
       slot: 'default',
@@ -18,11 +17,8 @@ export const geminiCli: AgentDefinition = {
       description: '默认模型',
     },
   ],
-  parseConfig(config) {
-    return {
-      models: { default: (config.model as string) ?? '' },
-      baseUrl: config.baseUrl as string | undefined,
-      apiKey: config.apiKey as string | undefined,
-    };
+  async parseConfig() {
+    return null;
   },
+  async saveConfig() {},
 };

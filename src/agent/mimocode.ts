@@ -5,12 +5,11 @@ export const mimoCode: AgentDefinition = {
   name: 'MiMoCode',
   command: 'mimo',
   apiType: 'openai',
-  configPaths: {
+  home: {
     linux: '~/.config/qwen/config.json',
     macos: '~/Library/Application Support/Qwen/config.json',
     windows: '~/AppData/Roaming/Qwen/config.json',
   },
-  configFormat: 'json',
   models: [
     {
       slot: 'default',
@@ -18,11 +17,8 @@ export const mimoCode: AgentDefinition = {
       description: '默认模型',
     },
   ],
-  parseConfig(config) {
-    return {
-      models: { default: (config.model as string) ?? '' },
-      baseUrl: config.baseUrl as string | undefined,
-      apiKey: config.apiKey as string | undefined,
-    };
+  async parseConfig() {
+    return null;
   },
+  async saveConfig() {},
 };

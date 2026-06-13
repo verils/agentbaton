@@ -69,7 +69,9 @@ function getCurrentModel(agentConfig: AgentConfig | null, slot: string): string 
 async function displayAgentConfig(agent: AgentDefinition): Promise<void> {
   const info: string[] = [];
 
-  const configPath = expandHome(getCurrentPlatformConfigPath(agent.home ?? agent.configPaths!!));
+  const configPath = agent.home
+    ? expandHome(getCurrentPlatformConfigPath(agent.home))
+    : '(未配置)';
   info.push(`配置目录: ${configPath}`);
 
   const agentConfig = await agent.parseConfig();
@@ -120,7 +122,7 @@ async function handleChooseProvider(agent: AgentDefinition, config: AgentBatonCo
     return;
   }
 
-  const configAgent: Agent = config.agents[agent.id] ?? { id: agent.id };
+  const configAgent: Agent = config.agents[agent.id] ?? { id: agent.id, currentProvider: '', modelSlots: {} };
   configAgent.currentProvider = providerId;
   await saveConfig(config)
 

@@ -15,7 +15,8 @@ export interface AgentBatonConfig {
 export interface Agent {
   id: string;
   currentProvider: string;
-  modelAssignments: Record<string, string>;
+  modelSlots: Record<string, string>;
+  history?: Record<string, Record<string, string>>;
 }
 
 export interface Provider {

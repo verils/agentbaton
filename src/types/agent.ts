@@ -19,10 +19,6 @@ export interface AgentDefinition {
   apiType: ApiType;
   /** 各平台的配置文件目录 */
   home?: AgentConfigPaths;
-  /** @deprecated 各平台的配置文件路径 */
-  configPaths?: AgentConfigPaths;
-  /** @deprecated 配置文件格式 */
-  configFormat?: 'json' | 'yaml' | 'toml' | string;
   /** 模型定义 */
   models: AgentModelSlot[];
 

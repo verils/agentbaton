@@ -181,7 +181,7 @@ async function addProvider(providerPresetId: string, apiKey: string, pricingId?:
       ? [ { type: preset.apiType, baseUrl: preset.baseUrl } ]
       : [];
 
-  const models: AgentBatonConfig['providers'][number]['models'] = preset.models.map((m) => ({
+  const models: AgentBatonConfig['providers'][number]['models'] = (preset.models ?? []).map((m) => ({
     id: m.name,
     name: m.description!,
     contextWindowSize: DEFAULT_CONTEXT_WINDOW,
