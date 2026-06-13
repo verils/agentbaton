@@ -124,14 +124,18 @@ async function handleChooseProvider(agent: AgentDefinition, config: AgentBatonCo
 
   const configAgent: Agent = config.agents[agent.id] ?? { id: agent.id, currentProvider: '', modelSlots: {} };
   configAgent.currentProvider = providerId;
-  await saveConfig(config)
+  config.agents[agent.id] = configAgent;
 
-  agent.saveConfig({
-    baseUrl: provider.endpoints.find(e => e.type === agent.apiType)?.baseUrl,
-    apiKey: provider.apiKey,
-  });
-
-  log.success(`✅ ${agent.name} 已切换到 ${provider.name}`);
+  try {
+    await saveConfig(config);
+    await agent.saveConfig({
+      baseUrl: provider.endpoints.find(e => e.type === agent.apiType)?.baseUrl,
+      apiKey: provider.apiKey,
+    });
+    log.success(`✅ ${agent.name} 已切换到 ${provider.name}`);
+  } catch (e) {
+    log.error(`切换失败：${e instanceof Error ? e.message : String(e)}`);
+  }
 }
 
 async function handleChooseModel(agent: AgentDefinition) {

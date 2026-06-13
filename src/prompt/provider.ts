@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto';
-import { isCancel, password, select } from '@clack/prompts';
-import { loadConfig, saveConfig } from '../config';
+import { isCancel, log, password, select } from '@clack/prompts';
+import { saveConfig } from '../config';
 import { backOption } from "./back";
 import { findProviderPreset, providerPresets } from "../provider/presets";
 import { AgentBatonConfig, Provider } from "../types";
@@ -31,7 +31,7 @@ export async function openProviderMenu(config: AgentBatonConfig): Promise<void> 
 
   switch (providerChoice) {
     case 'addProvider':
-      await handleAddProvider()
+      await handleAddProvider(config);
       return;
     default:
       await handleModifyProvider(providerChoice, config);
@@ -39,7 +39,7 @@ export async function openProviderMenu(config: AgentBatonConfig): Promise<void> 
   }
 }
 
-async function handleAddProvider() {
+async function handleAddProvider(config: AgentBatonConfig) {
   const providerPresetOptions = providerPresets.map(p => ({
     value: p.id,
     label: p.name
@@ -60,15 +60,15 @@ async function handleAddProvider() {
 
   switch (choice) {
     case 'custom':
-      await handleAddCustomProvider();
+      await handleAddCustomProvider(config);
       break;
     default:
-      await handleAddPresetProvider(choice)
+      await handleAddPresetProvider(choice, config);
       return;
   }
 }
 
-async function handleAddPresetProvider(providerPresetId: string) {
+async function handleAddPresetProvider(providerPresetId: string, config: AgentBatonConfig) {
   const providerPreset = findProviderPreset(providerPresetId);
 
   let pricingId: string | undefined;
@@ -96,11 +96,15 @@ async function handleAddPresetProvider(providerPresetId: string) {
     return;
   }
 
-  await addProvider(providerPreset.id, apiKey, pricingId);
-  console.log(`\n  ✅ 已保存 ${providerPreset.name} 的 API Key\n`);
+  try {
+    await addProvider(config, providerPreset.id, apiKey, pricingId);
+    log.success(`✅ 已保存 ${providerPreset.name} 的 API Key`);
+  } catch (e) {
+    log.error(`添加供应商失败：${e instanceof Error ? e.message : String(e)}`);
+  }
 }
 
-async function handleAddCustomProvider() {
+async function handleAddCustomProvider(_config: AgentBatonConfig) {
 
 }
 
@@ -115,7 +119,12 @@ async function handleSetProviderApiKey(provider: Provider, config: AgentBatonCon
   }
 
   provider.apiKey = apiKey;
-  await saveConfig(config);
+  try {
+    await saveConfig(config);
+    log.success(`✅ 已保存 ${provider.name} 的 API Key`);
+  } catch (e) {
+    log.error(`保存失败：${e instanceof Error ? e.message : String(e)}`);
+  }
 }
 
 export function findProvider(config: AgentBatonConfig, providerId: string) {
@@ -168,8 +177,7 @@ async function handleModifyProvider(providerId: string, config: AgentBatonConfig
   }
 }
 
-async function addProvider(providerPresetId: string, apiKey: string, pricingId?: string) {
-  const config = await loadConfig();
+async function addProvider(config: AgentBatonConfig, providerPresetId: string, apiKey: string, pricingId?: string) {
   const preset = findProviderPreset(providerPresetId);
 
   const pricing = pricingId
@@ -187,13 +195,20 @@ async function addProvider(providerPresetId: string, apiKey: string, pricingId?:
     contextWindowSize: DEFAULT_CONTEXT_WINDOW,
   }));
 
-  config.providers.push({
+  const newProvider = {
     id: randomUUID(),
     name: preset.name,
     apiKey,
     endpoints,
     models,
-  });
+  };
 
-  await saveConfig(config);
+  config.providers.push(newProvider);
+
+  try {
+    await saveConfig(config);
+  } catch (e) {
+    config.providers.pop();
+    throw e;
+  }
 }
