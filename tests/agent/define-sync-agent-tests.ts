@@ -16,7 +16,6 @@ export function defineSyncAgentTests(tc: SyncAgentTestCase) {
       expect(tc.agent.name).toBe(tc.expectedName);
       expect(tc.agent.command).toBe(tc.expectedCommand);
       expect(tc.agent.apiType).toBe(tc.expectedApiType);
-      expect(tc.agent.configFormat).toBe('json');
       expect(tc.agent.models).toHaveLength(1);
       expect(tc.agent.models[0].slot).toBe('default');
     });

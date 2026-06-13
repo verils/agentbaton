@@ -1,5 +1,5 @@
 import { confirm, isCancel, log, select } from '@clack/prompts';
-import { expandHome, getConfigPath, maskApiKey } from '../utils';
+import { expandHome, getCurrentPlatformConfigPath, maskApiKey } from '../utils';
 import type { Agent, AgentBatonConfig, AgentConfig, AgentDefinition } from '../types';
 import { detectInstalledAgents } from "../agent/detect";
 import { findAgent } from "../agent/builtin";
@@ -69,27 +69,28 @@ function getCurrentModel(agentConfig: AgentConfig | null, slot: string): string 
 async function displayAgentConfig(agent: AgentDefinition): Promise<void> {
   const info: string[] = [];
 
-  const configPath = expandHome(getConfigPath(agent.configPaths));
-  info.push(`配置文件: ${configPath}`);
-  info.push(`API 类型: ${agent.apiType}`);
+  const configPath = expandHome(getCurrentPlatformConfigPath(agent.home ?? agent.configPaths!!));
+  info.push(`配置目录: ${configPath}`);
 
   const agentConfig = await agent.parseConfig();
   if (agentConfig?.baseUrl) {
     info.push(`接口地址: ${agentConfig.baseUrl}`);
   }
+
+  info.push(`API 类型: ${agent.apiType}`);
+
   if (agentConfig?.apiKey) {
     info.push(`API Key: ${maskApiKey(agentConfig.apiKey)}`);
   }
+
   log.message(info);
 
 
-  const models: string[] = [];
-  models.push(`模型：`);
+  const models: string[] = [`模型：`];
   for (const slot of agent.models) {
     const modelId = getCurrentModel(agentConfig, slot.slot);
     models.push(`${slot.name}：${(modelId ? `${modelId}` : '（获取失败）')}`);
   }
-
   log.message(models);
 }
 

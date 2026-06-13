@@ -1,6 +1,7 @@
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { dirname } from 'node:path';
+import { parse as parseToml, stringify as stringifyToml } from 'smol-toml';
 import { paths } from './paths';
 import type { AgentBatonConfig } from '../types';
 
@@ -36,6 +37,26 @@ export async function readJson<T>(filePath: string): Promise<T | null> {
 export async function writeJson(filePath: string, data: unknown): Promise<void> {
   await ensureDir(dirname(filePath));
   const content = JSON.stringify(data, null, 2);
+  await writeFile(filePath, content, 'utf-8');
+}
+
+/**
+ * 读取 TOML 文件
+ */
+export async function readToml<T>(filePath: string): Promise<T | null> {
+  if (!existsSync(filePath)) {
+    return null;
+  }
+  const content = await readFile(filePath, 'utf-8');
+  return parseToml(content) as unknown as T;
+}
+
+/**
+ * 写入 TOML 文件
+ */
+export async function writeToml(filePath: string, data: Record<string, unknown>): Promise<void> {
+  await ensureDir(dirname(filePath));
+  const content = stringifyToml(data);
   await writeFile(filePath, content, 'utf-8');
 }
 

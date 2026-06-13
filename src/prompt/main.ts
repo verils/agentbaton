@@ -19,6 +19,7 @@ export async function runPrompt(): Promise<void> {
       options: [
         { value: 'agent', label: '智能体' },
         { value: 'provider', label: '模型供应商' },
+        { value: 'display', label: '查看当前设置' },
         { value: 'exit', label: '退出' },
       ],
     });
@@ -33,6 +34,9 @@ export async function runPrompt(): Promise<void> {
         break;
       case 'provider':
         await openProviderMenu(config);
+        break;
+      case 'display':
+        await displayInfo(config);
         break;
     }
   }

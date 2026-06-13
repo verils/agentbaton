@@ -32,15 +32,14 @@ describe('claude-code 定义', () => {
     expect(claudeCode.name).toBe('Claude Code');
     expect(claudeCode.command).toBe('claude');
     expect(claudeCode.apiType).toBe('anthropic');
-    expect(claudeCode.configFormat).toBe('json');
     expect(claudeCode.models).toHaveLength(3);
     expect(claudeCode.models.map(m => m.slot)).toEqual(['opus', 'sonnet', 'haiku']);
   });
 
   it('应包含各平台配置路径', () => {
-    expect(claudeCode.configPaths.linux).toContain('.claude');
-    expect(claudeCode.configPaths.macos).toContain('.claude');
-    expect(claudeCode.configPaths.windows).toContain('.claude');
+    expect(claudeCode.home!!.linux).toContain('.claude');
+    expect(claudeCode.home!!.macos).toContain('.claude');
+    expect(claudeCode.home!!.windows).toContain('.claude');
   });
 });
 

@@ -20,7 +20,7 @@ export function getCurrentPlatform(): Platform {
 /**
  * 获取当前平台的配置路径
  */
-export function getConfigPath(configPath: Record<Platform, string>): string {
+export function getCurrentPlatformConfigPath(configPath: Record<Platform, string>): string {
   const platform = getCurrentPlatform();
   return configPath[platform];
 }

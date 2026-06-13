@@ -1,5 +1,5 @@
 import { AgentConfig, AgentDefinition, AgentModel } from '../types';
-import { expandHome, getConfigPath } from "../utils";
+import { expandHome, getCurrentPlatformConfigPath } from "../utils";
 import { readJson, writeJson } from "../config";
 
 interface AnthropicConfig {
@@ -20,32 +20,29 @@ export const claudeCode: AgentDefinition = {
   name: 'Claude Code',
   command: 'claude',
   apiType: 'anthropic',
-  configPaths: {
-    linux: '~/.claude/settings.json',
-    macos: '~/.claude/settings.json',
-    windows: '~/.claude/settings.json',
+  home: {
+    linux: '~/.claude',
+    macos: '~/.claude',
+    windows: '~/.claude',
   },
-  configFormat: 'json',
   models: [
     {
       slot: 'opus',
       name: 'Claude Opus',
-      description: 'Claude Opus 模型',
     },
     {
       slot: 'sonnet',
       name: 'Claude Sonnet',
-      description: 'Claude Sonnet 模型',
     },
     {
       slot: 'haiku',
       name: 'Claude Haiku',
-      description: 'Claude Haiku 模型',
     },
   ],
   async parseConfig(): Promise<AgentConfig> {
-    const configPath = expandHome(getConfigPath(this.configPaths));
-    const anthropicConfig = await readJson<AnthropicConfig>(configPath);
+    const configDir = expandHome(getCurrentPlatformConfigPath(this.home!!));
+    const anthropicConfig = await readJson<AnthropicConfig>(getConfigFilePath(configDir));
+
     const env = anthropicConfig?.env;
 
     const models: AgentModel[] = [];
@@ -75,14 +72,16 @@ export const claudeCode: AgentDefinition = {
     };
   },
   async saveConfig(config: AgentConfig) {
-    const configPath = expandHome(getConfigPath(this.configPaths));
-    const anthropicConfig = await readJson<Record<string, unknown>>(configPath) ?? {};
+    const configDir = expandHome(getCurrentPlatformConfigPath(this.home!!));
+    const configFile = getConfigFilePath(configDir);
+    const anthropicConfig = await readJson<Record<string, unknown>>(configFile) ?? {};
+
     const envElement = anthropicConfig['env'] as Record<string, string> ?? (anthropicConfig['env'] = {});
     if (config.baseUrl) {
       envElement['ANTHROPIC_BASE_URL'] = config.baseUrl;
     }
     if (config.apiKey) {
-      envElement['ANTHROPIC_API_KEY'] = config.apiKey;
+      envElement['ANTHROPIC_AUTH_TOKEN'] = config.apiKey;
     }
     if (config.models) {
       const opusModel = config.models.find(m => m.slot === 'opus');
@@ -98,6 +97,10 @@ export const claudeCode: AgentDefinition = {
         envElement['ANTHROPIC_DEFAULT_HAIKU_MODEL'] = haikuModel.id;
       }
     }
-    await writeJson(configPath, anthropicConfig);
+    await writeJson(configFile, anthropicConfig);
   }
 };
+
+function getConfigFilePath(configDir: string) {
+  return `${configDir}/settings.json`;
+}

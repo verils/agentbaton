@@ -12,15 +12,17 @@ export interface AgentDefinition {
   command: string;
   /** 使用的 API 协议类型 */
   apiType: ApiType;
-  /** 各平台的配置文件路径 */
-  configPaths: AgentConfigPaths;
-  /** 配置文件格式 */
-  configFormat: 'json' | 'yaml' | 'toml' | string;
+  /** 各平台的配置文件目录 */
+  home?: AgentConfigPaths;
+  /** @deprecated 各平台的配置文件路径 */
+  configPaths?: AgentConfigPaths;
+  /** @deprecated 配置文件格式 */
+  configFormat?: 'json' | 'yaml' | 'toml' | string;
   /** 模型定义 */
   models: AgentModelSlot[];
 
   /** 从智能体配置文件内容中解析出配置 */
-  parseConfig(unused?: Record<string, unknown>): Promise<AgentConfig> | AgentConfig | null;
+  parseConfig(unused?: Record<string, unknown>): Promise<AgentConfig | null>;
 
   /** 保存配置到智能体配置文件 */
   saveConfig(config: AgentConfig): Promise<void> | void;
@@ -44,7 +46,7 @@ export type AgentConfigPaths = {
 export interface AgentModelSlot {
   /** 槽位标识 */
   slot: string;
-  /** 写入配置文件的字段名 */
+  /** 槽位名称 */
   name: string;
   /** 描述 */
   description?: string;
