@@ -4,7 +4,7 @@ import { readJson, writeJson } from "../config";
 
 interface AnthropicConfig {
   env: {
-    "ANTHROPIC_API_KEY": string,
+    "ANTHROPIC_AUTH_TOKEN": string,
     "ANTHROPIC_BASE_URL": string,
     "ANTHROPIC_DEFAULT_HAIKU_MODEL": string,
     "ANTHROPIC_DEFAULT_HAIKU_MODEL_NAME": string,
@@ -67,7 +67,7 @@ export const claudeCode: AgentDefinition = {
 
     return {
       baseUrl: env?.ANTHROPIC_BASE_URL,
-      apiKey: env?.ANTHROPIC_API_KEY,
+      apiKey: env?.ANTHROPIC_AUTH_TOKEN,
       models: models,
     };
   },

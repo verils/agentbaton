@@ -53,3 +53,4 @@ export interface ProviderModel {
   /** 上下文窗口大小 */
   contextWindowSize?: number;
 }
+

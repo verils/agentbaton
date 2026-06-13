@@ -36,11 +36,3 @@ interface Endpoint {
   type: ApiType;
   baseUrl: string;
 }
-
-/**
- * 单个 Agent 的启用状态
- */
-export interface EnabledAgent {
-  provider: string;
-  modelAssignments: Record<string, string>;
-}

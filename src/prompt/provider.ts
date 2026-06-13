@@ -3,7 +3,7 @@ import { isCancel, password, select } from '@clack/prompts';
 import { loadConfig, saveConfig } from '../config';
 import { backOption } from "./back";
 import { findProviderPreset, providerPresets } from "../provider/presets";
-import { AgentBatonConfig } from "../types";
+import { AgentBatonConfig, Provider } from "../types";
 
 const DEFAULT_CONTEXT_WINDOW = 256000;
 
@@ -104,8 +104,26 @@ async function handleAddCustomProvider() {
 
 }
 
+async function handleSetProviderApiKey(provider: Provider, config: AgentBatonConfig) {
+  const apiKey = await password({
+    message: `输入 ${provider.name} 的 API Key`,
+    mask: '*',
+  });
+
+  if (isCancel(apiKey)) {
+    return;
+  }
+
+  provider.apiKey = apiKey;
+  await saveConfig(config);
+}
+
+export function findProvider(config: AgentBatonConfig, providerId: string) {
+  return config.providers.find(p => p.id === providerId) !!;
+}
+
 async function handleModifyProvider(providerId: string, config: AgentBatonConfig) {
-  const provider = config.providers.find(p => p.id === providerId) !!;
+  const provider = findProvider(config, providerId);
 
   // 操作子菜单循环
   while (true) {
@@ -140,6 +158,7 @@ async function handleModifyProvider(providerId: string, config: AgentBatonConfig
       case 'setModels':
         break;
       case 'setApiKey':
+        await handleSetProviderApiKey(provider, config);
         break;
       case 'cleanApiKey':
         break;
@@ -148,7 +167,6 @@ async function handleModifyProvider(providerId: string, config: AgentBatonConfig
     }
   }
 }
-
 
 async function addProvider(providerPresetId: string, apiKey: string, pricingId?: string) {
   const config = await loadConfig();
@@ -160,7 +178,7 @@ async function addProvider(providerPresetId: string, apiKey: string, pricingId?:
   const endpoints: AgentBatonConfig['providers'][number]['endpoints'] = pricing
     ? Object.values(pricing.endpoints).map((e) => ({ type: e.apiType, baseUrl: e.baseUrl }))
     : preset.apiType && preset.baseUrl
-      ? [{ type: preset.apiType, baseUrl: preset.baseUrl }]
+      ? [ { type: preset.apiType, baseUrl: preset.baseUrl } ]
       : [];
 
   const models: AgentBatonConfig['providers'][number]['models'] = preset.models.map((m) => ({
@@ -169,20 +187,13 @@ async function addProvider(providerPresetId: string, apiKey: string, pricingId?:
     contextWindowSize: DEFAULT_CONTEXT_WINDOW,
   }));
 
-  const existing = config.providers.find((p) => p.name === preset.id);
-  if (existing) {
-    existing.apiKey = apiKey;
-    existing.endpoints = endpoints;
-    existing.models = models;
-  } else {
-    config.providers.push({
-      id: randomUUID(),
-      name: preset.name,
-      apiKey,
-      endpoints,
-      models,
-    });
-  }
+  config.providers.push({
+    id: randomUUID(),
+    name: preset.name,
+    apiKey,
+    endpoints,
+    models,
+  });
 
   await saveConfig(config);
 }
