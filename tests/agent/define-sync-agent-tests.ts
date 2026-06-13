@@ -21,55 +21,24 @@ export function defineSyncAgentTests(tc: SyncAgentTestCase) {
     });
 
     it('应包含各平台配置路径', () => {
-      expect(tc.agent.configPaths.linux).toBeTruthy();
-      expect(tc.agent.configPaths.macos).toBeTruthy();
-      expect(tc.agent.configPaths.windows).toBeTruthy();
+      expect(tc.agent.home!.linux).toBeTruthy();
+      expect(tc.agent.home!.macos).toBeTruthy();
+      expect(tc.agent.home!.windows).toBeTruthy();
     });
   });
 
   describe(`${tc.expectedId} parseConfig`, () => {
-    it('应解析完整配置', () => {
-      const result = tc.agent.parseConfig!({
-        model: 'test-model',
-        baseUrl: 'https://api.example.com',
-        apiKey: 'sk-test',
-      });
-      expect(result).toEqual({
-        models: { default: 'test-model' },
-        baseUrl: 'https://api.example.com',
-        apiKey: 'sk-test',
-      });
+    it('stub 实现应返回 null', async () => {
+      const result = await tc.agent.parseConfig();
+      expect(result).toBeNull();
     });
+  });
 
-    it('缺少 model 时应返回空字符串', () => {
-      const result = tc.agent.parseConfig!({});
-      expect(result).toEqual({
-        models: { default: '' },
-        baseUrl: undefined,
-        apiKey: undefined,
-      });
-    });
-
-    it('仅有 model 时应正确解析', () => {
-      const result = tc.agent.parseConfig!({ model: 'some-model' });
-      expect(result).not.toBeNull();
-      expect(result!.models).toEqual({ default: 'some-model' });
-      expect(result!.baseUrl).toBeUndefined();
-      expect(result!.apiKey).toBeUndefined();
-    });
-
-    it('仅有 apiKey 时应正确解析', () => {
-      const result = tc.agent.parseConfig!({ apiKey: 'sk-only' });
-      expect(result).not.toBeNull();
-      expect(result!.models).toEqual({ default: '' });
-      expect(result!.apiKey).toBe('sk-only');
-    });
-
-    it('仅有 baseUrl 时应正确解析', () => {
-      const result = tc.agent.parseConfig!({ baseUrl: 'https://proxy.example.com' });
-      expect(result).not.toBeNull();
-      expect(result!.models).toEqual({ default: '' });
-      expect(result!.baseUrl).toBe('https://proxy.example.com');
+  describe(`${tc.expectedId} saveConfig`, () => {
+    it('stub 实现不应抛出异常', async () => {
+      await expect(
+        tc.agent.saveConfig({ apiKey: 'test', baseUrl: 'https://example.com', models: [] })
+      ).resolves.not.toThrow();
     });
   });
 }

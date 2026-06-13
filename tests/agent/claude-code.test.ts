@@ -47,7 +47,7 @@ describe('claude-code parseConfig', () => {
   it('应解析完整的 settings.json', async () => {
     mockedReadJson.mockResolvedValue({
       env: {
-        ANTHROPIC_API_KEY: 'sk-ant-test',
+        ANTHROPIC_AUTH_TOKEN: 'sk-ant-test',
         ANTHROPIC_BASE_URL: 'https://custom.anthropic.com',
         ANTHROPIC_DEFAULT_OPUS_MODEL: 'claude-opus-4',
         ANTHROPIC_DEFAULT_OPUS_MODEL_NAME: 'Opus',
@@ -113,7 +113,7 @@ describe('claude-code parseConfig', () => {
 
   it('仅有 apiKey 时应正确解析', async () => {
     mockedReadJson.mockResolvedValue({
-      env: { ANTHROPIC_API_KEY: 'sk-ant-only' },
+      env: { ANTHROPIC_AUTH_TOKEN: 'sk-ant-only' },
     });
 
     const result = await claudeCode.parseConfig();
@@ -139,7 +139,7 @@ describe('claude-code parseConfig', () => {
 describe('claude-code saveConfig', () => {
   it('保存前应先读取已有配置', async () => {
     mockedReadJson.mockResolvedValue({
-      env: { ANTHROPIC_API_KEY: 'old-key' },
+      env: { ANTHROPIC_AUTH_TOKEN: 'old-key' },
     });
 
     await claudeCode.saveConfig!({
@@ -160,14 +160,14 @@ describe('claude-code saveConfig', () => {
     expect(mockedWriteJson).toHaveBeenCalledOnce();
     const saved = mockedWriteJson.mock.calls[0][1] as Record<string, unknown>;
     expect(saved.env).toEqual({
-      ANTHROPIC_API_KEY: 'sk-ant-new',
+      ANTHROPIC_AUTH_TOKEN: 'sk-ant-new',
       ANTHROPIC_BASE_URL: 'https://api.anthropic.com',
     });
   });
 
   it('应正确写出 apiKey 和 baseUrl', async () => {
     mockedReadJson.mockResolvedValue({
-      env: { ANTHROPIC_API_KEY: 'old-key', ANTHROPIC_BASE_URL: 'https://old.url' },
+      env: { ANTHROPIC_AUTH_TOKEN: 'old-key', ANTHROPIC_BASE_URL: 'https://old.url' },
     });
 
     await claudeCode.saveConfig!({
@@ -177,7 +177,7 @@ describe('claude-code saveConfig', () => {
 
     const saved = mockedWriteJson.mock.calls[0][1] as Record<string, unknown>;
     const env = saved.env as Record<string, string>;
-    expect(env.ANTHROPIC_API_KEY).toBe('new-key');
+    expect(env.ANTHROPIC_AUTH_TOKEN).toBe('new-key');
     expect(env.ANTHROPIC_BASE_URL).toBe('https://new.url');
   });
 
@@ -203,7 +203,7 @@ describe('claude-code saveConfig', () => {
     mockedReadJson.mockResolvedValue({
       autoUpdatesChannel: 'latest',
       env: {
-        ANTHROPIC_API_KEY: 'old-key',
+        ANTHROPIC_AUTH_TOKEN: 'old-key',
         ANTHROPIC_DEFAULT_SONNET_MODEL: 'old-sonnet',
         ANTHROPIC_DEFAULT_SONNET_MODEL_NAME: 'Old Sonnet',
       },
@@ -220,7 +220,7 @@ describe('claude-code saveConfig', () => {
     expect(saved.permissions).toEqual({ allow: ['read'] });
 
     const env = saved.env as Record<string, string>;
-    expect(env.ANTHROPIC_API_KEY).toBe('new-key');
+    expect(env.ANTHROPIC_AUTH_TOKEN).toBe('new-key');
     expect(env.ANTHROPIC_DEFAULT_SONNET_MODEL).toBe('new-sonnet');
     expect(env.ANTHROPIC_DEFAULT_SONNET_MODEL_NAME).toBe('Old Sonnet');
   });
@@ -228,7 +228,7 @@ describe('claude-code saveConfig', () => {
   it('不应覆盖已有但未传入的字段', async () => {
     mockedReadJson.mockResolvedValue({
       env: {
-        ANTHROPIC_API_KEY: 'existing-key',
+        ANTHROPIC_AUTH_TOKEN: 'existing-key',
         ANTHROPIC_BASE_URL: 'https://existing.url',
         ANTHROPIC_DEFAULT_OPUS_MODEL: 'existing-opus',
       },
@@ -240,7 +240,7 @@ describe('claude-code saveConfig', () => {
 
     const saved = mockedWriteJson.mock.calls[0][1] as Record<string, unknown>;
     const env = saved.env as Record<string, string>;
-    expect(env.ANTHROPIC_API_KEY).toBe('existing-key');
+    expect(env.ANTHROPIC_AUTH_TOKEN).toBe('existing-key');
     expect(env.ANTHROPIC_BASE_URL).toBe('https://existing.url');
     expect(env.ANTHROPIC_DEFAULT_OPUS_MODEL).toBe('existing-opus');
     expect(env.ANTHROPIC_DEFAULT_SONNET_MODEL).toBe('new-sonnet');
