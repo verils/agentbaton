@@ -8,8 +8,9 @@ vi.mock('../../src/config', () => ({
   writeJson: vi.fn(),
 }));
 
-const { readJson } = await import('../../src/config');
+const { readJson, writeJson } = await import('../../src/config');
 const mockedReadJson = vi.mocked(readJson);
+const mockedWriteJson = vi.mocked(writeJson);
 
 const { claudeCode } = await import('../../src/agent/claude-code');
 
@@ -18,6 +19,7 @@ let tmpDir: string;
 beforeEach(async () => {
   tmpDir = await mkdtemp(join(tmpdir(), 'claude-code-test-'));
   mockedReadJson.mockReset();
+  mockedWriteJson.mockReset();
 });
 
 afterEach(async () => {
@@ -155,13 +157,93 @@ describe('claude-code saveConfig', () => {
     await expect(
       claudeCode.saveConfig!({ apiKey: 'sk-ant-new', baseUrl: 'https://api.anthropic.com' })
     ).resolves.not.toThrow();
+
+    expect(mockedWriteJson).toHaveBeenCalledOnce();
+    const saved = mockedWriteJson.mock.calls[0][1] as Record<string, unknown>;
+    expect(saved.env).toEqual({
+      ANTHROPIC_API_KEY: 'sk-ant-new',
+      ANTHROPIC_BASE_URL: 'https://api.anthropic.com',
+    });
   });
 
-  it('配置为空对象时不应抛出异常', async () => {
-    mockedReadJson.mockResolvedValue({});
+  it('应正确写出 apiKey 和 baseUrl', async () => {
+    mockedReadJson.mockResolvedValue({
+      env: { ANTHROPIC_API_KEY: 'old-key', ANTHROPIC_BASE_URL: 'https://old.url' },
+    });
 
-    await expect(
-      claudeCode.saveConfig!({ apiKey: 'sk-ant-new' })
-    ).resolves.not.toThrow();
+    await claudeCode.saveConfig!({
+      apiKey: 'new-key',
+      baseUrl: 'https://new.url',
+    });
+
+    const saved = mockedWriteJson.mock.calls[0][1] as Record<string, unknown>;
+    const env = saved.env as Record<string, string>;
+    expect(env.ANTHROPIC_API_KEY).toBe('new-key');
+    expect(env.ANTHROPIC_BASE_URL).toBe('https://new.url');
+  });
+
+  it('应正确写出三个模型槽位', async () => {
+    mockedReadJson.mockResolvedValue({ env: {} });
+
+    await claudeCode.saveConfig!({
+      models: [
+        { slot: 'opus', id: 'claude-opus-4' },
+        { slot: 'sonnet', id: 'claude-sonnet-4' },
+        { slot: 'haiku', id: 'claude-haiku-3' },
+      ],
+    });
+
+    const saved = mockedWriteJson.mock.calls[0][1] as Record<string, unknown>;
+    const env = saved.env as Record<string, string>;
+    expect(env.ANTHROPIC_DEFAULT_OPUS_MODEL).toBe('claude-opus-4');
+    expect(env.ANTHROPIC_DEFAULT_SONNET_MODEL).toBe('claude-sonnet-4');
+    expect(env.ANTHROPIC_DEFAULT_HAIKU_MODEL).toBe('claude-haiku-3');
+  });
+
+  it('应保留配置文件中的其它无关字段', async () => {
+    mockedReadJson.mockResolvedValue({
+      autoUpdatesChannel: 'latest',
+      env: {
+        ANTHROPIC_API_KEY: 'old-key',
+        ANTHROPIC_DEFAULT_SONNET_MODEL: 'old-sonnet',
+        ANTHROPIC_DEFAULT_SONNET_MODEL_NAME: 'Old Sonnet',
+      },
+      permissions: { allow: ['read'] },
+    });
+
+    await claudeCode.saveConfig!({
+      apiKey: 'new-key',
+      models: [{ slot: 'sonnet', id: 'new-sonnet' }],
+    });
+
+    const saved = mockedWriteJson.mock.calls[0][1] as Record<string, unknown>;
+    expect(saved.autoUpdatesChannel).toBe('latest');
+    expect(saved.permissions).toEqual({ allow: ['read'] });
+
+    const env = saved.env as Record<string, string>;
+    expect(env.ANTHROPIC_API_KEY).toBe('new-key');
+    expect(env.ANTHROPIC_DEFAULT_SONNET_MODEL).toBe('new-sonnet');
+    expect(env.ANTHROPIC_DEFAULT_SONNET_MODEL_NAME).toBe('Old Sonnet');
+  });
+
+  it('不应覆盖已有但未传入的字段', async () => {
+    mockedReadJson.mockResolvedValue({
+      env: {
+        ANTHROPIC_API_KEY: 'existing-key',
+        ANTHROPIC_BASE_URL: 'https://existing.url',
+        ANTHROPIC_DEFAULT_OPUS_MODEL: 'existing-opus',
+      },
+    });
+
+    await claudeCode.saveConfig!({
+      models: [{ slot: 'sonnet', id: 'new-sonnet' }],
+    });
+
+    const saved = mockedWriteJson.mock.calls[0][1] as Record<string, unknown>;
+    const env = saved.env as Record<string, string>;
+    expect(env.ANTHROPIC_API_KEY).toBe('existing-key');
+    expect(env.ANTHROPIC_BASE_URL).toBe('https://existing.url');
+    expect(env.ANTHROPIC_DEFAULT_OPUS_MODEL).toBe('existing-opus');
+    expect(env.ANTHROPIC_DEFAULT_SONNET_MODEL).toBe('new-sonnet');
   });
 });

@@ -1,6 +1,6 @@
 import { AgentConfig, AgentDefinition, AgentModel } from '../types';
 import { expandHome, getConfigPath } from "../utils";
-import { readJson } from "../config";
+import { readJson, writeJson } from "../config";
 
 interface AnthropicConfig {
   env: {
@@ -77,12 +77,27 @@ export const claudeCode: AgentDefinition = {
   async saveConfig(config: AgentConfig) {
     const configPath = expandHome(getConfigPath(this.configPaths));
     const anthropicConfig = await readJson<Record<string, unknown>>(configPath) ?? {};
-    const envElement = anthropicConfig?.['env'] as Record<string, string> ?? {};
+    const envElement = anthropicConfig['env'] as Record<string, string> ?? (anthropicConfig['env'] = {});
     if (config.baseUrl) {
       envElement['ANTHROPIC_BASE_URL'] = config.baseUrl;
     }
     if (config.apiKey) {
       envElement['ANTHROPIC_API_KEY'] = config.apiKey;
     }
+    if (config.models) {
+      const opusModel = config.models.find(m => m.slot === 'opus');
+      if (opusModel) {
+        envElement['ANTHROPIC_DEFAULT_OPUS_MODEL'] = opusModel.id;
+      }
+      const sonnetModel = config.models.find(m => m.slot === 'sonnet');
+      if (sonnetModel) {
+        envElement['ANTHROPIC_DEFAULT_SONNET_MODEL'] = sonnetModel.id;
+      }
+      const haikuModel = config.models.find(m => m.slot === 'haiku');
+      if (haikuModel) {
+        envElement['ANTHROPIC_DEFAULT_HAIKU_MODEL'] = haikuModel.id;
+      }
+    }
+    await writeJson(configPath, anthropicConfig);
   }
 };
