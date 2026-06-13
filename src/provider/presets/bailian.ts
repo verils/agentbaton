@@ -1,4 +1,38 @@
-import { ProviderModel, ProviderPreset } from "../../types";
+import { ApiType, ProviderModel, ProviderPreset } from "../../types";
+
+const FALLBACK_MODELS: ProviderModel[] = [
+  {
+    id: 'qwen3.7-max',
+    name: 'Qwen3.7-Max',
+    contextWindowSize: 1000000
+  },
+  {
+    id: 'qwen3.7-plus',
+    name: 'Qwen3.7 Plus',
+    contextWindowSize: 1000000
+  },
+  {
+    id: 'qwen3.6-flash',
+    name: 'Qwen3.6 Flash',
+    contextWindowSize: 1000000
+  },
+  {
+    id: 'glm-5.1',
+    name: 'GLM-5.1',
+    contextWindowSize: 256000
+  },
+  {
+    id: 'deepseek-v4-pro',
+    name: 'DeepSeek-V4-Pro',
+    contextWindowSize: 1000000
+  },
+  {
+    id: 'deepseek-v4-flash',
+    name: 'DeepSeek-V4-Flash',
+    contextWindowSize: 1000000
+  }
+
+];
 
 export const bailian: ProviderPreset = {
   id: 'bailian',
@@ -47,29 +81,21 @@ export const bailian: ProviderPreset = {
       }
     }
   ],
-  async fetchModels(): Promise<ProviderModel[]> {
-    return []
-  },
-  models: [
-    {
-      id: 'qwen3.7-max',
-      name: 'Qwen3.7-Max',
-      contextWindowSize: 1000000
-    },
-    {
-      id: 'qwen3.7-plus',
-      name: 'qwen3.7-plus',
-      contextWindowSize: 1000000
-    },
-    {
-      id: 'qwen3.6-flash',
-      name: 'qwen3.6-flash',
-      contextWindowSize: 1000000
-    },
-    {
-      id: 'glm-5.1',
-      name: 'GLM-5.1',
-      contextWindowSize: 256000
+  async fetchModels(apiType: ApiType, baseUrl: string, apiKey: string): Promise<ProviderModel[]> {
+    if (apiType === 'openai') {
+      try {
+        const res = await fetch(`${baseUrl}/models`, {
+          headers: { 'Authorization': `Bearer ${apiKey}` },
+        });
+
+        if (res.ok) {
+          const json = await res.json() as { data: { id: string }[] };
+          return json.data.map((m) => ({ name: m.id }));
+        }
+      } catch {
+      }
     }
-  ]
+
+    return FALLBACK_MODELS;
+  },
 };

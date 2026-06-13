@@ -13,7 +13,7 @@ export interface ProviderPreset {
   pricing?: ProviderPricing[];
 
   /** 获取可用模型列表 */
-  fetchModels?(): Promise<ProviderModel[]>
+  fetchModels?(apiType: ApiType, baseUrl: string, apiKey: string): Promise<ProviderModel[]>
 
   /** @deprecated 提供的 API 协议类型 */
   apiType?: ApiType;
@@ -21,7 +21,7 @@ export interface ProviderPreset {
   baseUrl?: string;
 
   /** 可用模型列表 */
-  models: ProviderModel[];
+  models?: ProviderModel[];
 }
 
 export interface ProviderPricing {
