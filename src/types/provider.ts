@@ -1,4 +1,4 @@
-export type ApiType = 'openai' | 'anthropic' | 'google';
+import { ApiType } from "./model";
 
 /**
  * Provider 定义接口

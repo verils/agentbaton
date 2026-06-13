@@ -1,5 +1,4 @@
-import { ApiType } from "./provider";
-import { Model } from "./model";
+import { ApiType, Model } from "./model";
 
 /**
  * 统一配置文件结构

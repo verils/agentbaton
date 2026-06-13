@@ -1,4 +1,9 @@
-import { ApiType } from "./provider";
+import { ApiType } from "./model";
+
+/**
+ * 平台类型
+ */
+export type Platform = 'linux' | 'windows' | 'macos';
 
 /**
  * Agent 定义接口
@@ -27,11 +32,6 @@ export interface AgentDefinition {
   /** 保存配置到智能体配置文件 */
   saveConfig(config: AgentConfig): Promise<void> | void;
 }
-
-/**
- * 平台类型
- */
-export type Platform = 'linux' | 'windows' | 'macos';
 
 /**
  * 平台配置路径映射

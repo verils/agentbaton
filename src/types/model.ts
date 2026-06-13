@@ -1,3 +1,7 @@
+/** API 类型 */
+export type ApiType = 'openai' | 'anthropic' | 'google';
+
+/** 模型信息 */
 export interface Model {
   /** 模型 ID */
   id: string;
