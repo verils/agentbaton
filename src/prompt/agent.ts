@@ -5,6 +5,7 @@ import { detectInstalledAgents } from "../agent/detect";
 import { findAgent } from "../agent/builtin";
 import { backOption } from "./back";
 import { saveConfig } from "../config";
+import { handleAddProvider } from "./provider";
 
 /**
  * 配置智能体子流程
@@ -104,8 +105,17 @@ async function handleChooseProvider(agent: AgentDefinition, config: AgentBatonCo
     .filter(p => p.endpoints.find(e => e.type === agent.apiType));
 
   if (compatibleProviders.length === 0) {
-    log.warn(`没有兼容 ${agent.apiType} 类型的供应商，请先添加模型供应商`);
-    return;
+    log.warn(`没有兼容 ${agent.apiType} 类型的供应商`);
+    const goAdd = await confirm({ message: '是否立即添加？' });
+    if (isCancel(goAdd) || !goAdd) return;
+    await handleAddProvider(config);
+    // 重新检查兼容供应商
+    const newCompatible = config.providers
+      .filter(p => p.endpoints.find(e => e.type === agent.apiType));
+    if (newCompatible.length === 0) return;
+    // 更新兼容供应商列表，继续选择流程
+    compatibleProviders.length = 0;
+    compatibleProviders.push(...newCompatible);
   }
 
   const providerId = await select({
@@ -166,8 +176,13 @@ async function handleChooseProvider(agent: AgentDefinition, config: AgentBatonCo
 async function handleChooseModel(agent: AgentDefinition, config: AgentBatonConfig): Promise<void> {
   const agentAssignment = config.agents[agent.id];
   if (!agentAssignment?.currentProvider) {
-    log.warn('请先设置模型供应商');
-    return;
+    log.warn('尚未设置模型供应商');
+    const goSet = await confirm({ message: '是否立即设置？' });
+    if (isCancel(goSet) || !goSet) return;
+    await handleChooseProvider(agent, config);
+    // 重新检查绑定状态
+    const updated = config.agents[agent.id];
+    if (!updated?.currentProvider) return;
   }
 
   const provider = config.providers.find(p => p.id === agentAssignment.currentProvider);

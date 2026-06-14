@@ -149,12 +149,7 @@ Provider 与 Preset 没有持久引用关系。Preset 仅是模板，填充后 P
 
 #### ⚠️ 已知问题
 
-**1. 操作路径断裂**
-
-- **问题**：智能体设置供应商时，如果没有兼容供应商，只提示"请先添加"，但没有快捷入口跳转到添加供应商
-- **位置**：`src/prompt/agent.ts:107` `handleChooseProvider()`、`src/prompt/agent.ts:169` `handleChooseModel()`
-
-**2. 删除风险提示不足**
+**1. 删除风险提示不足**
 
 - **问题**：删除供应商时有级联清理，但未告知影响范围
 - **位置**：`src/prompt/provider.ts:276` `handleDeleteProvider()`
@@ -170,42 +165,7 @@ Provider 与 Preset 没有持久引用关系。Preset 仅是模板，填充后 P
 
 #### P0 - 高优先级
 
-**1. 增加操作引导跳转**
-
-目标：用户在遇到前置条件不满足时，可以直接跳转到相应操作。
-
-```typescript
-// src/prompt/agent.ts handleChooseProvider()
-if (compatibleProviders.length === 0) {
-  log.warn(`没有兼容 ${agent.apiType} 类型的供应商`);
-  const goAdd = await confirm({ message: '是否立即添加？' });
-  if (!isCancel(goAdd) && goAdd) {
-    await handleAddProvider(config);
-    const newCompatible = config.providers
-      .filter(p => p.endpoints.find(e => e.type === agent.apiType));
-    if (newCompatible.length === 0) return;
-  }
-  return;
-}
-```
-
-```typescript
-// src/prompt/agent.ts handleChooseModel()
-if (!agentAssignment?.currentProvider) {
-  log.warn('尚未设置模型供应商');
-  const goSet = await confirm({ message: '是否立即设置？' });
-  if (!isCancel(goSet) && goSet) {
-    await handleChooseProvider(agent, config);
-    const updated = config.agents[agent.id];
-    if (!updated?.currentProvider) return;
-  }
-  return;
-}
-```
-
-涉及文件：`src/prompt/agent.ts`
-
-**2. 删除前显示影响范围**
+**1. 删除前显示影响范围**
 
 目标：用户删除供应商前，清楚知道哪些智能体会受影响。
 
@@ -233,7 +193,7 @@ async function handleDeleteProvider(provider: Provider, config: AgentBatonConfig
 
 #### P1 - 中优先级
 
-**3. 原子化配置保存**
+**2. 原子化配置保存**
 
 目标：确保主配置和智能体配置要么都成功，要么都失败。
 
@@ -256,7 +216,7 @@ try {
 
 涉及文件：`src/prompt/agent.ts`、`src/prompt/provider.ts`
 
-**4. 增加快捷返回主菜单**
+**3. 增加快捷返回主菜单**
 
 目标：在深层菜单中增加"返回主菜单"选项。
 
@@ -276,7 +236,7 @@ const action = await select({
 
 #### P2 - 低优先级
 
-**5. 配置导入导出**
+**4. 配置导入导出**
 
 - 导出当前配置到文件
 - 从文件导入配置

@@ -40,7 +40,7 @@ export async function openProviderMenu(config: AgentBatonConfig): Promise<void> 
   }
 }
 
-async function handleAddProvider(config: AgentBatonConfig) {
+export async function handleAddProvider(config: AgentBatonConfig) {
   const providerPresetOptions = providerPresets.map(p => ({
     value: p.id,
     label: p.name
