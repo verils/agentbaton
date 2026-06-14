@@ -149,12 +149,7 @@ Provider 与 Preset 没有持久引用关系。Preset 仅是模板，填充后 P
 
 #### ⚠️ 已知问题
 
-**1. 删除风险提示不足**
-
-- **问题**：删除供应商时有级联清理，但未告知影响范围
-- **位置**：`src/prompt/provider.ts:276` `handleDeleteProvider()`
-
-**3. 状态不一致风险**
+**1. 状态不一致风险**
 
 - **问题**：智能体配置文件写入失败时，主配置已更新，可能导致状态不一致
 - **位置**：`src/prompt/agent.ts:143-163` `handleChooseProvider()`、`src/prompt/agent.ts:212-222` `handleChooseModel()`
@@ -163,37 +158,9 @@ Provider 与 Preset 没有持久引用关系。Preset 仅是模板，填充后 P
 
 ### 改进计划
 
-#### P0 - 高优先级
-
-**1. 删除前显示影响范围**
-
-目标：用户删除供应商前，清楚知道哪些智能体会受影响。
-
-```typescript
-// src/prompt/provider.ts handleDeleteProvider()
-async function handleDeleteProvider(provider: Provider, config: AgentBatonConfig): Promise<boolean> {
-  const affectedAgents = Object.entries(config.agents)
-    .filter(([_, a]) => a.currentProvider === provider.id)
-    .map(([id]) => builtinAgents.find(a => a.id === id)?.name ?? id);
-
-  let message = `确认删除供应商 ${provider.name}？`;
-  if (affectedAgents.length > 0) {
-    message += `\n\n⚠️ 以下智能体将被解除绑定：\n${affectedAgents.map(n => `  • ${n}`).join('\n')}`;
-  }
-  message += '\n\n此操作不可撤销。';
-
-  const yes = await confirm({ message });
-  if (isCancel(yes) || !yes) return false;
-  
-  // ... 原有删除逻辑
-}
-```
-
-涉及文件：`src/prompt/provider.ts`
-
 #### P1 - 中优先级
 
-**2. 原子化配置保存**
+**1. 原子化配置保存**
 
 目标：确保主配置和智能体配置要么都成功，要么都失败。
 
@@ -216,7 +183,7 @@ try {
 
 涉及文件：`src/prompt/agent.ts`、`src/prompt/provider.ts`
 
-**3. 增加快捷返回主菜单**
+**2. 增加快捷返回主菜单**
 
 目标：在深层菜单中增加"返回主菜单"选项。
 
@@ -236,13 +203,13 @@ const action = await select({
 
 #### P2 - 低优先级
 
-**4. 配置导入导出**
+**3. 配置导入导出**
 
 - 导出当前配置到文件
 - 从文件导入配置
 - 合并或覆盖选项
 
-**6. 批量操作**
+**4. 批量操作**
 
 - 选择多个智能体
 - 统一绑定同一供应商

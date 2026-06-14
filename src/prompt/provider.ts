@@ -180,6 +180,9 @@ async function handleModifyProvider(providerId: string, config: AgentBatonConfig
 
   // 操作子菜单循环
   while (true) {
+    // 检查供应商是否被智能体使用
+    const isUsed = Object.values(config.agents).some(a => a.currentProvider === provider.id);
+
     const action = await select({
       message: `设置 ${provider.name}`,
       options: [
@@ -197,7 +200,9 @@ async function handleModifyProvider(providerId: string, config: AgentBatonConfig
         },
         {
           value: 'deleteProvider',
-          label: '删除此模型供应商'
+          label: '删除此模型供应商',
+          disabled: isUsed,
+          hint: isUsed ? '当前供应商正在被使用' : undefined
         },
         backOption,
       ],
