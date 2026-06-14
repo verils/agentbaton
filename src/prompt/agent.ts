@@ -151,14 +151,14 @@ async function handleChooseProvider(agent: AgentDefinition, config: AgentBatonCo
   config.agents[agent.id] = configAgent;
 
   try {
-    await saveConfig(config);
-
     const models: AgentModel[] = Object.entries(configAgent.modelSlots).map(([slot, id]) => ({ slot, id }));
     await agent.saveConfig({
       baseUrl: provider.endpoints.find(e => e.type === agent.apiType)?.baseUrl,
       apiKey: provider.apiKey,
       models,
     });
+
+    await saveConfig(config);
     log.success(`✅ ${agent.name} 已切换到 ${provider.name}`);
 
     // 恢复的槽位为空且有模型槽位定义时，提示用户配置模型
@@ -225,12 +225,13 @@ async function handleChooseModel(agent: AgentDefinition, config: AgentBatonConfi
   agentAssignment.modelSlots = Object.fromEntries(modelAssignments.map(m => [m.slot, m.id]));
 
   try {
-    await saveConfig(config);
     await agent.saveConfig({
       baseUrl: provider.endpoints.find(e => e.type === agent.apiType)?.baseUrl,
       apiKey: provider.apiKey,
       models: modelAssignments,
     });
+
+    await saveConfig(config);
     log.success(`✅ ${agent.name} 模型已更新`);
   } catch (e) {
     log.error(`保存模型失败：${e instanceof Error ? e.message : String(e)}`);

@@ -149,10 +149,7 @@ Provider 与 Preset 没有持久引用关系。Preset 仅是模板，填充后 P
 
 #### ⚠️ 已知问题
 
-**1. 状态不一致风险**
-
-- **问题**：智能体配置文件写入失败时，主配置已更新，可能导致状态不一致
-- **位置**：`src/prompt/agent.ts:143-163` `handleChooseProvider()`、`src/prompt/agent.ts:212-222` `handleChooseModel()`
+（暂无）
 
 ---
 
@@ -160,30 +157,7 @@ Provider 与 Preset 没有持久引用关系。Preset 仅是模板，填充后 P
 
 #### P1 - 中优先级
 
-**1. 原子化配置保存**
-
-目标：确保主配置和智能体配置要么都成功，要么都失败。
-
-```typescript
-// src/prompt/agent.ts handleChooseProvider()
-try {
-  await agent.saveConfig({
-    baseUrl: provider.endpoints.find(e => e.type === agent.apiType)?.baseUrl,
-    apiKey: provider.apiKey,
-    models,
-  });
-  await saveConfig(config);
-  log.success(`✅ ${agent.name} 已切换到 ${provider.name}`);
-} catch (e) {
-  configAgent.currentProvider = previousProvider;
-  configAgent.modelSlots = previousModelSlots;
-  log.error(`切换失败：${e instanceof Error ? e.message : String(e)}`);
-}
-```
-
-涉及文件：`src/prompt/agent.ts`、`src/prompt/provider.ts`
-
-**2. 增加快捷返回主菜单**
+**1. 增加快捷返回主菜单**
 
 目标：在深层菜单中增加"返回主菜单"选项。
 
@@ -203,13 +177,13 @@ const action = await select({
 
 #### P2 - 低优先级
 
-**3. 配置导入导出**
+**2. 配置导入导出**
 
 - 导出当前配置到文件
 - 从文件导入配置
 - 合并或覆盖选项
 
-**4. 批量操作**
+**3. 批量操作**
 
 - 选择多个智能体
 - 统一绑定同一供应商
