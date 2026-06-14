@@ -178,8 +178,8 @@ async function handleChooseModel(agent: AgentDefinition, config: AgentBatonConfi
 
   const modelOptions = [
     ...provider.models.map((m) => ({
-      label: m.name,
       value: m.id,
+      label: m.name,
     })),
     { label: '手动输入', value: '__manual__' },
   ];

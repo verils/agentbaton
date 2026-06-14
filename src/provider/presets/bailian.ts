@@ -3,7 +3,7 @@ import { ApiType, ProviderModel, ProviderPreset } from "../../types";
 const FALLBACK_MODELS: ProviderModel[] = [
   {
     id: 'qwen3.7-max',
-    name: 'Qwen3.7-Max',
+    name: 'Qwen3.7 Max',
     contextWindowSize: 1000000
   },
   {
@@ -22,17 +22,32 @@ const FALLBACK_MODELS: ProviderModel[] = [
     contextWindowSize: 256000
   },
   {
-    id: 'deepseek-v4-pro',
-    name: 'DeepSeek-V4-Pro',
+    id: 'deepseek v4 pro',
+    name: 'DeepSeek V4 Pro',
     contextWindowSize: 1000000
   },
   {
     id: 'deepseek-v4-flash',
-    name: 'DeepSeek-V4-Flash',
+    name: 'DeepSeek V4 Flash',
     contextWindowSize: 1000000
   }
 
 ];
+
+interface BailianModelItem {
+  id: string;
+  object: 'model';
+  created: number;
+  owned_by: string;
+}
+
+interface BailianModelList {
+  object: 'list';
+  data: BailianModelItem[];
+  first_id: string;
+  last_id: string;
+  has_more: boolean;
+}
 
 export const bailian: ProviderPreset = {
   id: 'bailian',
@@ -89,8 +104,8 @@ export const bailian: ProviderPreset = {
         });
 
         if (res.ok) {
-          const json = await res.json() as { data: { id: string }[] };
-          return json.data.map((m) => ({ id: m.id, name: m.id }));
+          const json = await res.json() as BailianModelList;
+          return json.data.map((item) => ({ id: item.id, name: item.id }));
         }
       } catch {
       }
