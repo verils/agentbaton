@@ -117,8 +117,8 @@ agentbaton disable <agent> <provider>       # 禁用 Provider
 
 ```bash
 # 克隆仓库
-git clone https://github.com/yourusername/agent-baton.git
-cd agent-baton
+git clone https://github.com/verils/agentbaton.git
+cd agentbaton
 
 # 安装依赖
 pnpm install
@@ -149,8 +149,8 @@ pnpm test
 
 ## 📮 联系方式
 
-- 项目主页：[GitHub](https://github.com/verils/agent-baton)
-- 问题反馈：[Issues](https://github.com/verils/agent-baton/issues)
+- 项目主页：[GitHub](https://github.com/verils/agentbaton)
+- 问题反馈：[Issues](https://github.com/verils/agentbaton/issues)
 
 ---
 

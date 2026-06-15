@@ -9,20 +9,20 @@ Agent Baton 管理和连接两类实体：
 - **Agent（智能体）**：本地已安装的编程智能体（如 Claude Code、Codex CLI、Gemini CLI 等）。通过 TypeScript 定义描述其配置文件位置、API 协议类型、模型槽位和配置解析逻辑。
 - **Provider（模型供应商）**：提供 LLM API 的服务方（如百炼、火山引擎、腾讯云、DeepSeek 等）。通过 TypeScript 模板定义其 API 端点和可用模型列表。
 
-Agent 与 Provider 通过 **API 类型**（`openai` / `anthropic` / `google`）匹配。agent 声明自己使用的 API 类型，provider 声明自己提供的 API 类型，baton 在两者匹配时才允许配置。
+Agent 与 Provider 通过 **API 类型**（`openai` / `anthropic` / `google`）匹配。agent 声明自己使用的 API 类型，provider 声明自己提供的 API 类型，agentbaton 在两者匹配时才允许配置。
 
 ### 设计原则
 
-- **单向写入**：baton 只将配置写入智能体的原生配置文件，不尝试管理它们的状态
+- **单向写入**：agentbaton 只将配置写入智能体的原生配置文件，不尝试管理它们的状态
 - **配置文件为准**：所有显示均从智能体的原生配置文件读取，外部修改会实时反映
 - **声明式定义**：agent 和 provider 均通过 TypeScript 数据定义，不包含硬编码适配逻辑
 - **单次加载**：config 在启动时加载一次，之后通过引用传递，仅保存不重复加载
 
 ### 约束
 
-- baton 不选择/切换"当前活跃智能体"，所有已安装的 agent 均可独立配置
-- baton 不维护 agent 的安装/卸载，仅识别已安装的 agent
-- baton 只做单向写入智能体的配置文件，不尝试管理它们的状态
+- agentbaton 不选择/切换"当前活跃智能体"，所有已安装的 agent 均可独立配置
+- agentbaton 不维护 agent 的安装/卸载，仅识别已安装的 agent
+- agentbaton 只做单向写入智能体的配置文件，不尝试管理它们的状态
 
 ### 数据模型
 
