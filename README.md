@@ -61,22 +61,22 @@ agentbaton enable claude-code deepseek
 |--------|------|------|
 | Claude Code | ✅ | Anthropic 的编程助手 |
 | Codex CLI | ✅ | OpenAI 的代码生成工具 |
-| Gemini CLI | ✅ | Google 的 Gemini 助手 |
-| OpenCode | ✅ | 开源代码助手 |
-| Qwen Code | ✅ | 阿里云通义千问 |
-| Qoder | ✅ | 智能编程助手 |
-| Crush | ✅ | 代码优化工具 |
+| Gemini CLI | 🚧 | Google 的 Gemini 助手（开发中） |
+| OpenCode | 🚧 | 开源代码助手（开发中） |
+| Qwen Code | 🚧 | 阿里云通义千问（开发中） |
+| Qoder | 🚧 | 智能编程助手（开发中） |
+| Crush | 🚧 | 代码优化工具（开发中） |
 
 ## ☁️ 支持的 Provider
 
 | Provider | 状态 | API 支持 |
 |----------|------|----------|
 | 百炼 (Bailian) | ✅ | 完整支持 |
-| 火山引擎 | ✅ | 完整支持 |
-| 腾讯云 | ✅ | 完整支持 |
-| 智谱 AI | ✅ | 完整支持 |
-| MiniMax | ✅ | 完整支持 |
-| 月之暗面 (Moonshot) | ✅ | 完整支持 |
+| 火山引擎 | 🚧 | 开发中 |
+| 腾讯云 | 🚧 | 开发中 |
+| 智谱 AI | 🚧 | 开发中 |
+| MiniMax | 🚧 | 开发中 |
+| 月之暗面 (Moonshot) | 🚧 | 开发中 |
 | DeepSeek | ✅ | 完整支持 |
 | 小米 MiMo | ✅ | 完整支持 |
 
