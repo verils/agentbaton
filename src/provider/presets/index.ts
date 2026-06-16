@@ -12,11 +12,11 @@ export const providerPresets: ProviderPreset[] = [
   bailian,
   deepseek,
   minimax,
-  moonshot,
-  tencent,
-  volcengine,
-  xiaomiMimo,
-  zhipu,
+  // moonshot,
+  // tencent,
+  // volcengine,
+  // xiaomiMimo,
+  // zhipu,
 ];
 
 export function findProviderPreset(providerPresetId: string) {
