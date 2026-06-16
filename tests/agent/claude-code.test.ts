@@ -58,7 +58,7 @@ describe('claude-code parseConfig', () => {
       },
     });
 
-    const result = await claudeCode.parseConfig();
+    const result = await claudeCode.loadConfig();
     expect(result).not.toBeNull();
     expect(result!.apiKey).toBe('sk-ant-test');
     expect(result!.baseUrl).toBe('https://custom.anthropic.com');
@@ -72,7 +72,7 @@ describe('claude-code parseConfig', () => {
   it('文件不存在时应返回空模型列表', async () => {
     mockedReadJson.mockResolvedValue(null);
 
-    const result = await claudeCode.parseConfig();
+    const result = await claudeCode.loadConfig();
     expect(result).not.toBeNull();
     expect(result!.models).toEqual([]);
     expect(result!.apiKey).toBeUndefined();
@@ -82,7 +82,7 @@ describe('claude-code parseConfig', () => {
   it('缺少 env 字段时应返回空模型列表', async () => {
     mockedReadJson.mockResolvedValue({});
 
-    const result = await claudeCode.parseConfig();
+    const result = await claudeCode.loadConfig();
     expect(result).not.toBeNull();
     expect(result!.models).toEqual([]);
     expect(result!.apiKey).toBeUndefined();
@@ -92,7 +92,7 @@ describe('claude-code parseConfig', () => {
   it('env 为空对象时应返回空模型列表', async () => {
     mockedReadJson.mockResolvedValue({ env: {} });
 
-    const result = await claudeCode.parseConfig();
+    const result = await claudeCode.loadConfig();
     expect(result).not.toBeNull();
     expect(result!.models).toEqual([]);
     expect(result!.apiKey).toBeUndefined();
@@ -104,7 +104,7 @@ describe('claude-code parseConfig', () => {
       env: { ANTHROPIC_DEFAULT_SONNET_MODEL: 'claude-sonnet-4' },
     });
 
-    const result = await claudeCode.parseConfig();
+    const result = await claudeCode.loadConfig();
     expect(result).not.toBeNull();
     expect(result!.models).toEqual([
       { slot: 'sonnet', id: 'claude-sonnet-4' },
@@ -116,7 +116,7 @@ describe('claude-code parseConfig', () => {
       env: { ANTHROPIC_AUTH_TOKEN: 'sk-ant-only' },
     });
 
-    const result = await claudeCode.parseConfig();
+    const result = await claudeCode.loadConfig();
     expect(result).not.toBeNull();
     expect(result!.apiKey).toBe('sk-ant-only');
     expect(result!.baseUrl).toBeUndefined();
@@ -128,7 +128,7 @@ describe('claude-code parseConfig', () => {
       env: { ANTHROPIC_BASE_URL: 'https://proxy.anthropic.com' },
     });
 
-    const result = await claudeCode.parseConfig();
+    const result = await claudeCode.loadConfig();
     expect(result).not.toBeNull();
     expect(result!.baseUrl).toBe('https://proxy.anthropic.com');
     expect(result!.apiKey).toBeUndefined();

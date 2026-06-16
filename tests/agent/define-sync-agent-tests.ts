@@ -29,7 +29,7 @@ export function defineSyncAgentTests(tc: SyncAgentTestCase) {
 
   describe(`${tc.expectedId} parseConfig`, () => {
     it('stub 实现应返回 null', async () => {
-      const result = await tc.agent.parseConfig();
+      const result = await tc.agent.loadConfig();
       expect(result).toBeNull();
     });
   });

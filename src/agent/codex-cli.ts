@@ -37,7 +37,7 @@ export const codexCli: AgentDefinition = {
       name: 'Default',
     },
   ],
-  async parseConfig(): Promise<AgentConfig | null> {
+  async loadConfig(): Promise<AgentConfig | null> {
     const configDir = resolvePlatformHome(this.home!);
     const codexAuth = await readJson<CodexAuthConfig>(`${configDir}/auth.json`);
     const codexConfig = await readToml<CodexConfig>(`${configDir}/config.toml`);

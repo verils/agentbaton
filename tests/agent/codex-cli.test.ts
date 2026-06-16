@@ -60,7 +60,7 @@ describe('codex-cli parseConfig', () => {
     mockedReadJson.mockResolvedValue({ OPENAI_API_KEY: 'sk-test' });
     mockedReadToml.mockResolvedValue(SAMPLE_TOML);
 
-    const result = await codexCli.parseConfig();
+    const result = await codexCli.loadConfig();
 
     expect(result).not.toBeNull();
     expect(result!.apiKey).toBe('sk-test');
@@ -72,7 +72,7 @@ describe('codex-cli parseConfig', () => {
     mockedReadJson.mockResolvedValue(null);
     mockedReadToml.mockResolvedValue(SAMPLE_TOML);
 
-    const result = await codexCli.parseConfig();
+    const result = await codexCli.loadConfig();
 
     expect(result).not.toBeNull();
     expect(result!.apiKey).toBeUndefined();
@@ -84,7 +84,7 @@ describe('codex-cli parseConfig', () => {
     mockedReadJson.mockResolvedValue({ OPENAI_API_KEY: 'sk-test' });
     mockedReadToml.mockResolvedValue(null);
 
-    const result = await codexCli.parseConfig();
+    const result = await codexCli.loadConfig();
 
     expect(result).not.toBeNull();
     expect(result!.apiKey).toBe('sk-test');
@@ -96,7 +96,7 @@ describe('codex-cli parseConfig', () => {
     mockedReadJson.mockResolvedValue(null);
     mockedReadToml.mockResolvedValue(null);
 
-    const result = await codexCli.parseConfig();
+    const result = await codexCli.loadConfig();
 
     expect(result).not.toBeNull();
     expect(result!.apiKey).toBeUndefined();
@@ -115,7 +115,7 @@ describe('codex-cli parseConfig', () => {
       },
     });
 
-    const result = await codexCli.parseConfig();
+    const result = await codexCli.loadConfig();
 
     expect(result!.baseUrl).toBe('https://my.api.com/v1');
   });
@@ -128,7 +128,7 @@ describe('codex-cli parseConfig', () => {
       model_providers: {},
     });
 
-    const result = await codexCli.parseConfig();
+    const result = await codexCli.loadConfig();
 
     expect(result!.baseUrl).toBeUndefined();
   });

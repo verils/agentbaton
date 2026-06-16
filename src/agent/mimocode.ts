@@ -17,7 +17,7 @@ export const mimoCode: AgentDefinition = {
       description: '默认模型',
     },
   ],
-  async parseConfig() {
+  async loadConfig() {
     return null;
   },
   async saveConfig() {},

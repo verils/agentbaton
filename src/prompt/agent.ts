@@ -75,7 +75,7 @@ async function displayAgentConfig(agent: AgentDefinition): Promise<void> {
     : '(未配置)';
   info.push(`配置目录: ${configPath}`);
 
-  const agentConfig = await agent.parseConfig();
+  const agentConfig = await agent.loadConfig();
   if (agentConfig?.baseUrl) {
     info.push(`接口地址: ${agentConfig.baseUrl}`);
   }

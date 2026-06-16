@@ -48,7 +48,7 @@ export const geminiCli: AgentDefinition = {
       description: '默认模型',
     },
   ],
-  async parseConfig(): Promise<AgentConfig | null> {
+  async loadConfig(): Promise<AgentConfig | null> {
     const envPath = getEnvFilePath(this.home!);
     const env = await readEnvFile(envPath);
     if (!Object.keys(env).length) {

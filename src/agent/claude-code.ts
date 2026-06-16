@@ -39,7 +39,7 @@ export const claudeCode: AgentDefinition = {
       name: 'Claude Haiku',
     },
   ],
-  async parseConfig(): Promise<AgentConfig> {
+  async loadConfig(): Promise<AgentConfig> {
     const configDir = resolvePlatformHome(this.home!);
     const anthropicConfig = await readJson<AnthropicConfig>(getConfigFilePath(configDir));
 
