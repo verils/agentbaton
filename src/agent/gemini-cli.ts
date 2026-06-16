@@ -3,11 +3,9 @@ import { existsSync } from 'node:fs';
 import type { AgentConfig, AgentConfigPaths, AgentDefinition, AgentModel } from '../types';
 import { resolvePlatformHome } from '../utils';
 
-const ENV_KEYS = {
-  apiKey: 'GEMINI_API_KEY',
-  model: 'GEMINI_MODEL',
-  baseUrl: 'GOOGLE_GEMINI_BASE_URL',
-} as const;
+const GOOGLE_GEMINI_BASE_URL = 'GOOGLE_GEMINI_BASE_URL';
+const GEMINI_API_KEY = 'GEMINI_API_KEY';
+const GEMINI_MODEL = 'GEMINI_MODEL';
 
 function getEnvFilePath(home: AgentConfigPaths): string {
   return `${resolvePlatformHome(home)}/.env`;
@@ -25,8 +23,7 @@ async function readEnvFile(filePath: string): Promise<Record<string, string>> {
     const eqIndex = trimmed.indexOf('=');
     if (eqIndex === -1) continue;
     const key = trimmed.slice(0, eqIndex).trim();
-    const value = trimmed.slice(eqIndex + 1).trim();
-    result[key] = value;
+    result[key] = trimmed.slice(eqIndex + 1).trim();
   }
   return result;
 }
@@ -56,13 +53,13 @@ export const geminiCli: AgentDefinition = {
     }
 
     const models: AgentModel[] = [];
-    if (env[ENV_KEYS.model]) {
-      models.push({ slot: 'default', id: env[ENV_KEYS.model] });
+    if (env[GEMINI_MODEL]) {
+      models.push({ slot: 'default', id: env[GEMINI_MODEL] });
     }
 
     return {
-      apiKey: env[ENV_KEYS.apiKey] || undefined,
-      baseUrl: env[ENV_KEYS.baseUrl] || undefined,
+      apiKey: env[GEMINI_API_KEY] || undefined,
+      baseUrl: env[GOOGLE_GEMINI_BASE_URL] || undefined,
       models,
     };
   },
@@ -71,15 +68,15 @@ export const geminiCli: AgentDefinition = {
     const env = await readEnvFile(envPath);
 
     if (config.apiKey) {
-      env[ENV_KEYS.apiKey] = config.apiKey;
+      env[GEMINI_API_KEY] = config.apiKey;
     }
     if (config.baseUrl) {
-      env[ENV_KEYS.baseUrl] = config.baseUrl;
+      env[GOOGLE_GEMINI_BASE_URL] = config.baseUrl;
     }
     if (config.models) {
       const defaultModel = config.models.find(m => m.slot === 'default');
       if (defaultModel) {
-        env[ENV_KEYS.model] = defaultModel.id;
+        env[GEMINI_MODEL] = defaultModel.id;
       }
     }
 
