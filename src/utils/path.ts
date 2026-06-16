@@ -18,14 +18,6 @@ export function getCurrentPlatform(): Platform {
 }
 
 /**
- * 获取当前平台的配置路径
- */
-export function getCurrentPlatformConfigPath(configPath: Record<Platform, string>): string {
-  const platform = getCurrentPlatform();
-  return configPath[platform];
-}
-
-/**
  * 展开路径中的 ~ 为用户主目录
  */
 export function expandHome(path: string): string {
@@ -33,6 +25,15 @@ export function expandHome(path: string): string {
     return resolve(homedir(), path.slice(2));
   }
   return resolve(path);
+}
+
+/**
+ * 获取当前平台的配置路径并展开 ~
+ */
+export function resolvePlatformHome(paths: Record<Platform, string>): string {
+  const platform = getCurrentPlatform();
+  const agentHome = paths[platform];
+  return expandHome(agentHome);
 }
 
 /**

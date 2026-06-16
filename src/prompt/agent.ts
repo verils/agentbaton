@@ -1,5 +1,5 @@
 import { confirm, isCancel, log, select, text } from '@clack/prompts';
-import { expandHome, getCurrentPlatformConfigPath, maskApiKey } from '../utils';
+import { resolvePlatformHome, maskApiKey } from '../utils';
 import type { Agent, AgentBatonConfig, AgentConfig, AgentDefinition, AgentModel } from '../types';
 import { detectInstalledAgents } from "../agent/detect";
 import { findAgent } from "../agent/builtin";
@@ -71,7 +71,7 @@ async function displayAgentConfig(agent: AgentDefinition): Promise<void> {
   const info: string[] = [];
 
   const configPath = agent.home
-    ? expandHome(getCurrentPlatformConfigPath(agent.home))
+    ? resolvePlatformHome(agent.home)
     : '(未配置)';
   info.push(`配置目录: ${configPath}`);
 

@@ -1,7 +1,7 @@
 import { readFile, writeFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import type { AgentConfig, AgentConfigPaths, AgentDefinition, AgentModel } from '../types';
-import { expandHome, getCurrentPlatformConfigPath } from '../utils';
+import { resolvePlatformHome } from '../utils';
 
 const ENV_KEYS = {
   apiKey: 'GEMINI_API_KEY',
@@ -10,7 +10,7 @@ const ENV_KEYS = {
 } as const;
 
 function getEnvFilePath(home: AgentConfigPaths): string {
-  return `${expandHome(getCurrentPlatformConfigPath(home))}/.env`;
+  return `${resolvePlatformHome(home)}/.env`;
 }
 
 async function readEnvFile(filePath: string): Promise<Record<string, string>> {

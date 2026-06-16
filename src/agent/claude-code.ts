@@ -1,5 +1,5 @@
 import { AgentConfig, AgentDefinition, AgentModel } from '../types';
-import { expandHome, getCurrentPlatformConfigPath } from "../utils";
+import { resolvePlatformHome } from "../utils";
 import { readJson, writeJson } from "../config";
 
 interface AnthropicConfig {
@@ -40,7 +40,7 @@ export const claudeCode: AgentDefinition = {
     },
   ],
   async parseConfig(): Promise<AgentConfig> {
-    const configDir = expandHome(getCurrentPlatformConfigPath(this.home!!));
+    const configDir = resolvePlatformHome(this.home!);
     const anthropicConfig = await readJson<AnthropicConfig>(getConfigFilePath(configDir));
 
     const env = anthropicConfig?.env;
@@ -72,7 +72,7 @@ export const claudeCode: AgentDefinition = {
     };
   },
   async saveConfig(config: AgentConfig) {
-    const configDir = expandHome(getCurrentPlatformConfigPath(this.home!!));
+    const configDir = resolvePlatformHome(this.home!);
     const configFile = getConfigFilePath(configDir);
     const anthropicConfig = await readJson<Record<string, unknown>>(configFile) ?? {};
 

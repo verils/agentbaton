@@ -1,5 +1,5 @@
 import type { AgentConfig, AgentDefinition, AgentModel } from '../types';
-import { expandHome, getCurrentPlatformConfigPath } from "../utils";
+import { resolvePlatformHome } from "../utils";
 import { readJson, readToml, writeJson, writeToml } from "../config";
 
 interface CodexAuthConfig {
@@ -38,7 +38,7 @@ export const codexCli: AgentDefinition = {
     },
   ],
   async parseConfig(): Promise<AgentConfig | null> {
-    const configDir = expandHome(getCurrentPlatformConfigPath(this.home!));
+    const configDir = resolvePlatformHome(this.home!);
     const codexAuth = await readJson<CodexAuthConfig>(`${configDir}/auth.json`);
     const codexConfig = await readToml<CodexConfig>(`${configDir}/config.toml`);
 
@@ -57,7 +57,7 @@ export const codexCli: AgentDefinition = {
     };
   },
   async saveConfig(config: AgentConfig) {
-    const configDir = expandHome(getCurrentPlatformConfigPath(this.home!));
+    const configDir = resolvePlatformHome(this.home!);
 
     if (config.apiKey) {
       const authPath = `${configDir}/auth.json`;
