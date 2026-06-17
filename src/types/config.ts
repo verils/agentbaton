@@ -1,4 +1,5 @@
 import { ApiType, Model } from "./model";
+import { AgentProviderBinding } from "./agent";
 
 /**
  * 统一配置文件结构
@@ -17,6 +18,8 @@ export interface Agent {
   currentProvider: string;
   modelSlots: Record<string, string>;
   history?: Record<string, Record<string, string>>;
+  /** 多供应商模式下的供应商绑定：providerId → binding */
+  providers?: Record<string, AgentProviderBinding>;
 }
 
 export interface Provider {

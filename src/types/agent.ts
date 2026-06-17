@@ -21,6 +21,8 @@ export interface AgentDefinition {
   home?: AgentNativePaths;
   /** 模型定义 */
   models: AgentModelSlot[];
+  /** 多供应商模式：agentbaton 管理 provider 绑定而非模型槽位 */
+  multiProvider?: boolean;
 
   /** 从智能体配置文件内容中解析出配置 */
   loadNativeConfig(): Promise<AgentNativeConfig | null>;
@@ -56,6 +58,14 @@ export interface AgentModel {
 }
 
 /**
+ * 供应商绑定（可选覆盖值，缺省字段从 agentbaton provider 继承）
+ */
+export interface AgentProviderBinding {
+  apiKey?: string;
+  baseUrl?: string;
+}
+
+/**
  * 从智能体原生配置文件解析出的配置摘要
  */
 export interface AgentNativeConfig {
@@ -65,4 +75,6 @@ export interface AgentNativeConfig {
   apiKey?: string;
   /** 各槽位的模型值：slot → model value */
   models?: AgentModel[];
+  /** 多供应商模式下的供应商绑定：providerId → binding */
+  providers?: Record<string, AgentProviderBinding>;
 }

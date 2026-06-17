@@ -1,6 +1,6 @@
 import { confirm, isCancel, log, select, text } from '@clack/prompts';
 import { resolvePlatformHome, maskApiKey } from '../utils';
-import type { Agent, AgentBatonConfig, AgentNativeConfig, AgentDefinition, AgentModel } from '../types';
+import type { Agent, AgentBatonConfig, AgentNativeConfig, AgentProviderBinding, AgentDefinition, AgentModel } from '../types';
 import { detectInstalledAgents } from "../agent/detect";
 import { findAgent } from "../agent/builtin";
 import { backOption } from "./back";
@@ -13,7 +13,6 @@ import { handleAddProvider } from "./provider";
 export async function openAgentMenu(config: AgentBatonConfig): Promise<void> {
   const installedAgents = await detectInstalledAgents();
 
-  // 列出所有 agent，标注安装状态
   const agentOptions = await Promise.all(
     installedAgents.map((a) => ({
       value: a.id,
@@ -32,7 +31,190 @@ export async function openAgentMenu(config: AgentBatonConfig): Promise<void> {
 
   const agent = findAgent(agentId)!;
 
-  // 操作子菜单循环
+  if (agent.multiProvider) {
+    await openMultiProviderAgentMenu(agent, config);
+  } else {
+    await openSingleProviderAgentMenu(agent, config);
+  }
+}
+
+// ─── 多供应商模式 ───
+
+async function openMultiProviderAgentMenu(agent: AgentDefinition, config: AgentBatonConfig): Promise<void> {
+  while (true) {
+    await displayMultiProviderConfig(agent, config);
+
+    const action = await select({
+      message: `${agent.name}：`,
+      options: [
+        { value: 'add', label: '添加供应商' },
+        { value: 'remove', label: '移除供应商' },
+        backOption,
+      ],
+    });
+
+    if (isCancel(action) || action === backOption.value) {
+      return;
+    }
+
+    switch (action) {
+      case 'add':
+        await handleAddProviderBinding(agent, config);
+        break;
+      case 'remove':
+        await handleRemoveProviderBinding(agent, config);
+        break;
+    }
+  }
+}
+
+async function displayMultiProviderConfig(agent: AgentDefinition, config: AgentBatonConfig): Promise<void> {
+  const info: string[] = [];
+
+  const configPath = agent.home
+    ? resolvePlatformHome(agent.home)
+    : '(未配置)';
+  info.push(`配置目录: ${configPath}`);
+  info.push(`API 类型: ${agent.apiType}`);
+
+  log.message(info);
+
+  const agentConfig = await agent.loadNativeConfig();
+  const bindings = agentConfig?.providers ?? {};
+  const entries = Object.entries(bindings);
+
+  const lines: string[] = ['已绑定供应商：'];
+  if (entries.length === 0) {
+    lines.push('  （暂无绑定）');
+  } else {
+    for (const [key, binding] of entries) {
+      const provider = config.providers.find(p => p.id === key);
+      const name = provider?.name ?? key;
+      const keyDisplay = binding.apiKey ? maskApiKey(binding.apiKey) : '(继承默认)';
+      lines.push(`  ${name}  Key: ${keyDisplay}`);
+    }
+  }
+  log.message(lines);
+}
+
+async function handleAddProviderBinding(agent: AgentDefinition, config: AgentBatonConfig): Promise<void> {
+  const existingKeys = Object.keys(config.agents[agent.id]?.providers ?? {});
+
+  const compatibleProviders = config.providers
+    .filter(p => p.endpoints.find(e => e.type === agent.apiType))
+    .filter(p => !existingKeys.includes(p.id));
+
+  if (compatibleProviders.length === 0) {
+    log.warn(`没有更多可添加的兼容 ${agent.apiType} 类型供应商`);
+    const goAdd = await confirm({ message: '是否先去"模型供应商"菜单添加新供应商？' });
+    if (isCancel(goAdd) || !goAdd) return;
+    await handleAddProvider(config);
+    return;
+  }
+
+  const providerId = await select({
+    message: '选择要绑定的供应商：',
+    options: compatibleProviders.map(p => ({
+      value: p.id,
+      label: p.name,
+    })),
+  });
+
+  if (isCancel(providerId)) return;
+
+  const provider = compatibleProviders.find(p => p.id === providerId)!;
+
+  const yes = await confirm({ message: `确认绑定 ${provider.name}？` });
+  if (isCancel(yes) || !yes) return;
+
+  if (!config.agents[agent.id]) {
+    config.agents[agent.id] = { id: agent.id, currentProvider: '', modelSlots: {} };
+  }
+  const agentEntry = config.agents[agent.id];
+  if (!agentEntry.providers) {
+    agentEntry.providers = {};
+  }
+  agentEntry.providers[providerId] = {};
+
+  try {
+    await syncMultiProviderNativeConfig(agent, config);
+    await saveConfig(config);
+    log.success(`✅ ${agent.name} 已绑定 ${provider.name}`);
+  } catch (e) {
+    delete agentEntry.providers[providerId];
+    log.error(`绑定失败：${e instanceof Error ? e.message : String(e)}`);
+  }
+}
+
+async function handleRemoveProviderBinding(agent: AgentDefinition, config: AgentBatonConfig): Promise<void> {
+  const agentEntry = config.agents[agent.id];
+  const bindings = agentEntry?.providers;
+  if (!bindings || Object.keys(bindings).length === 0) {
+    log.warn('当前没有已绑定的供应商');
+    return;
+  }
+
+  const options = Object.entries(bindings).map(([key, binding]) => {
+    const provider = config.providers.find(p => p.id === key);
+    const name = provider?.name ?? key;
+    const keyDisplay = binding.apiKey ? maskApiKey(binding.apiKey) : '(继承默认)';
+    return { value: key, label: `${name}  Key: ${keyDisplay}` };
+  });
+
+  const targetId = await select({
+    message: '选择要移除的供应商：',
+    options: [...options, backOption],
+  });
+
+  if (isCancel(targetId) || targetId === backOption.value) return;
+
+  const provider = config.providers.find(p => p.id === targetId);
+  const name = provider?.name ?? targetId;
+
+  const yes = await confirm({ message: `确认移除 ${name}？` });
+  if (isCancel(yes) || !yes) return;
+
+  const backup = bindings[targetId];
+  delete bindings[targetId];
+
+  try {
+    await syncMultiProviderNativeConfig(agent, config);
+    await saveConfig(config);
+    log.success(`✅ ${agent.name} 已移除 ${name}`);
+  } catch (e) {
+    bindings[targetId] = backup;
+    log.error(`移除失败：${e instanceof Error ? e.message : String(e)}`);
+  }
+}
+
+/**
+ * 将 agentbaton 的 provider 绑定合并后写入智能体原生配置文件
+ */
+async function syncMultiProviderNativeConfig(agent: AgentDefinition, config: AgentBatonConfig): Promise<void> {
+  const agentEntry = config.agents[agent.id];
+  const bindings = agentEntry?.providers ?? {};
+
+  const mergedProviders: Record<string, AgentProviderBinding> = {};
+  for (const [providerId, binding] of Object.entries(bindings)) {
+    const provider = config.providers.find(p => p.id === providerId);
+    if (!provider) continue;
+    const endpoint = provider.endpoints.find(e => e.type === agent.apiType);
+    mergedProviders[providerId] = {
+      apiKey: binding.apiKey ?? provider.apiKey,
+      baseUrl: binding.baseUrl ?? endpoint?.baseUrl,
+    };
+  }
+
+  await agent.saveNativeConfig({ providers: mergedProviders });
+}
+
+// ─── 单供应商模式 ───
+
+function getCurrentModel(agentConfig: AgentNativeConfig | null, slot: string): string | null {
+  return agentConfig?.models?.find((m) => m.slot === slot)?.id ?? null;
+}
+
+async function openSingleProviderAgentMenu(agent: AgentDefinition, config: AgentBatonConfig): Promise<void> {
   while (true) {
     await displayAgentConfig(agent);
 
@@ -58,10 +240,6 @@ export async function openAgentMenu(config: AgentBatonConfig): Promise<void> {
         break;
     }
   }
-}
-
-function getCurrentModel(agentConfig: AgentNativeConfig | null, slot: string): string | null {
-  return agentConfig?.models?.find((m) => m.slot === slot)?.id ?? null;
 }
 
 /**

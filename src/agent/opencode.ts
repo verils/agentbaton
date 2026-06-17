@@ -1,4 +1,4 @@
-import type { AgentNativeConfig, AgentDefinition, AgentModel } from '../types';
+import type { AgentNativeConfig, AgentProviderBinding, AgentDefinition, AgentModel } from '../types';
 import { expandHome } from '../utils';
 import { readJson, writeJson } from '../config';
 
@@ -29,6 +29,7 @@ export const opencode: AgentDefinition = {
   name: 'OpenCode',
   command: 'opencode',
   apiType: 'openai',
+  multiProvider: true,
   home: {
     linux: '~/.config/opencode/opencode.json',
     macos: '~/.config/opencode/opencode.json',
@@ -50,14 +51,17 @@ export const opencode: AgentDefinition = {
       models.push({ slot: 'default', id: config.model });
     }
 
-    const providerKey = config?.model?.split('/')[0];
-    const provider = providerKey ? config?.provider?.[providerKey] : undefined;
+    const providers: Record<string, AgentProviderBinding> = {};
+    if (config?.provider) {
+      for (const [key, p] of Object.entries(config.provider)) {
+        providers[key] = {
+          apiKey: p.options?.apiKey,
+          baseUrl: p.options?.baseURL,
+        };
+      }
+    }
 
-    return {
-      baseUrl: provider?.options?.baseURL,
-      apiKey: provider?.options?.apiKey,
-      models,
-    };
+    return { models, providers };
   },
   async saveNativeConfig(config: AgentNativeConfig): Promise<void> {
     const filePath = expandHome(this.home!.linux);
@@ -70,23 +74,24 @@ export const opencode: AgentDefinition = {
       }
     }
 
-    const providerKey = ocConfig.model?.split('/')[0];
-    if (providerKey) {
+    if (config.providers) {
       if (!ocConfig.provider) {
         ocConfig.provider = {};
       }
-      if (!ocConfig.provider[providerKey]) {
-        ocConfig.provider[providerKey] = {};
-      }
-      const provider = ocConfig.provider[providerKey];
-      if (!provider.options) {
-        provider.options = {};
-      }
-      if (config.apiKey) {
-        provider.options.apiKey = config.apiKey;
-      }
-      if (config.baseUrl) {
-        provider.options.baseURL = config.baseUrl;
+      for (const [key, binding] of Object.entries(config.providers)) {
+        if (!ocConfig.provider[key]) {
+          ocConfig.provider[key] = {};
+        }
+        const provider = ocConfig.provider[key];
+        if (!provider.options) {
+          provider.options = {};
+        }
+        if (binding.apiKey) {
+          provider.options.apiKey = binding.apiKey;
+        }
+        if (binding.baseUrl) {
+          provider.options.baseURL = binding.baseUrl;
+        }
       }
     }
 
