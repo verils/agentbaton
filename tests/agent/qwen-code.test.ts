@@ -48,7 +48,7 @@ describe('qwen-code loadConfig', () => {
       model: { name: 'qwen3.7-max' },
     });
 
-    const result = await qwenCode.loadConfig();
+    const result = await qwenCode.loadNativeConfig();
     expect(result).not.toBeNull();
     expect(result!.apiKey).toBe('sk-test-key');
     expect(result!.baseUrl).toBe('https://dashscope.aliyuncs.com/compatible-mode/v1');
@@ -58,7 +58,7 @@ describe('qwen-code loadConfig', () => {
   it('文件不存在时应返回 null', async () => {
     mockedReadJson.mockResolvedValue(null);
 
-    const result = await qwenCode.loadConfig();
+    const result = await qwenCode.loadNativeConfig();
     expect(result).toBeNull();
   });
 
@@ -68,7 +68,7 @@ describe('qwen-code loadConfig', () => {
       model: {},
     });
 
-    const result = await qwenCode.loadConfig();
+    const result = await qwenCode.loadNativeConfig();
     expect(result).not.toBeNull();
     expect(result!.apiKey).toBeUndefined();
     expect(result!.baseUrl).toBeUndefined();
@@ -80,7 +80,7 @@ describe('qwen-code loadConfig', () => {
       env: { CUSTOM_API_KEY: 'sk-only' },
     });
 
-    const result = await qwenCode.loadConfig();
+    const result = await qwenCode.loadNativeConfig();
     expect(result).not.toBeNull();
     expect(result!.apiKey).toBe('sk-only');
     expect(result!.baseUrl).toBeUndefined();
@@ -93,7 +93,7 @@ describe('qwen-code saveConfig', () => {
     mockedReadJson.mockResolvedValue(null);
 
     await expect(
-      qwenCode.saveConfig({ apiKey: 'sk-new', baseUrl: 'https://dashscope.aliyuncs.com/compatible-mode/v1' })
+      qwenCode.saveNativeConfig({ apiKey: 'sk-new', baseUrl: 'https://dashscope.aliyuncs.com/compatible-mode/v1' })
     ).resolves.not.toThrow();
 
     expect(mockedWriteJson).toHaveBeenCalledOnce();
@@ -115,7 +115,7 @@ describe('qwen-code saveConfig', () => {
       },
     });
 
-    await qwenCode.saveConfig({
+    await qwenCode.saveNativeConfig({
       apiKey: 'new-key',
       baseUrl: 'https://new.url',
     });
@@ -131,7 +131,7 @@ describe('qwen-code saveConfig', () => {
   it('应正确写出 model name', async () => {
     mockedReadJson.mockResolvedValue({ env: {} });
 
-    await qwenCode.saveConfig({
+    await qwenCode.saveNativeConfig({
       models: [{ slot: 'default', id: 'qwen3.7-plus' }],
     });
 
@@ -146,7 +146,7 @@ describe('qwen-code saveConfig', () => {
       memory: { enableAutoSkill: false },
     });
 
-    await qwenCode.saveConfig({ apiKey: 'new-key' });
+    await qwenCode.saveNativeConfig({ apiKey: 'new-key' });
 
     const saved = mockedWriteJson.mock.calls[0][1] as Record<string, unknown>;
     expect(saved.$version).toBe(4);
@@ -167,7 +167,7 @@ describe('qwen-code saveConfig', () => {
       model: { name: 'qwen3.7-max' },
     });
 
-    await qwenCode.saveConfig({
+    await qwenCode.saveNativeConfig({
       models: [{ slot: 'default', id: 'qwen3.7-plus' }],
     });
 
@@ -184,7 +184,7 @@ describe('qwen-code saveConfig', () => {
       modelProviders: { openai: [] },
     });
 
-    await qwenCode.saveConfig({ baseUrl: 'https://new.url' });
+    await qwenCode.saveNativeConfig({ baseUrl: 'https://new.url' });
 
     const saved = mockedWriteJson.mock.calls[0][1] as Record<string, unknown>;
     const providers = (saved.modelProviders as { openai: { baseUrl: string }[] }).openai;

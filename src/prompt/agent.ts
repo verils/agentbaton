@@ -1,6 +1,6 @@
 import { confirm, isCancel, log, select, text } from '@clack/prompts';
 import { resolvePlatformHome, maskApiKey } from '../utils';
-import type { Agent, AgentBatonConfig, AgentConfig, AgentDefinition, AgentModel } from '../types';
+import type { Agent, AgentBatonConfig, AgentNativeConfig, AgentDefinition, AgentModel } from '../types';
 import { detectInstalledAgents } from "../agent/detect";
 import { findAgent } from "../agent/builtin";
 import { backOption } from "./back";
@@ -60,7 +60,7 @@ export async function openAgentMenu(config: AgentBatonConfig): Promise<void> {
   }
 }
 
-function getCurrentModel(agentConfig: AgentConfig | null, slot: string): string | null {
+function getCurrentModel(agentConfig: AgentNativeConfig | null, slot: string): string | null {
   return agentConfig?.models?.find((m) => m.slot === slot)?.id ?? null;
 }
 
@@ -75,7 +75,7 @@ async function displayAgentConfig(agent: AgentDefinition): Promise<void> {
     : '(未配置)';
   info.push(`配置目录: ${configPath}`);
 
-  const agentConfig = await agent.loadConfig();
+  const agentConfig = await agent.loadNativeConfig();
   if (agentConfig?.baseUrl) {
     info.push(`接口地址: ${agentConfig.baseUrl}`);
   }
@@ -152,7 +152,7 @@ async function handleChooseProvider(agent: AgentDefinition, config: AgentBatonCo
 
   try {
     const models: AgentModel[] = Object.entries(configAgent.modelSlots).map(([slot, id]) => ({ slot, id }));
-    await agent.saveConfig({
+    await agent.saveNativeConfig({
       baseUrl: provider.endpoints.find(e => e.type === agent.apiType)?.baseUrl,
       apiKey: provider.apiKey,
       models,
@@ -225,7 +225,7 @@ async function handleChooseModel(agent: AgentDefinition, config: AgentBatonConfi
   agentAssignment.modelSlots = Object.fromEntries(modelAssignments.map(m => [m.slot, m.id]));
 
   try {
-    await agent.saveConfig({
+    await agent.saveNativeConfig({
       baseUrl: provider.endpoints.find(e => e.type === agent.apiType)?.baseUrl,
       apiKey: provider.apiKey,
       models: modelAssignments,

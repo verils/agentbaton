@@ -1,4 +1,4 @@
-import { AgentConfig, AgentDefinition, AgentModel } from '../types';
+import { AgentNativeConfig, AgentDefinition, AgentModel } from '../types';
 import { resolvePlatformHome } from "../utils";
 import { readJson, writeJson } from "../config";
 
@@ -39,7 +39,7 @@ export const claudeCode: AgentDefinition = {
       name: 'Claude Haiku',
     },
   ],
-  async loadConfig(): Promise<AgentConfig> {
+  async loadNativeConfig(): Promise<AgentNativeConfig> {
     const configDir = resolvePlatformHome(this.home!);
     const anthropicConfig = await readJson<AnthropicConfig>(getConfigFilePath(configDir));
 
@@ -71,7 +71,7 @@ export const claudeCode: AgentDefinition = {
       models: models,
     };
   },
-  async saveConfig(config: AgentConfig) {
+  async saveNativeConfig(config: AgentNativeConfig) {
     const configDir = resolvePlatformHome(this.home!);
     const configFile = getConfigFilePath(configDir);
     const anthropicConfig = await readJson<Record<string, unknown>>(configFile) ?? {};

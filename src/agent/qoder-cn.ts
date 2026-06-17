@@ -17,8 +17,8 @@ export const qoderCn: AgentDefinition = {
       description: '默认模型',
     },
   ],
-  async loadConfig() {
+  async loadNativeConfig() {
     return null;
   },
-  async saveConfig() {},
+  async saveNativeConfig() {},
 };

@@ -1,4 +1,4 @@
-import type { AgentConfig, AgentDefinition, AgentModel } from '../types';
+import type { AgentNativeConfig, AgentDefinition, AgentModel } from '../types';
 import { resolvePlatformHome } from '../utils';
 import { readJson, writeJson } from '../config';
 
@@ -41,7 +41,7 @@ export const qwenCode: AgentDefinition = {
       description: '默认模型',
     },
   ],
-  async loadConfig(): Promise<AgentConfig | null> {
+  async loadNativeConfig(): Promise<AgentNativeConfig | null> {
     const configDir = resolvePlatformHome(this.home!);
     const settings = await readJson<QwenSettings>(getConfigFilePath(configDir));
     if (!settings) {
@@ -63,7 +63,7 @@ export const qwenCode: AgentDefinition = {
       models,
     };
   },
-  async saveConfig(config: AgentConfig): Promise<void> {
+  async saveNativeConfig(config: AgentNativeConfig): Promise<void> {
     const configDir = resolvePlatformHome(this.home!);
     const configFile = getConfigFilePath(configDir);
     const settings = await readJson<QwenSettings>(configFile) ?? {};

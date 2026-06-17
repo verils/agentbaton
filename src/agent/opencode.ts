@@ -1,4 +1,4 @@
-import type { AgentConfig, AgentDefinition, AgentModel } from '../types';
+import type { AgentNativeConfig, AgentDefinition, AgentModel } from '../types';
 import { expandHome } from '../utils';
 import { readJson, writeJson } from '../config';
 
@@ -41,7 +41,7 @@ export const opencode: AgentDefinition = {
       description: '默认模型',
     },
   ],
-  async loadConfig(): Promise<AgentConfig> {
+  async loadNativeConfig(): Promise<AgentNativeConfig> {
     const filePath = expandHome(this.home!.linux);
     const config = await readJson<OpenCodeConfig>(filePath);
 
@@ -59,7 +59,7 @@ export const opencode: AgentDefinition = {
       models,
     };
   },
-  async saveConfig(config: AgentConfig): Promise<void> {
+  async saveNativeConfig(config: AgentNativeConfig): Promise<void> {
     const filePath = expandHome(this.home!.linux);
     const ocConfig = await readJson<OpenCodeConfig>(filePath) ?? {} as OpenCodeConfig;
 

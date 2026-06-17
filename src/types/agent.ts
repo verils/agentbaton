@@ -18,21 +18,21 @@ export interface AgentDefinition {
   /** 使用的 API 协议类型 */
   apiType: ApiType;
   /** 各平台的配置文件目录 */
-  home?: AgentConfigPaths;
+  home?: AgentNativePaths;
   /** 模型定义 */
   models: AgentModelSlot[];
 
   /** 从智能体配置文件内容中解析出配置 */
-  loadConfig(): Promise<AgentConfig | null>;
+  loadNativeConfig(): Promise<AgentNativeConfig | null>;
 
   /** 保存配置到智能体配置文件 */
-  saveConfig(config: AgentConfig): Promise<void>;
+  saveNativeConfig(config: AgentNativeConfig): Promise<void>;
 }
 
 /**
  * 平台配置路径映射
  */
-export type AgentConfigPaths = {
+export type AgentNativePaths = {
   [key in Platform]: string;
 };
 
@@ -56,9 +56,9 @@ export interface AgentModel {
 }
 
 /**
- * 从智能体配置文件解析出的配置摘要
+ * 从智能体原生配置文件解析出的配置摘要
  */
-export interface AgentConfig {
+export interface AgentNativeConfig {
   /** API 接入端点 */
   baseUrl?: string;
   /** API 密钥（原值） */

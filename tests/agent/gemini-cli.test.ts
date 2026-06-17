@@ -47,7 +47,7 @@ describe('gemini-cli parseConfig', () => {
       'GEMINI_API_KEY=sk-test-key\nGEMINI_MODEL=gemini-3.5-flash\nGOOGLE_GEMINI_BASE_URL=https://custom.google.com\n'
     );
 
-    const result = await geminiCli.loadConfig();
+    const result = await geminiCli.loadNativeConfig();
 
     expect(result).not.toBeNull();
     expect(result!.apiKey).toBe('sk-test-key');
@@ -58,7 +58,7 @@ describe('gemini-cli parseConfig', () => {
   it('.env 文件不存在时应返回 null', async () => {
     mockedExistsSync.mockReturnValue(false);
 
-    const result = await geminiCli.loadConfig();
+    const result = await geminiCli.loadNativeConfig();
 
     expect(result).toBeNull();
   });
@@ -66,7 +66,7 @@ describe('gemini-cli parseConfig', () => {
   it('.env 为空文件时应返回 null', async () => {
     mockedReadFile.mockResolvedValue('');
 
-    const result = await geminiCli.loadConfig();
+    const result = await geminiCli.loadNativeConfig();
 
     expect(result).toBeNull();
   });
@@ -74,7 +74,7 @@ describe('gemini-cli parseConfig', () => {
   it('仅有 apiKey 时应正确解析', async () => {
     mockedReadFile.mockResolvedValue('GEMINI_API_KEY=sk-only\n');
 
-    const result = await geminiCli.loadConfig();
+    const result = await geminiCli.loadNativeConfig();
 
     expect(result).not.toBeNull();
     expect(result!.apiKey).toBe('sk-only');
@@ -85,7 +85,7 @@ describe('gemini-cli parseConfig', () => {
   it('仅有 baseUrl 时应正确解析', async () => {
     mockedReadFile.mockResolvedValue('GOOGLE_GEMINI_BASE_URL=https://proxy.google.com\n');
 
-    const result = await geminiCli.loadConfig();
+    const result = await geminiCli.loadNativeConfig();
 
     expect(result).not.toBeNull();
     expect(result!.baseUrl).toBe('https://proxy.google.com');
@@ -96,7 +96,7 @@ describe('gemini-cli parseConfig', () => {
   it('仅有 model 时应正确解析', async () => {
     mockedReadFile.mockResolvedValue('GEMINI_MODEL=gemini-2.0-flash\n');
 
-    const result = await geminiCli.loadConfig();
+    const result = await geminiCli.loadNativeConfig();
 
     expect(result).not.toBeNull();
     expect(result!.models).toEqual([{ slot: 'default', id: 'gemini-2.0-flash' }]);
@@ -109,7 +109,7 @@ describe('gemini-cli parseConfig', () => {
       '# This is a comment\n\nGEMINI_API_KEY=sk-test\n# Another comment\nGEMINI_MODEL=gemini-pro\n'
     );
 
-    const result = await geminiCli.loadConfig();
+    const result = await geminiCli.loadNativeConfig();
 
     expect(result).not.toBeNull();
     expect(result!.apiKey).toBe('sk-test');
@@ -121,7 +121,7 @@ describe('gemini-cli parseConfig', () => {
       'GEMINI_API_KEY=sk-test\nOTHER_VAR=ignored\nGEMINI_MODEL=gemini-pro\n'
     );
 
-    const result = await geminiCli.loadConfig();
+    const result = await geminiCli.loadNativeConfig();
 
     expect(result).not.toBeNull();
     expect(result!.apiKey).toBe('sk-test');
@@ -133,7 +133,7 @@ describe('gemini-cli saveConfig', () => {
   it('应正确写出所有字段到新文件', async () => {
     mockedExistsSync.mockReturnValue(false);
 
-    await geminiCli.saveConfig({
+    await geminiCli.saveNativeConfig({
       apiKey: 'sk-new',
       baseUrl: 'https://api.google.com',
       models: [{ slot: 'default', id: 'gemini-3.5-flash' }],
@@ -151,7 +151,7 @@ describe('gemini-cli saveConfig', () => {
       'GEMINI_API_KEY=old-key\nGEMINI_MODEL=old-model\nOTHER_VAR=keep\n'
     );
 
-    await geminiCli.saveConfig({ apiKey: 'new-key' });
+    await geminiCli.saveNativeConfig({ apiKey: 'new-key' });
 
     const content = mockedWriteFile.mock.calls[0][1] as string;
     expect(content).toContain('GEMINI_API_KEY=new-key');
@@ -164,7 +164,7 @@ describe('gemini-cli saveConfig', () => {
       'GEMINI_API_KEY=old-key\nGEMINI_MODEL=old-model\n'
     );
 
-    await geminiCli.saveConfig({
+    await geminiCli.saveNativeConfig({
       apiKey: 'new-key',
       models: [{ slot: 'default', id: 'new-model' }],
     });
@@ -180,7 +180,7 @@ describe('gemini-cli saveConfig', () => {
     mockedExistsSync.mockReturnValue(false);
 
     await expect(
-      geminiCli.saveConfig({ apiKey: 'sk-new' })
+      geminiCli.saveNativeConfig({ apiKey: 'sk-new' })
     ).resolves.not.toThrow();
 
     expect(mockedWriteFile).toHaveBeenCalledOnce();

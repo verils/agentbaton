@@ -60,7 +60,7 @@ describe('codex-cli parseConfig', () => {
     mockedReadJson.mockResolvedValue({ OPENAI_API_KEY: 'sk-test' });
     mockedReadToml.mockResolvedValue(SAMPLE_TOML);
 
-    const result = await codexCli.loadConfig();
+    const result = await codexCli.loadNativeConfig();
 
     expect(result).not.toBeNull();
     expect(result!.apiKey).toBe('sk-test');
@@ -72,7 +72,7 @@ describe('codex-cli parseConfig', () => {
     mockedReadJson.mockResolvedValue(null);
     mockedReadToml.mockResolvedValue(SAMPLE_TOML);
 
-    const result = await codexCli.loadConfig();
+    const result = await codexCli.loadNativeConfig();
 
     expect(result).not.toBeNull();
     expect(result!.apiKey).toBeUndefined();
@@ -84,7 +84,7 @@ describe('codex-cli parseConfig', () => {
     mockedReadJson.mockResolvedValue({ OPENAI_API_KEY: 'sk-test' });
     mockedReadToml.mockResolvedValue(null);
 
-    const result = await codexCli.loadConfig();
+    const result = await codexCli.loadNativeConfig();
 
     expect(result).not.toBeNull();
     expect(result!.apiKey).toBe('sk-test');
@@ -96,7 +96,7 @@ describe('codex-cli parseConfig', () => {
     mockedReadJson.mockResolvedValue(null);
     mockedReadToml.mockResolvedValue(null);
 
-    const result = await codexCli.loadConfig();
+    const result = await codexCli.loadNativeConfig();
 
     expect(result).not.toBeNull();
     expect(result!.apiKey).toBeUndefined();
@@ -115,7 +115,7 @@ describe('codex-cli parseConfig', () => {
       },
     });
 
-    const result = await codexCli.loadConfig();
+    const result = await codexCli.loadNativeConfig();
 
     expect(result!.baseUrl).toBe('https://my.api.com/v1');
   });
@@ -128,7 +128,7 @@ describe('codex-cli parseConfig', () => {
       model_providers: {},
     });
 
-    const result = await codexCli.loadConfig();
+    const result = await codexCli.loadNativeConfig();
 
     expect(result!.baseUrl).toBeUndefined();
   });
@@ -139,7 +139,7 @@ describe('codex-cli saveConfig', () => {
     mockedReadJson.mockResolvedValue({ OPENAI_API_KEY: 'old-key' });
     mockedReadToml.mockResolvedValue(SAMPLE_TOML);
 
-    await codexCli.saveConfig!({ apiKey: 'new-key' });
+    await codexCli.saveNativeConfig!({ apiKey: 'new-key' });
 
     expect(mockedWriteJson).toHaveBeenCalledOnce();
     const saved = mockedWriteJson.mock.calls[0][1] as Record<string, string>;
@@ -150,7 +150,7 @@ describe('codex-cli saveConfig', () => {
     mockedReadJson.mockResolvedValue(null);
     mockedReadToml.mockResolvedValue(SAMPLE_TOML);
 
-    await codexCli.saveConfig!({ apiKey: 'sk-new' });
+    await codexCli.saveNativeConfig!({ apiKey: 'sk-new' });
 
     expect(mockedWriteJson).toHaveBeenCalledOnce();
     const saved = mockedWriteJson.mock.calls[0][1] as Record<string, string>;
@@ -161,7 +161,7 @@ describe('codex-cli saveConfig', () => {
     mockedReadJson.mockResolvedValue(null);
     mockedReadToml.mockResolvedValue(SAMPLE_TOML);
 
-    await codexCli.saveConfig!({ models: [{ slot: 'default', id: 'gpt-4o' }] });
+    await codexCli.saveNativeConfig!({ models: [{ slot: 'default', id: 'gpt-4o' }] });
 
     expect(mockedWriteToml).toHaveBeenCalledOnce();
     const saved = mockedWriteToml.mock.calls[0][1] as Record<string, unknown>;
@@ -172,7 +172,7 @@ describe('codex-cli saveConfig', () => {
     mockedReadJson.mockResolvedValue(null);
     mockedReadToml.mockResolvedValue(SAMPLE_TOML);
 
-    await codexCli.saveConfig!({ baseUrl: 'https://new.api.com/v1' });
+    await codexCli.saveNativeConfig!({ baseUrl: 'https://new.api.com/v1' });
 
     expect(mockedWriteToml).toHaveBeenCalledOnce();
     const saved = mockedWriteToml.mock.calls[0][1] as Record<string, unknown>;
@@ -186,7 +186,7 @@ describe('codex-cli saveConfig', () => {
     mockedReadJson.mockResolvedValue(null);
     mockedReadToml.mockResolvedValue(SAMPLE_TOML);
 
-    await codexCli.saveConfig!({ models: [{ slot: 'default', id: 'gpt-4o' }] });
+    await codexCli.saveNativeConfig!({ models: [{ slot: 'default', id: 'gpt-4o' }] });
 
     const saved = mockedWriteToml.mock.calls[0][1] as Record<string, unknown>;
     expect(saved.tui).toEqual({ status_line_use_colors: true });
@@ -206,7 +206,7 @@ describe('codex-cli saveConfig', () => {
       },
     });
 
-    await codexCli.saveConfig!({ baseUrl: 'https://new.com/v1' });
+    await codexCli.saveNativeConfig!({ baseUrl: 'https://new.com/v1' });
 
     const saved = mockedWriteToml.mock.calls[0][1] as Record<string, unknown>;
     const providers = saved.model_providers as Record<string, Record<string, unknown>>;
@@ -218,7 +218,7 @@ describe('codex-cli saveConfig', () => {
     mockedReadJson.mockResolvedValue({ OPENAI_API_KEY: 'existing-key' });
     mockedReadToml.mockResolvedValue(SAMPLE_TOML);
 
-    await codexCli.saveConfig!({ models: [{ slot: 'default', id: 'gpt-4o' }] });
+    await codexCli.saveNativeConfig!({ models: [{ slot: 'default', id: 'gpt-4o' }] });
 
     expect(mockedWriteJson).not.toHaveBeenCalled();
     const saved = mockedWriteToml.mock.calls[0][1] as Record<string, unknown>;
@@ -230,7 +230,7 @@ describe('codex-cli saveConfig', () => {
     mockedReadJson.mockResolvedValue(null);
     mockedReadToml.mockResolvedValue(null);
 
-    await codexCli.saveConfig!({
+    await codexCli.saveNativeConfig!({
       apiKey: 'sk-new',
       baseUrl: 'https://api.new.com/v1',
       models: [{ slot: 'default', id: 'gpt-4o' }],

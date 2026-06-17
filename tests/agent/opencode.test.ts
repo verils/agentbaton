@@ -48,7 +48,7 @@ describe('opencode parseConfig', () => {
       },
     });
 
-    const result = await opencode.loadConfig();
+    const result = await opencode.loadNativeConfig();
 
     expect(result).not.toBeNull();
     expect(result!.apiKey).toBe('sk-deepseek');
@@ -59,7 +59,7 @@ describe('opencode parseConfig', () => {
   it('文件不存在时应返回空配置', async () => {
     mockedReadJson.mockResolvedValue(null);
 
-    const result = await opencode.loadConfig();
+    const result = await opencode.loadNativeConfig();
 
     expect(result).not.toBeNull();
     expect(result!.apiKey).toBeUndefined();
@@ -72,7 +72,7 @@ describe('opencode parseConfig', () => {
       model: 'anthropic/claude-sonnet-4',
     });
 
-    const result = await opencode.loadConfig();
+    const result = await opencode.loadNativeConfig();
 
     expect(result).not.toBeNull();
     expect(result!.apiKey).toBeUndefined();
@@ -94,7 +94,7 @@ describe('opencode parseConfig', () => {
       },
     });
 
-    const result = await opencode.loadConfig();
+    const result = await opencode.loadNativeConfig();
 
     expect(result!.apiKey).toBe('sk-mimo');
     expect(result!.baseUrl).toBe('https://token-plan-cn.xiaomimimo.com/v1');
@@ -109,7 +109,7 @@ describe('opencode parseConfig', () => {
       },
     });
 
-    const result = await opencode.loadConfig();
+    const result = await opencode.loadNativeConfig();
 
     expect(result!.apiKey).toBeUndefined();
     expect(result!.baseUrl).toBeUndefined();
@@ -127,7 +127,7 @@ describe('opencode saveConfig', () => {
       },
     });
 
-    await opencode.saveConfig({
+    await opencode.saveNativeConfig({
       apiKey: 'new-key',
       baseUrl: 'https://new.com/v1',
       models: [{ slot: 'default', id: 'deepseek/deepseek-v4-pro' }],
@@ -144,7 +144,7 @@ describe('opencode saveConfig', () => {
   it('文件不存在时应创建新配置', async () => {
     mockedReadJson.mockResolvedValue(null);
 
-    await opencode.saveConfig({
+    await opencode.saveNativeConfig({
       apiKey: 'sk-new',
       baseUrl: 'https://api.new.com/v1',
       models: [{ slot: 'default', id: 'deepseek/deepseek-v4-flash' }],
@@ -175,7 +175,7 @@ describe('opencode saveConfig', () => {
       },
     });
 
-    await opencode.saveConfig({
+    await opencode.saveNativeConfig({
       models: [{ slot: 'default', id: 'deepseek/deepseek-v4-pro' }],
     });
 
@@ -197,7 +197,7 @@ describe('opencode saveConfig', () => {
       },
     });
 
-    await opencode.saveConfig({
+    await opencode.saveNativeConfig({
       models: [{ slot: 'default', id: 'deepseek/deepseek-v4-pro' }],
     });
 
@@ -212,7 +212,7 @@ describe('opencode saveConfig', () => {
       model: 'volcengine-plan/glm-5.1',
     });
 
-    await opencode.saveConfig({
+    await opencode.saveNativeConfig({
       apiKey: 'sk-new',
       baseUrl: 'https://api.volcengine.com/v1',
       models: [{ slot: 'default', id: 'volcengine-plan/glm-5.1' }],

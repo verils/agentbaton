@@ -1,4 +1,4 @@
-import type { AgentConfig, AgentDefinition, AgentModel } from '../types';
+import type { AgentNativeConfig, AgentDefinition, AgentModel } from '../types';
 import { resolvePlatformHome } from "../utils";
 import { readJson, readToml, writeJson, writeToml } from "../config";
 
@@ -37,7 +37,7 @@ export const codexCli: AgentDefinition = {
       name: 'Default',
     },
   ],
-  async loadConfig(): Promise<AgentConfig | null> {
+  async loadNativeConfig(): Promise<AgentNativeConfig | null> {
     const configDir = resolvePlatformHome(this.home!);
     const codexAuth = await readJson<CodexAuthConfig>(`${configDir}/auth.json`);
     const codexConfig = await readToml<CodexConfig>(`${configDir}/config.toml`);
@@ -56,7 +56,7 @@ export const codexCli: AgentDefinition = {
       models,
     };
   },
-  async saveConfig(config: AgentConfig) {
+  async saveNativeConfig(config: AgentNativeConfig) {
     const configDir = resolvePlatformHome(this.home!);
 
     if (config.apiKey) {

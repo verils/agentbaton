@@ -29,7 +29,7 @@ export function defineSyncAgentTests(tc: SyncAgentTestCase) {
 
   describe(`${tc.expectedId} parseConfig`, () => {
     it('stub 实现应返回 null', async () => {
-      const result = await tc.agent.loadConfig();
+      const result = await tc.agent.loadNativeConfig();
       expect(result).toBeNull();
     });
   });
@@ -37,7 +37,7 @@ export function defineSyncAgentTests(tc: SyncAgentTestCase) {
   describe(`${tc.expectedId} saveConfig`, () => {
     it('stub 实现不应抛出异常', async () => {
       await expect(
-        tc.agent.saveConfig({ apiKey: 'test', baseUrl: 'https://example.com', models: [] })
+        tc.agent.saveNativeConfig({ apiKey: 'test', baseUrl: 'https://example.com', models: [] })
       ).resolves.not.toThrow();
     });
   });

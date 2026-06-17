@@ -1,13 +1,13 @@
 import { readFile, writeFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
-import type { AgentConfig, AgentConfigPaths, AgentDefinition, AgentModel } from '../types';
+import type { AgentNativeConfig, AgentNativePaths, AgentDefinition, AgentModel } from '../types';
 import { resolvePlatformHome } from '../utils';
 
 const GOOGLE_GEMINI_BASE_URL = 'GOOGLE_GEMINI_BASE_URL';
 const GEMINI_API_KEY = 'GEMINI_API_KEY';
 const GEMINI_MODEL = 'GEMINI_MODEL';
 
-function getEnvFilePath(home: AgentConfigPaths): string {
+function getEnvFilePath(home: AgentNativePaths): string {
   return `${resolvePlatformHome(home)}/.env`;
 }
 
@@ -45,7 +45,7 @@ export const geminiCli: AgentDefinition = {
       description: '默认模型',
     },
   ],
-  async loadConfig(): Promise<AgentConfig | null> {
+  async loadNativeConfig(): Promise<AgentNativeConfig | null> {
     const envPath = getEnvFilePath(this.home!);
     const env = await readEnvFile(envPath);
     if (!Object.keys(env).length) {
@@ -63,7 +63,7 @@ export const geminiCli: AgentDefinition = {
       models,
     };
   },
-  async saveConfig(config: AgentConfig): Promise<void> {
+  async saveNativeConfig(config: AgentNativeConfig): Promise<void> {
     const envPath = getEnvFilePath(this.home!);
     const env = await readEnvFile(envPath);
 

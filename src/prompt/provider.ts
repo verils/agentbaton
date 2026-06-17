@@ -291,7 +291,7 @@ async function handleDeleteProvider(provider: Provider, config: AgentBatonConfig
       const agent = builtinAgents.find(a => a.id === agentId);
       if (agent) {
         try {
-          await agent.saveConfig({ baseUrl: undefined, apiKey: undefined, models: [] });
+          await agent.saveNativeConfig({ baseUrl: undefined, apiKey: undefined, models: [] });
         } catch {
           // 智能体配置文件写入失败不阻塞删除流程
         }
