@@ -29,6 +29,7 @@ export const qwenCode: AgentDefinition = {
   name: 'Qwen Code',
   command: 'qwen',
   apiType: 'openai',
+  multiProvider: true,
   home: {
     linux: '~/.qwen',
     macos: '~/.qwen',
@@ -41,58 +42,30 @@ export const qwenCode: AgentDefinition = {
       description: '默认模型',
     },
   ],
-  async loadNativeConfig(): Promise<AgentNativeConfig | null> {
+  async loadNativeConfig(): Promise<AgentNativeConfig> {
     const configDir = resolvePlatformHome(this.home!);
     const settings = await readJson<QwenSettings>(getConfigFilePath(configDir));
-    if (!settings) {
-      return null;
-    }
-
-    const apiKey = settings.env?.CUSTOM_API_KEY;
-    const providers = settings.modelProviders?.openai;
-    const baseUrl = providers?.[0]?.baseUrl;
 
     const models: AgentModel[] = [];
-    if (settings.model?.name) {
+    if (settings?.model?.name) {
       models.push({ slot: 'default', id: settings.model.name });
     }
 
-    return {
-      baseUrl: baseUrl || undefined,
-      apiKey: apiKey || undefined,
-      models,
-    };
+    const providers: Record<string, { apiKey?: string; baseUrl?: string }> = {};
+    const qwenProviders = settings?.modelProviders?.openai ?? [];
+    for (const p of qwenProviders) {
+      providers[p.id] = {
+        apiKey: settings?.env?.[p.envKey] || undefined,
+        baseUrl: p.baseUrl || undefined,
+      };
+    }
+
+    return { models, providers };
   },
   async saveNativeConfig(config: AgentNativeConfig): Promise<void> {
     const configDir = resolvePlatformHome(this.home!);
     const configFile = getConfigFilePath(configDir);
     const settings = await readJson<QwenSettings>(configFile) ?? {};
-
-    if (!settings.env) {
-      settings.env = {};
-    }
-    if (config.apiKey) {
-      settings.env.CUSTOM_API_KEY = config.apiKey;
-    }
-
-    if (config.baseUrl) {
-      if (!settings.modelProviders) {
-        settings.modelProviders = {};
-      }
-      if (!settings.modelProviders.openai) {
-        settings.modelProviders.openai = [];
-      }
-      if (settings.modelProviders.openai.length > 0) {
-        settings.modelProviders.openai[0].baseUrl = config.baseUrl;
-      } else {
-        settings.modelProviders.openai.push({
-          id: 'custom',
-          name: 'Custom',
-          baseUrl: config.baseUrl,
-          envKey: 'CUSTOM_API_KEY',
-        });
-      }
-    }
 
     if (config.models) {
       const defaultModel = config.models.find(m => m.slot === 'default');
@@ -101,6 +74,45 @@ export const qwenCode: AgentDefinition = {
           settings.model = {};
         }
         settings.model.name = defaultModel.id;
+      }
+    }
+
+    if (config.providers) {
+      if (!settings.env) {
+        settings.env = {};
+      }
+      if (!settings.modelProviders) {
+        settings.modelProviders = {};
+      }
+      if (!settings.modelProviders.openai) {
+        settings.modelProviders.openai = [];
+      }
+
+      const existing = settings.modelProviders.openai;
+      settings.modelProviders.openai = [];
+
+      for (const [providerKey, binding] of Object.entries(config.providers)) {
+        const matched = existing.find(p => p.id === providerKey);
+        if (matched) {
+          if (binding.apiKey) {
+            settings.env[matched.envKey] = binding.apiKey;
+          }
+          if (binding.baseUrl) {
+            matched.baseUrl = binding.baseUrl;
+          }
+          settings.modelProviders.openai.push(matched);
+        } else {
+          const envKey = `CUSTOM_API_KEY_${providerKey.replace(/[^a-zA-Z0-9]/g, '_').toUpperCase()}`;
+          if (binding.apiKey) {
+            settings.env[envKey] = binding.apiKey;
+          }
+          settings.modelProviders.openai.push({
+            id: providerKey,
+            name: providerKey,
+            baseUrl: binding.baseUrl ?? '',
+            envKey,
+          });
+        }
       }
     }
 

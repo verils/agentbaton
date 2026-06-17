@@ -83,12 +83,23 @@ async function displayMultiProviderConfig(agent: AgentDefinition, config: AgentB
   const bindings = agentConfig?.providers ?? {};
   const entries = Object.entries(bindings);
 
+  // 构建 baseUrl → agentbaton UUID 映射，用于显示名称
+  const uuidByBaseUrl = new Map<string, string>();
+  for (const provider of config.providers) {
+    const endpoint = provider.endpoints.find(e => e.type === agent.apiType);
+    if (endpoint) {
+      uuidByBaseUrl.set(endpoint.baseUrl, provider.id);
+    }
+  }
+
   const lines: string[] = ['已绑定供应商：'];
   if (entries.length === 0) {
     lines.push('  （暂无绑定）');
   } else {
     for (const [key, binding] of entries) {
-      const provider = config.providers.find(p => p.id === key);
+      // 优先按 UUID 匹配，其次按 baseUrl 匹配
+      const uuid = uuidByBaseUrl.get(binding.baseUrl ?? '') ?? key;
+      const provider = config.providers.find(p => p.id === uuid);
       const name = provider?.name ?? key;
       const keyDisplay = binding.apiKey ? maskApiKey(binding.apiKey) : '(继承默认)';
       lines.push(`  ${name}  Key: ${keyDisplay}`);
@@ -98,11 +109,22 @@ async function displayMultiProviderConfig(agent: AgentDefinition, config: AgentB
 }
 
 async function handleAddProviderBinding(agent: AgentDefinition, config: AgentBatonConfig): Promise<void> {
-  const existingKeys = Object.keys(config.agents[agent.id]?.providers ?? {});
+  // 收集已绑定的 provider ID 和 baseUrl，避免重复添加
+  const boundProviderIds = new Set(Object.keys(config.agents[agent.id]?.providers ?? {}));
+  const agentConfig = await agent.loadNativeConfig();
+  const boundBaseUrls = new Set(
+    Object.values(agentConfig?.providers ?? {})
+      .map(b => b.baseUrl)
+      .filter(Boolean)
+  );
 
   const compatibleProviders = config.providers
     .filter(p => p.endpoints.find(e => e.type === agent.apiType))
-    .filter(p => !existingKeys.includes(p.id));
+    .filter(p => !boundProviderIds.has(p.id))
+    .filter(p => {
+      const endpoint = p.endpoints.find(e => e.type === agent.apiType);
+      return !endpoint || !boundBaseUrls.has(endpoint.baseUrl);
+    });
 
   if (compatibleProviders.length === 0) {
     log.warn(`没有更多可添加的兼容 ${agent.apiType} 类型供应商`);
@@ -188,13 +210,16 @@ async function handleRemoveProviderBinding(agent: AgentDefinition, config: Agent
 }
 
 /**
- * 将 agentbaton 的 provider 绑定合并后写入智能体原生配置文件
+ * 将 agentbaton 的 provider 绑定合并到智能体原生配置文件
  */
 async function syncMultiProviderNativeConfig(agent: AgentDefinition, config: AgentBatonConfig): Promise<void> {
   const agentEntry = config.agents[agent.id];
   const bindings = agentEntry?.providers ?? {};
 
-  const mergedProviders: Record<string, AgentProviderBinding> = {};
+  // 读取现有原生配置中的 providers
+  const existingConfig = await agent.loadNativeConfig();
+  const mergedProviders: Record<string, AgentProviderBinding> = { ...existingConfig?.providers };
+
   for (const [providerId, binding] of Object.entries(bindings)) {
     const provider = config.providers.find(p => p.id === providerId);
     if (!provider) continue;
