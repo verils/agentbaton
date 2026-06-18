@@ -57,13 +57,17 @@ async function openMultiProviderAgentMenu(agent: AgentDefinition, config: AgentB
       return;
     }
 
-    switch (action) {
-      case 'add':
-        await handleAddProviderBinding(agent, config);
-        break;
-      case 'remove':
-        await handleRemoveProviderBinding(agent, config);
-        break;
+    try {
+      switch (action) {
+        case 'add':
+          await handleAddProviderBinding(agent, config);
+          break;
+        case 'remove':
+          await handleRemoveProviderBinding(agent, config);
+          break;
+      }
+    } catch (e) {
+      log.error(`操作失败：${e instanceof Error ? e.message : String(e)}`);
     }
   }
 }
@@ -256,13 +260,17 @@ async function openSingleProviderAgentMenu(agent: AgentDefinition, config: Agent
       return;
     }
 
-    switch (action) {
-      case 'chooseProvider':
-        await handleChooseProvider(agent, config);
-        break;
-      case 'chooseModel':
-        await handleChooseModel(agent, config);
-        break;
+    try {
+      switch (action) {
+        case 'chooseProvider':
+          await handleChooseProvider(agent, config);
+          break;
+        case 'chooseModel':
+          await handleChooseModel(agent, config);
+          break;
+      }
+    } catch (e) {
+      log.error(`操作失败：${e instanceof Error ? e.message : String(e)}`);
     }
   }
 }

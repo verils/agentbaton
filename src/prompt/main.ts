@@ -1,12 +1,14 @@
 import { intro, isCancel, log, outro, select } from '@clack/prompts';
 import { loadConfig } from '../config';
-import { getStringWidth, isCommandAvailable, maskApiKey, padEndWidth } from '../utils';
+import { getStringWidth, isCommandAvailable, installStdinRecovery, maskApiKey, padEndWidth } from '../utils';
 import { openAgentMenu } from './agent';
 import { openProviderMenu } from './provider';
 import { builtinAgents } from "../agent/builtin";
 import { AgentBatonConfig } from "../types";
 
 export async function runPrompt(): Promise<void> {
+  installStdinRecovery();
+
   const config = await loadConfig();
 
   intro('AgentBaton — 智能体设置管理');
@@ -28,18 +30,22 @@ export async function runPrompt(): Promise<void> {
       break;
     }
 
-    switch (choice) {
-      case 'agent':
-        await openAgentMenu(config);
-        await displayInfo(config);
-        break;
-      case 'provider':
-        await openProviderMenu(config);
-        await displayInfo(config);
-        break;
-      case 'display':
-        await displayInfo(config);
-        break;
+    try {
+      switch (choice) {
+        case 'agent':
+          await openAgentMenu(config);
+          await displayInfo(config);
+          break;
+        case 'provider':
+          await openProviderMenu(config);
+          await displayInfo(config);
+          break;
+        case 'display':
+          await displayInfo(config);
+          break;
+      }
+    } catch (e) {
+      log.error(`操作失败：${e instanceof Error ? e.message : String(e)}`);
     }
   }
 

@@ -212,19 +212,23 @@ async function handleModifyProvider(providerId: string, config: AgentBatonConfig
       return;
     }
 
-    switch (action) {
-      case 'setModels':
-        await handleSetModels(provider, config);
-        break;
-      case 'setApiKey':
-        await handleSetProviderApiKey(provider, config);
-        break;
-      case 'cleanApiKey':
-        await handleCleanApiKey(provider, config);
-        break;
-      case 'deleteProvider':
-        if (await handleDeleteProvider(provider, config)) return;
-        break;
+    try {
+      switch (action) {
+        case 'setModels':
+          await handleSetModels(provider, config);
+          break;
+        case 'setApiKey':
+          await handleSetProviderApiKey(provider, config);
+          break;
+        case 'cleanApiKey':
+          await handleCleanApiKey(provider, config);
+          break;
+        case 'deleteProvider':
+          if (await handleDeleteProvider(provider, config)) return;
+          break;
+      }
+    } catch (e) {
+      log.error(`操作失败：${e instanceof Error ? e.message : String(e)}`);
     }
   }
 }
