@@ -12,7 +12,7 @@ export const builtinAgents: AgentDefinition[] = [
   claudeCode,
   codexCli,
   geminiCli,
-  // opencode,
+  opencode,
   // mimoCode,
   // qoder,
   // qoderCn,
