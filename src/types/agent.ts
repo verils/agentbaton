@@ -63,6 +63,7 @@ export interface AgentModel {
 export interface AgentProviderBinding {
   apiKey?: string;
   baseUrl?: string;
+  models?: Array<{ id: string; name: string }>;
 }
 
 /**

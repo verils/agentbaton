@@ -92,6 +92,11 @@ export const opencode: AgentDefinition = {
         if (binding.baseUrl) {
           provider.options.baseURL = binding.baseUrl;
         }
+        if (binding.models && binding.models.length > 0) {
+          provider.models = Object.fromEntries(
+            binding.models.map(m => [m.id, { name: m.name }])
+          );
+        }
       }
     }
 

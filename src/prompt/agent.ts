@@ -146,12 +146,16 @@ async function handleAddProviderBinding(agent: AgentDefinition, config: AgentBat
     })),
   });
 
-  if (isCancel(providerId)) return;
+  if (isCancel(providerId)) {
+    return;
+  }
 
   const provider = compatibleProviders.find(p => p.id === providerId)!;
 
   const yes = await confirm({ message: `确认绑定 ${provider.name}？` });
-  if (isCancel(yes) || !yes) return;
+  if (isCancel(yes) || !yes) {
+    return;
+  }
 
   if (!config.agents[agent.id]) {
     config.agents[agent.id] = { id: agent.id, currentProvider: '', modelSlots: {} };
@@ -231,6 +235,7 @@ async function syncMultiProviderNativeConfig(agent: AgentDefinition, config: Age
     mergedProviders[providerId] = {
       apiKey: binding.apiKey ?? provider.apiKey,
       baseUrl: binding.baseUrl ?? endpoint?.baseUrl,
+      models: provider.models,
     };
   }
 
