@@ -11,11 +11,11 @@ import { zhipu } from "./zhipu";
 export const providerPresets: ProviderPreset[] = [
   bailian,
   deepseek,
-  minimax,
+  // minimax,
   // moonshot,
   // tencent,
   // volcengine,
-  // xiaomiMimo,
+  xiaomiMimo,
   // zhipu,
 ];
 

@@ -11,7 +11,7 @@ import { mimoCode } from "./mimocode";
 export const builtinAgents: AgentDefinition[] = [
   claudeCode,
   codexCli,
-  // geminiCli,
+  geminiCli,
   // opencode,
   // mimoCode,
   // qoder,
