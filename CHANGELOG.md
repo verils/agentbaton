@@ -2,6 +2,33 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v0.2.0] - 2026-06-18
+
+### Added
+
+- **Volcengine Provider**: Added Volcengine provider preset configuration with multiple pricing plans (Default, Coding Plan, Agent Plan)
+- **Model Configuration**: Added model configuration support with optimized code structure
+- **OpenCode Integration**: Enabled OpenCode agent integration with full configuration support
+- **Multi-Provider Management**: Support for managing multiple provider configurations
+- **Agent Detection**: Enhanced agent detection with caching for command availability checks
+
+### Fixed
+
+- **CLI Exit Issue**: Fixed stdin blocking issue when command line interface exits abnormally
+
+### Changed
+
+- **Configuration Naming**: Renamed configuration-related types and methods to "native configuration" for clarity
+- **Built-in Agents**: Switched built-in agent configuration for better defaults
+- **Module Cleanup**: Removed unused agent modules and fixed type declarations
+
+### Testing
+
+- Added comprehensive configuration loading/saving tests for OpenCode agent
+- Added complete test suite for Qwen Code agent
+
+---
+
 ## [v0.1.1] - 2026-06-17
 
 ### Changed
