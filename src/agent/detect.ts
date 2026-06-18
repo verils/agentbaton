@@ -11,7 +11,7 @@ export async function isCommandAvailable(command: string): Promise<boolean> {
     return commandCache.get(command)!;
   }
   const {execSync} = await import('node:child_process');
-  let available = false;
+  let available: boolean;
   try {
     const checkCmd = process.platform === 'win32'
       ? `where ${command}`

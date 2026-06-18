@@ -1,12 +1,8 @@
-import type { ProviderPreset } from "../../types";
-import { bailian } from "./bailian";
-import { deepseek } from "./deepseek";
-import { minimax } from "./minimax";
-import { moonshot } from "./moonshot";
-import { tencent } from "./tencent";
-import { volcengine } from "./volcengine";
-import { xiaomiMimo } from "./xiaomi-mimo";
-import { zhipu } from "./zhipu";
+import type {ProviderPreset} from "../../types";
+import {bailian} from "./bailian";
+import {deepseek} from "./deepseek";
+import {xiaomiMimo} from "./xiaomi-mimo";
+import {volcengine} from "./volcengine";
 
 export const providerPresets: ProviderPreset[] = [
   bailian,
@@ -14,7 +10,7 @@ export const providerPresets: ProviderPreset[] = [
   // minimax,
   // moonshot,
   // tencent,
-  // volcengine,
+  volcengine,
   xiaomiMimo,
   // zhipu,
 ];
