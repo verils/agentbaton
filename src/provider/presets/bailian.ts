@@ -107,8 +107,7 @@ export const bailian: ProviderPreset = {
           const json = await res.json() as BailianModelList;
           return json.data.map((item) => ({ id: item.id, name: item.id }));
         }
-      } catch {
-      }
+      } catch { /* fallback to static models */ }
     }
 
     return FALLBACK_MODELS;

@@ -22,7 +22,7 @@ export function getCurrentPlatform(): Platform {
  */
 export function expandHome(path: string): string {
   if (path.startsWith('~')) {
-    return resolve(homedir(), path.slice(2));
+    return resolve(path.replace(/^~/, homedir()));
   }
   return resolve(path);
 }

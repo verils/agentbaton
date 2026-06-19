@@ -16,5 +16,5 @@ export const providerPresets: ProviderPreset[] = [
 ];
 
 export function findProviderPreset(providerPresetId: string) {
-  return providerPresets.find(t => t.id === providerPresetId) !!
+  return providerPresets.find(t => t.id === providerPresetId) !
 }

@@ -159,9 +159,9 @@ Provider 与 Preset 没有持久引用关系。Preset 仅是模板，填充后 P
 
 | # | 问题 | 严重度 | 说明 |
 |---|------|--------|------|
-| 1 | `expandHome('~')` 边界 bug | 中 | `path.slice(2)` 假设 `~/...` 格式，单独 `~` 产生空字符串 |
-| 2 | `pnpm lint` 无法执行 | 低 | 引用 eslint 但仓库中无配置文件 |
-| 3 | `vite.config.ts` external 残留 | 低 | `yaml`、`chalk` 在 external 列表但 `package.json` 中无此依赖 |
+| 1 | ~~`expandHome('~')` 边界 bug~~ | ~~中~~ | ✅ 已修复：改用 `path.replace(/^~/, homedir())` |
+| 2 | ~~`pnpm lint` 无法执行~~ | ~~低~~ | ✅ 已修复：添加 `eslint.config.js`（flat config） |
+| 3 | ~~`vite.config.ts` external 残留~~ | ~~低~~ | ✅ 已修复：移除 `yaml`、`chalk` |
 | 4 | `ProviderPreset` deprecated 字段 | 低 | `apiType`、`baseUrl` 已标记废弃，新代码应使用 `pricing[].endpoints` |
 | 5 | 4 个 agent 未注册 | 低 | `mimoCode`、`qoder`、`qoderCn`、`qwenCode` 被注释，需决定启用或删除 |
 | 6 | 数据模型文档过时 | 低 | PLAN.md 功能规格中的 Agent/Provider 类型定义与实际代码不一致 |
@@ -170,18 +170,17 @@ Provider 与 Preset 没有持久引用关系。Preset 仅是模板，填充后 P
 
 ### 改进计划
 
-#### P0 - 立即处理
+#### ~~P0 - 立即处理~~ ✅
 
-**1. 修复 `expandHome` 边界 bug**
+**~~1. 修复 `expandHome` 边界 bug~~** ✅
 
 ```ts
-// 当前：path.slice(2) — 对 "~" 产生 ""
-// 修复：使用 path.replace(/^~/, homedir())
+// 已修复：path.replace(/^~/, homedir())
 ```
 
 涉及文件：`src/utils/path.ts`
 
-**2. 清理 vite.config.ts external 列表**
+**~~2. 清理 vite.config.ts external 列表~~** ✅
 
 移除 `yaml`、`chalk`（`package.json` 中无依赖）。如未来需要再加回。
 
@@ -189,7 +188,7 @@ Provider 与 Preset 没有持久引用关系。Preset 仅是模板，填充后 P
 
 #### P1 - 中优先级
 
-**3. 添加 eslint 配置**
+**~~3. 添加 eslint 配置~~** ✅
 
 二选一：
 - 添加 `eslint.config.js`（flat config，ESM 友好）

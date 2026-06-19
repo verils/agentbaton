@@ -25,8 +25,6 @@ export default defineConfig({
         // npm 依赖
         'commander',
         '@clack/prompts',
-        'yaml',
-        'chalk',
       ],
     },
     outDir: 'dist',

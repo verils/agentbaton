@@ -172,7 +172,7 @@ async function handleSetProviderApiKey(provider: Provider, config: AgentBatonCon
 }
 
 export function findProvider(config: AgentBatonConfig, providerId: string) {
-  return config.providers.find(p => p.id === providerId) !!;
+  return config.providers.find(p => p.id === providerId) !;
 }
 
 async function handleModifyProvider(providerId: string, config: AgentBatonConfig) {
