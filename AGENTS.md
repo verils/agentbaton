@@ -1,50 +1,82 @@
 # AGENTS.md
 
-CLI tool (ESM) that configures AI coding agents (Claude Code, Codex CLI, etc.) with cloud provider API keys. Written in TypeScript, built with Vite targeting Node.js 22+.
+面向智能体的项目参考文档。如需了解项目概况和使用方法，见 `README.md`；计划与进度见 `PLAN.md`。
 
-## Commands
+## 项目简介
 
-| Action | Command |
-|--------|---------|
-| Build | `pnpm build` |
-| Test | `pnpm test` |
-| Test (watch) | `pnpm test:watch` |
-| Type check | `pnpm typecheck` |
-| Lint | `pnpm lint` (no eslint config file exists yet — script may fail) |
-| Run built CLI | `pnpm start` or `node dist/cli.js` |
-| Dev (watch build) | `pnpm dev` |
+CLI 工具 (ESM)，为编程智能体（Claude Code、Codex CLI 等）配置云厂商 API 密钥。TypeScript 编写，Vite 构建，目标 Node.js 22+。
 
-Always run `pnpm typecheck` and `pnpm test` before considering work done.
+## 常用命令
 
-## Architecture
+| 操作 | 命令 |
+|------|------|
+| 构建 | `pnpm build` |
+| 测试 | `pnpm test` |
+| 测试 (watch) | `pnpm test:watch` |
+| 类型检查 | `pnpm typecheck` |
+| Lint | `pnpm lint`（⚠️ 无 eslint 配置文件，会报错） |
+| 运行 CLI | `pnpm start` 或 `node dist/cli.js` |
+| 开发 (watch) | `pnpm dev` |
 
-Single-package repo, not a monorepo. Entry point: `src/cli.ts` → `dist/cli.js`.
+完成任务前必须运行 `pnpm typecheck` 和 `pnpm test`。
+
+## 架构
+
+单包仓库。入口：`src/cli.ts` → `dist/cli.js`。
 
 ```
 src/
-  cli.ts            # Commander entry point, delegates to prompt/
-  agent/            # Agent definitions (one file per agent + builtin.ts registry)
-  provider/presets/ # Provider templates (one file per provider + index.ts registry)
-  config/           # Load/save ~/.agentbaton/config.json (JSON, not TOML)
-  prompt/           # TUI menus via @clack/prompts
-  types/            # Shared interfaces (AgentDefinition, ProviderPreset, AgentBatonConfig, etc.)
-  utils/            # Path helpers, string width, command detection
+  cli.ts                # Commander 入口，委托给 prompt/
+  agent/
+    builtin.ts          # Agent 注册表
+    detect.ts           # 命令检测（where/which），判断 agent 是否已安装
+    claude-code.ts      # 各 agent 定义（一个文件一个 agent）
+    ...
+  provider/
+    presets/
+      index.ts          # Provider 注册表
+      bailian.ts        # 各 provider 模板（一个文件一个 provider）
+      ...
+  config/
+    index.ts            # re-export
+    loader.ts           # loadConfig/saveConfig、readJson/writeJson、readToml/writeToml
+    paths.ts            # ~/.agentbaton/ 路径常量
+  prompt/
+    main.ts             # TUI 主菜单
+    agent.ts            # 智能体设置菜单
+    provider.ts         # 供应商设置菜单
+    back.ts             # 返回选项
+    index.ts            # re-export
+  types/
+    index.ts            # re-export
+    agent.ts            # AgentDefinition、AgentNativeConfig 等
+    config.ts           # AgentBatonConfig
+    model.ts            # ApiType、Model
+    provider.ts         # ProviderPreset、ProviderPricing 等
+  utils/
+    index.ts            # re-export
+    path.ts             # expandHome、resolvePlatformHome、getCurrentPlatform
+    string.ts           # 字符串宽度计算
+    stdin.ts            # stdin 工具
 ```
 
-## Key patterns
+## 核心模式
 
-- **Agent definitions**: Each agent is a `const` object implementing `AgentDefinition` (in `src/agent/<name>.ts`). Register it in `src/agent/builtin.ts`. Agents define `parseConfig()` and `saveConfig()` for reading/writing the agent's native config files.
-- **Provider presets**: Each provider is a `const` implementing `ProviderPreset` (in `src/provider/presets/<name>.ts`). Register it in `src/provider/presets/index.ts`. Presets are templates — after user creates a provider instance, it's stored independently.
-- **Config persistence**: All user config lives in `~/.agentbaton/config.json` (JSON). The `readJson`/`writeJson` helpers also handle TOML for agent-native config files.
-- **API type matching**: Agents declare an `ApiType` (`'openai' | 'anthropic' | 'google'`); providers declare endpoints with types. Only matching pairs can be enabled.
-- **Vite build**: Library mode targeting `node22`, ESM format, no minification, all npm deps externalized. If adding a new npm dependency, add it to `rollupOptions.external` in `vite.config.ts`.
+- **Agent 定义**：每个 agent 是一个 `const` 对象，实现 `AgentDefinition`（`src/agent/<name>.ts`），在 `src/agent/builtin.ts` 注册。接口方法为 `loadNativeConfig()`（读取原生配置）和 `saveNativeConfig()`（写入原生配置）。
+- **Provider 模板**：每个 provider 是一个 `const`，实现 `ProviderPreset`（`src/provider/presets/<name>.ts`），在 `src/provider/presets/index.ts` 注册。Preset 是模板，用户创建 provider 实例后独立存储，无持久引用。
+- **配置持久化**：用户配置统一存储在 `~/.agentbaton/config.json`（JSON）。TOML 读写由独立的 `readToml`/`writeToml` 处理（用于 agent 原生配置文件）。
+- **API 类型匹配**：Agent 声明 `ApiType`（`'openai' | 'anthropic' | 'google'`）；Provider 通过 `pricing[].endpoints` 声明各端点的类型，仅匹配的 pair 可启用。
+- **多供应商模式**：Agent 可设置 `multiProvider: true`，此时通过 `AgentProviderBinding` 管理多个供应商绑定，而非单一模型槽位。
+- **Vite 构建**：Library 模式，target `node22`，ESM 格式，不压缩，所有 npm 依赖 externalized。新增依赖需加入 `vite.config.ts` 的 `rollupOptions.external`。
 
-## Testing
+## 测试
 
-Uses Vitest. Tests in `tests/` mirror the source structure. Agent tests use a shared `defineSyncAgentTests()` helper (`tests/agent/define-sync-agent-tests.ts`) for common metadata assertions.
+使用 Vitest，测试文件在 `tests/` 下镜像源码结构。Agent 测试共享 `defineSyncAgentTests()` 辅助函数（`tests/agent/define-sync-agent-tests.ts`）做通用元数据断言。
 
-## Gotchas
+## 已知问题
 
-- `pnpm lint` references eslint but no `.eslintrc` or `eslint.config.*` exists — it will likely error.
-- Several agents are commented out in `src/agent/builtin.ts` (geminiCli, opencode, mimoCode, qoder, qoderCn, qwenCode). They exist as files but aren't registered.
-- `expandHome('~')` splits on index 2 (`path.slice(2)`) — this assumes `~/...` format (tilde + slash). Single `~` would produce an empty slice.
+- `pnpm lint` 引用 eslint 但仓库中无 `.eslintrc` 或 `eslint.config.*`，执行会报错。
+- `src/agent/builtin.ts` 中 `mimoCode`、`qoder`、`qoderCn`、`qwenCode` 被注释，文件存在但未注册。`geminiCli` 和 `opencode` 已启用。
+- `expandHome('~')` 使用 `path.slice(2)`，假设输入为 `~/...` 格式。单独 `~` 会产生空字符串。
+- `ProviderPreset` 中 `apiType` 和 `baseUrl` 字段已标记 `@deprecated`，新代码应使用 `pricing[].endpoints`。
+- `vite.config.ts` 的 `external` 列表包含 `yaml` 和 `chalk`，但 `package.json` 中无这两个依赖（可能为历史残留）。
