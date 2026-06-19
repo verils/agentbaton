@@ -3,7 +3,7 @@ import { resolvePlatformHome, maskApiKey } from '../utils';
 import type { Agent, AgentBatonConfig, AgentNativeConfig, AgentProviderBinding, AgentDefinition, AgentModel } from '../types';
 import { detectInstalledAgents } from "../agent/detect";
 import { findAgent } from "../agent/builtin";
-import { backOption } from "./back";
+import { backOption, mainMenuOption } from "./back";
 import { saveConfig } from "../config";
 import { handleAddProvider } from "./provider";
 
@@ -22,10 +22,10 @@ export async function openAgentMenu(config: AgentBatonConfig): Promise<void> {
 
   const agentId = await select({
     message: '选择智能体：',
-    options: [ ...agentOptions, backOption ],
+    options: [ ...agentOptions, backOption, mainMenuOption ],
   });
 
-  if (isCancel(agentId) || agentId === backOption.value) {
+  if (isCancel(agentId) || agentId === backOption.value || agentId === mainMenuOption.value) {
     return;
   }
 
@@ -50,10 +50,14 @@ async function openMultiProviderAgentMenu(agent: AgentDefinition, config: AgentB
         { value: 'add', label: '添加供应商' },
         { value: 'remove', label: '移除供应商' },
         backOption,
+        mainMenuOption,
       ],
     });
 
     if (isCancel(action) || action === backOption.value) {
+      return;
+    }
+    if (action === mainMenuOption.value) {
       return;
     }
 
@@ -133,7 +137,9 @@ async function handleAddProviderBinding(agent: AgentDefinition, config: AgentBat
   if (compatibleProviders.length === 0) {
     log.warn(`没有更多可添加的兼容 ${agent.apiType} 类型供应商`);
     const goAdd = await confirm({ message: '是否先去"模型供应商"菜单添加新供应商？' });
-    if (isCancel(goAdd) || !goAdd) return;
+    if (isCancel(goAdd) || !goAdd) {
+      return;
+    }
     await handleAddProvider(config);
     return;
   }
@@ -193,16 +199,23 @@ async function handleRemoveProviderBinding(agent: AgentDefinition, config: Agent
 
   const targetId = await select({
     message: '选择要移除的供应商：',
-    options: [...options, backOption],
+    options: [...options, backOption, mainMenuOption],
   });
 
-  if (isCancel(targetId) || targetId === backOption.value) return;
+  if (isCancel(targetId) || targetId === backOption.value) {
+    return;
+  }
+  if (targetId === mainMenuOption.value) {
+    return;
+  }
 
   const provider = config.providers.find(p => p.id === targetId);
   const name = provider?.name ?? targetId;
 
   const yes = await confirm({ message: `确认移除 ${name}？` });
-  if (isCancel(yes) || !yes) return;
+  if (isCancel(yes) || !yes) {
+    return;
+  }
 
   const backup = bindings[targetId];
   delete bindings[targetId];
@@ -230,7 +243,9 @@ async function syncMultiProviderNativeConfig(agent: AgentDefinition, config: Age
 
   for (const [providerId, binding] of Object.entries(bindings)) {
     const provider = config.providers.find(p => p.id === providerId);
-    if (!provider) continue;
+    if (!provider) {
+      continue;
+    }
     const endpoint = provider.endpoints.find(e => e.type === agent.apiType);
     mergedProviders[providerId] = {
       apiKey: binding.apiKey ?? provider.apiKey,
@@ -258,20 +273,28 @@ async function openSingleProviderAgentMenu(agent: AgentDefinition, config: Agent
         { value: 'chooseProvider', label: '设置模型供应商' },
         { value: 'chooseModel', label: '设置模型' },
         backOption,
+        mainMenuOption,
       ],
     });
 
     if (isCancel(action) || action === backOption.value) {
       return;
     }
+    if (action === mainMenuOption.value) {
+      return;
+    }
 
     try {
       switch (action) {
         case 'chooseProvider':
-          await handleChooseProvider(agent, config);
+          if (await handleChooseProvider(agent, config)) {
+            return;
+          }
           break;
         case 'chooseModel':
-          await handleChooseModel(agent, config);
+          if (await handleChooseModel(agent, config)) {
+            return;
+          }
           break;
       }
     } catch (e) {
@@ -316,19 +339,23 @@ async function displayAgentConfig(agent: AgentDefinition): Promise<void> {
 /**
  * 切换供应商
  */
-async function handleChooseProvider(agent: AgentDefinition, config: AgentBatonConfig): Promise<void> {
+async function handleChooseProvider(agent: AgentDefinition, config: AgentBatonConfig): Promise<boolean> {
   const compatibleProviders = config.providers
     .filter(p => p.endpoints.find(e => e.type === agent.apiType));
 
   if (compatibleProviders.length === 0) {
     log.warn(`没有兼容 ${agent.apiType} 类型的供应商`);
     const goAdd = await confirm({ message: '是否立即添加？' });
-    if (isCancel(goAdd) || !goAdd) return;
+    if (isCancel(goAdd) || !goAdd) {
+      return false;
+    }
     await handleAddProvider(config);
     // 重新检查兼容供应商
     const newCompatible = config.providers
       .filter(p => p.endpoints.find(e => e.type === agent.apiType));
-    if (newCompatible.length === 0) return;
+    if (newCompatible.length === 0) {
+      return false;
+    }
     // 更新兼容供应商列表，继续选择流程
     compatibleProviders.length = 0;
     compatibleProviders.push(...newCompatible);
@@ -336,28 +363,37 @@ async function handleChooseProvider(agent: AgentDefinition, config: AgentBatonCo
 
   const providerId = await select({
     message: '切换到：',
-    options: compatibleProviders.map((p) => ({
-      value: p.id,
-      label: p.name,
-    })),
+    options: [
+      ...compatibleProviders.map((p) => ({
+        value: p.id,
+        label: p.name,
+      })),
+      backOption,
+      mainMenuOption,
+    ],
   });
 
-  if (isCancel(providerId)) {
-    return;
+  if (isCancel(providerId) || providerId === backOption.value) {
+    return false;
+  }
+  if (providerId === mainMenuOption.value) {
+    return true;
   }
 
   const provider = compatibleProviders.find((p) => p.id === providerId)!;
 
   const yes = await confirm({ message: '确认切换？' });
   if (isCancel(yes) || !yes) {
-    return;
+    return false;
   }
 
   const configAgent: Agent = config.agents[agent.id] ?? { id: agent.id, currentProvider: '', modelSlots: {} };
 
   // 保存当前供应商的模型槽位到 history
   if (configAgent.currentProvider && Object.keys(configAgent.modelSlots).length > 0) {
-    if (!configAgent.history) configAgent.history = {};
+    if (!configAgent.history) {
+      configAgent.history = {};
+    }
     configAgent.history[configAgent.currentProvider] = { ...configAgent.modelSlots };
   }
 
@@ -381,30 +417,39 @@ async function handleChooseProvider(agent: AgentDefinition, config: AgentBatonCo
     if (Object.keys(configAgent.modelSlots).length === 0 && agent.models.length > 0) {
       const configure = await confirm({ message: '当前供应商尚未配置模型，是否立即设置？' });
       if (!isCancel(configure) && configure) {
-        await handleChooseModel(agent, config);
+        if (await handleChooseModel(agent, config)) {
+          return true;
+        }
       }
     }
   } catch (e) {
     log.error(`切换失败：${e instanceof Error ? e.message : String(e)}`);
   }
+  return false;
 }
 
-async function handleChooseModel(agent: AgentDefinition, config: AgentBatonConfig): Promise<void> {
+async function handleChooseModel(agent: AgentDefinition, config: AgentBatonConfig): Promise<boolean> {
   const agentAssignment = config.agents[agent.id];
   if (!agentAssignment?.currentProvider) {
     log.warn('尚未设置模型供应商');
     const goSet = await confirm({ message: '是否立即设置？' });
-    if (isCancel(goSet) || !goSet) return;
-    await handleChooseProvider(agent, config);
+    if (isCancel(goSet) || !goSet) {
+      return false;
+    }
+    if (await handleChooseProvider(agent, config)) {
+      return true;
+    }
     // 重新检查绑定状态
     const updated = config.agents[agent.id];
-    if (!updated?.currentProvider) return;
+    if (!updated?.currentProvider) {
+      return false;
+    }
   }
 
   const provider = config.providers.find(p => p.id === agentAssignment.currentProvider);
   if (!provider) {
     log.error('当前绑定的供应商不存在，请重新设置');
-    return;
+    return false;
   }
 
   const modelOptions = [
@@ -423,7 +468,9 @@ async function handleChooseModel(agent: AgentDefinition, config: AgentBatonConfi
       options: modelOptions,
     });
 
-    if (isCancel(selected)) return;
+    if (isCancel(selected)) {
+      return false;
+    }
 
     let modelId = selected as string;
     if (modelId === '__manual__') {
@@ -431,7 +478,9 @@ async function handleChooseModel(agent: AgentDefinition, config: AgentBatonConfi
         message: `输入 ${slot.name} 的模型 ID`,
         placeholder: '例如: gpt-4o',
       });
-      if (isCancel(manual)) return;
+      if (isCancel(manual)) {
+        return false;
+      }
       modelId = manual as string;
     }
 
@@ -452,4 +501,5 @@ async function handleChooseModel(agent: AgentDefinition, config: AgentBatonConfi
   } catch (e) {
     log.error(`保存模型失败：${e instanceof Error ? e.message : String(e)}`);
   }
+  return false;
 }

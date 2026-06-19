@@ -194,7 +194,7 @@ Provider 与 Preset 没有持久引用关系。Preset 仅是模板，填充后 P
 - 添加 `eslint.config.js`（flat config，ESM 友好）
 - 或从 `package.json` 移除 lint 脚本，避免误导
 
-**4. 增加快捷返回主菜单**
+**~~4. 增加快捷返回主菜单~~** ✅
 
 在深层菜单中增加"返回主菜单"选项。
 

@@ -1,7 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import { confirm, isCancel, log, password, select, text } from '@clack/prompts';
 import { saveConfig } from '../config';
-import { backOption } from "./back";
+import { backOption, mainMenuOption } from "./back";
 import { findProviderPreset, providerPresets } from "../provider/presets";
 import { builtinAgents } from "../agent/builtin";
 import { AgentBatonConfig, ApiType, Provider } from "../types";
@@ -22,11 +22,15 @@ export async function openProviderMenu(config: AgentBatonConfig): Promise<void> 
     options: [
       ...providerOptions,
       { value: 'addProvider', label: '添加模型供应商' },
-      backOption
+      backOption,
+      mainMenuOption,
     ],
   });
 
   if (isCancel(providerChoice) || providerChoice === backOption.value) {
+    return;
+  }
+  if (providerChoice === mainMenuOption.value) {
     return;
   }
 
@@ -52,10 +56,14 @@ export async function handleAddProvider(config: AgentBatonConfig) {
       ...providerPresetOptions,
       { value: 'custom', label: '自定义模型供应商' },
       backOption,
+      mainMenuOption,
     ]
   });
 
   if (isCancel(choice) || choice === backOption.value) {
+    return;
+  }
+  if (choice === mainMenuOption.value) {
     return;
   }
 
@@ -110,7 +118,9 @@ async function handleAddCustomProvider(config: AgentBatonConfig) {
     message: '输入供应商名称',
     placeholder: '例如: My Provider',
   });
-  if (isCancel(name)) return;
+  if (isCancel(name)) {
+    return;
+  }
 
   const apiType = await select({
     message: '选择 API 类型',
@@ -120,19 +130,25 @@ async function handleAddCustomProvider(config: AgentBatonConfig) {
       { value: 'google', label: 'Google' },
     ],
   });
-  if (isCancel(apiType)) return;
+  if (isCancel(apiType)) {
+    return;
+  }
 
   const baseUrl = await text({
     message: '输入 Base URL',
     placeholder: '例如: https://api.example.com/v1',
   });
-  if (isCancel(baseUrl)) return;
+  if (isCancel(baseUrl)) {
+    return;
+  }
 
   const apiKey = await password({
     message: '输入 API Key',
     mask: '*',
   });
-  if (isCancel(apiKey)) return;
+  if (isCancel(apiKey)) {
+    return;
+  }
 
   const newProvider = {
     id: randomUUID(),
@@ -205,17 +221,23 @@ async function handleModifyProvider(providerId: string, config: AgentBatonConfig
           hint: isUsed ? '当前供应商正在被使用' : undefined
         },
         backOption,
+        mainMenuOption,
       ],
     });
 
     if (isCancel(action) || action === backOption.value) {
       return;
     }
+    if (action === mainMenuOption.value) {
+      return;
+    }
 
     try {
       switch (action) {
         case 'setModels':
-          await handleSetModels(provider, config);
+          if (await handleSetModels(provider, config)) {
+            return;
+          }
           break;
         case 'setApiKey':
           await handleSetProviderApiKey(provider, config);
@@ -224,7 +246,9 @@ async function handleModifyProvider(providerId: string, config: AgentBatonConfig
           await handleCleanApiKey(provider, config);
           break;
         case 'deleteProvider':
-          if (await handleDeleteProvider(provider, config)) return;
+          if (await handleDeleteProvider(provider, config)) {
+            return;
+          }
           break;
       }
     } catch (e) {
@@ -271,7 +295,9 @@ async function addProvider(config: AgentBatonConfig, providerPresetId: string, a
 
 async function handleCleanApiKey(provider: Provider, config: AgentBatonConfig) {
   const yes = await confirm({ message: `确认清除 ${provider.name} 的 API Key？` });
-  if (isCancel(yes) || !yes) return;
+  if (isCancel(yes) || !yes) {
+    return;
+  }
 
   provider.apiKey = '';
   try {
@@ -284,7 +310,9 @@ async function handleCleanApiKey(provider: Provider, config: AgentBatonConfig) {
 
 async function handleDeleteProvider(provider: Provider, config: AgentBatonConfig): Promise<boolean> {
   const yes = await confirm({ message: `确认删除供应商 ${provider.name}？此操作不可撤销。` });
-  if (isCancel(yes) || !yes) return false;
+  if (isCancel(yes) || !yes) {
+    return false;
+  }
 
   // 级联清理：清除所有绑定此供应商的 agent 配置
   for (const [agentId, agentAssignment] of Object.entries(config.agents)) {
@@ -309,7 +337,9 @@ async function handleDeleteProvider(provider: Provider, config: AgentBatonConfig
 
   // 从 providers 列表中移除
   const idx = config.providers.findIndex(p => p.id === provider.id);
-  if (idx !== -1) config.providers.splice(idx, 1);
+  if (idx !== -1) {
+    config.providers.splice(idx, 1);
+  }
 
   try {
     await saveConfig(config);
@@ -317,13 +347,15 @@ async function handleDeleteProvider(provider: Provider, config: AgentBatonConfig
     return true;
   } catch (e) {
     // 回滚
-    if (idx !== -1) config.providers.splice(idx, 0, provider);
+    if (idx !== -1) {
+      config.providers.splice(idx, 0, provider);
+    }
     log.error(`删除失败：${e instanceof Error ? e.message : String(e)}`);
     return false;
   }
 }
 
-async function handleSetModels(provider: Provider, config: AgentBatonConfig) {
+async function handleSetModels(provider: Provider, config: AgentBatonConfig): Promise<boolean> {
   const action = await select({
     message: '选择操作',
     options: [
@@ -331,23 +363,29 @@ async function handleSetModels(provider: Provider, config: AgentBatonConfig) {
       { value: 'add', label: '手动添加模型' },
       { value: 'clear', label: '清空模型列表' },
       backOption,
+      mainMenuOption,
     ],
   });
 
-  if (isCancel(action) || action === backOption.value) return;
+  if (isCancel(action) || action === backOption.value) {
+    return false;
+  }
+  if (action === mainMenuOption.value) {
+    return true;
+  }
 
   switch (action) {
     case 'fetch': {
       const preset = providerPresets.find(p => p.name === provider.name);
       if (!preset?.fetchModels) {
         log.warn('此供应商不支持从 API 获取模型列表');
-        return;
+        return false;
       }
 
       const endpoint = provider.endpoints[0];
       if (!endpoint) {
         log.error('供应商缺少 API 端点');
-        return;
+        return false;
       }
 
       log.info('正在获取模型列表...');
@@ -370,13 +408,17 @@ async function handleSetModels(provider: Provider, config: AgentBatonConfig) {
         message: '输入模型 ID',
         placeholder: '例如: gpt-4o',
       });
-      if (isCancel(modelId)) return;
+      if (isCancel(modelId)) {
+        return false;
+      }
 
       const modelName = await text({
         message: '输入模型显示名称',
         placeholder: '例如: GPT-4o',
       });
-      if (isCancel(modelName)) return;
+      if (isCancel(modelName)) {
+        return false;
+      }
 
       provider.models.push({
         id: modelId as string,
@@ -395,7 +437,9 @@ async function handleSetModels(provider: Provider, config: AgentBatonConfig) {
     }
     case 'clear': {
       const yes = await confirm({ message: `确认清空 ${provider.name} 的模型列表？` });
-      if (isCancel(yes) || !yes) return;
+      if (isCancel(yes) || !yes) {
+        return false;
+      }
 
       const backup = provider.models;
       provider.models = [];
@@ -409,4 +453,5 @@ async function handleSetModels(provider: Provider, config: AgentBatonConfig) {
       break;
     }
   }
+  return false;
 }
