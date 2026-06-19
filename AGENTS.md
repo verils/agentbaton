@@ -73,10 +73,4 @@ src/
 
 使用 Vitest，测试文件在 `tests/` 下镜像源码结构。Agent 测试共享 `defineSyncAgentTests()` 辅助函数（`tests/agent/define-sync-agent-tests.ts`）做通用元数据断言。
 
-## 已知问题
 
-- `pnpm lint` 引用 eslint 但仓库中无 `.eslintrc` 或 `eslint.config.*`，执行会报错。
-- `src/agent/builtin.ts` 中 `mimoCode`、`qoder`、`qoderCn`、`qwenCode` 被注释，文件存在但未注册。`geminiCli` 和 `opencode` 已启用。
-- `expandHome('~')` 使用 `path.slice(2)`，假设输入为 `~/...` 格式。单独 `~` 会产生空字符串。
-- `ProviderPreset` 中 `apiType` 和 `baseUrl` 字段已标记 `@deprecated`，新代码应使用 `pricing[].endpoints`。
-- `vite.config.ts` 的 `external` 列表包含 `yaml` 和 `chalk`，但 `package.json` 中无这两个依赖（可能为历史残留）。

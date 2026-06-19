@@ -147,19 +147,57 @@ Provider 与 Preset 没有持久引用关系。Preset 仅是模板，填充后 P
 添加供应商 → 配置智能体绑定供应商 → 设置模型 → 使用
 ```
 
+#### ✅ 已实现
+
+- 多供应商模式（`multiProvider`、`AgentProviderBinding`）
+- 动态模型获取（`fetchModels()`）
+- 多付费模式（`ProviderPricing`）
+- 配置 I/O 测试（`tests/config-io.test.ts`）
+- Agent 元数据测试（`tests/agent/*.test.ts`）
+
 #### ⚠️ 已知问题
 
-（暂无）
+| # | 问题 | 严重度 | 说明 |
+|---|------|--------|------|
+| 1 | `expandHome('~')` 边界 bug | 中 | `path.slice(2)` 假设 `~/...` 格式，单独 `~` 产生空字符串 |
+| 2 | `pnpm lint` 无法执行 | 低 | 引用 eslint 但仓库中无配置文件 |
+| 3 | `vite.config.ts` external 残留 | 低 | `yaml`、`chalk` 在 external 列表但 `package.json` 中无此依赖 |
+| 4 | `ProviderPreset` deprecated 字段 | 低 | `apiType`、`baseUrl` 已标记废弃，新代码应使用 `pricing[].endpoints` |
+| 5 | 4 个 agent 未注册 | 低 | `mimoCode`、`qoder`、`qoderCn`、`qwenCode` 被注释，需决定启用或删除 |
+| 6 | 数据模型文档过时 | 低 | PLAN.md 功能规格中的 Agent/Provider 类型定义与实际代码不一致 |
 
 ---
 
 ### 改进计划
 
+#### P0 - 立即处理
+
+**1. 修复 `expandHome` 边界 bug**
+
+```ts
+// 当前：path.slice(2) — 对 "~" 产生 ""
+// 修复：使用 path.replace(/^~/, homedir())
+```
+
+涉及文件：`src/utils/path.ts`
+
+**2. 清理 vite.config.ts external 列表**
+
+移除 `yaml`、`chalk`（`package.json` 中无依赖）。如未来需要再加回。
+
+涉及文件：`vite.config.ts`
+
 #### P1 - 中优先级
 
-**1. 增加快捷返回主菜单**
+**3. 添加 eslint 配置**
 
-目标：在深层菜单中增加"返回主菜单"选项。
+二选一：
+- 添加 `eslint.config.js`（flat config，ESM 友好）
+- 或从 `package.json` 移除 lint 脚本，避免误导
+
+**4. 增加快捷返回主菜单**
+
+在深层菜单中增加"返回主菜单"选项。
 
 ```typescript
 const action = await select({
@@ -175,19 +213,35 @@ const action = await select({
 
 涉及文件：`src/prompt/agent.ts`、`src/prompt/provider.ts`
 
+**5. 清理 deprecated 字段**
+
+评估 `ProviderPreset.apiType` 和 `ProviderPreset.baseUrl` 的使用情况：
+- 若无调用方 → 直接移除
+- 若有调用方 → 迁移到 `pricing[].endpoints` 后移除
+
+**6. 处理未注册 agent**
+
+对 `mimoCode`、`qoder`、`qoderCn`、`qwenCode` 逐个评估：
+- 已可用 → 取消注释注册
+- 未完成 → 标记为开发中或删除文件
+
 #### P2 - 低优先级
 
-**2. 配置导入导出**
+**7. 配置导入导出**
 
 - 导出当前配置到文件
 - 从文件导入配置
 - 合并或覆盖选项
 
-**3. 批量操作**
+**8. 批量操作**
 
 - 选择多个智能体
 - 统一绑定同一供应商
 - 统一设置模型
+
+**9. 更新功能规格文档**
+
+PLAN.md 中的 Agent/Provider 类型定义与实际代码有差异，需同步更新。
 
 ---
 
@@ -205,9 +259,9 @@ const action = await select({
 - 使用 discriminated union 处理 cancel 逻辑
 - 减少类型断言
 
-**3. 测试覆盖**
+**3. 测试扩展**
 
-当前无测试，建议优先覆盖：
-- 配置加载/保存逻辑
+已有测试覆盖：配置 I/O、Agent 元数据。建议补充：
 - 级联删除逻辑
 - 供应商兼容性检查
+- `expandHome` 边界用例
