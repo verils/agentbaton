@@ -3,8 +3,15 @@ import type { ProviderPreset } from '../../types';
 export const zhipu: ProviderPreset = {
   id: 'zhipu',
   name: '智谱 AI',
-  apiType: 'openai',
-  baseUrl: 'https://open.bigmodel.cn/api/paas/v4',
+  pricing: [
+    {
+      id: 'default',
+      name: '默认',
+      endpoints: {
+        openai: { apiType: 'openai', baseUrl: 'https://open.bigmodel.cn/api/paas/v4' },
+      },
+    },
+  ],
   models: [
     {
       id: 'glm-4-flash',

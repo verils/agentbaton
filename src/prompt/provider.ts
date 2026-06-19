@@ -265,9 +265,7 @@ async function addProvider(config: AgentBatonConfig, providerPresetId: string, a
     : preset.pricing?.find(p => p.id === 'default') ?? preset.pricing?.[0];
   const endpoints: AgentBatonConfig['providers'][number]['endpoints'] = pricing
     ? Object.values(pricing.endpoints).map((e) => ({ type: e.apiType, baseUrl: e.baseUrl }))
-    : preset.apiType && preset.baseUrl
-      ? [ { type: preset.apiType, baseUrl: preset.baseUrl } ]
-      : [];
+    : [];
 
   const models = (preset.models ?? []).map((m) => ({
     id: m.id,

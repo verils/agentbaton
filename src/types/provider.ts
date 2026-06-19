@@ -15,11 +15,6 @@ export interface ProviderPreset {
   /** 获取可用模型列表 */
   fetchModels?(apiType: ApiType, baseUrl: string, apiKey: string): Promise<ProviderModel[]>
 
-  /** @deprecated 提供的 API 协议类型 */
-  apiType?: ApiType;
-  /** @deprecated API 基础地址 */
-  baseUrl?: string;
-
   /** 可用模型列表 */
   models?: ProviderModel[];
 }
