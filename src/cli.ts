@@ -6,7 +6,7 @@ const program = new Command();
 program
   .name('agentbaton')
   .description('一个基于 CLI 的编程智能体配置管理器')
-  .version('0.1.0');
+  .version('0.3.0');
 
 // 注册子命令
 // program.addCommand(createAgentCommand());

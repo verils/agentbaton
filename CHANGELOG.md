@@ -2,6 +2,29 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v0.3.0] - 2026-06-21
+
+### Added
+
+- **Cline Agent**: Added Cline agent definition with configuration management
+- **Pi Agent**: Added Pi agent definition and configuration support
+- **Kimi Provider**: Added Moonshot (月之暗面) Kimi model provider preset
+- **ESLint Configuration**: Added `eslint.config.js` with TypeScript rules
+
+### Fixed
+
+- **Path Expansion**: Fixed `expandHome('~')` edge case bug
+- **Lint Script**: Fixed `pnpm lint` not working due to missing ESLint config
+
+### Changed
+
+- **Provider Presets**: Migrated all provider presets from `apiType`/`baseUrl` to `pricing` structure
+- **Menu Options**: Unified menu option definitions and code style
+- **Slot Descriptions**: Marked slot description fields as deprecated
+- **Cleanup**: Removed deprecated `apiType`/`baseUrl` fields and fallback code from `ProviderPreset`
+
+---
+
 ## [v0.2.0] - 2026-06-18
 
 ### Added
