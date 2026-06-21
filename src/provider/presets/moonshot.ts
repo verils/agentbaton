@@ -9,21 +9,30 @@ export const moonshot: ProviderPreset = {
       name: '默认',
       endpoints: {
         openai: { apiType: 'openai', baseUrl: 'https://api.moonshot.cn/v1' },
+        anthropic: { apiType: 'anthropic', baseUrl: 'https://api.moonshot.cn/anthropic' },
       },
     },
   ],
   models: [
     {
-      id: 'moonshot-v1-8k',
-      name: 'Moonshot V1 8K',
+      id: 'kimi-k2.7-code',
+      name: 'Kimi K2.7 Code',
+      contextWindowSize: 1000000
     },
     {
-      id: 'moonshot-v1-32k',
-      name: 'Moonshot V1 32K',
+      id: 'kimi-k2.7-code-highspeed',
+      name: 'Kimi K2.7 Code HighSpeed',
+      contextWindowSize: 1000000
     },
     {
-      id: 'moonshot-v1-128k',
-      name: 'Moonshot V1 128K',
+      id: 'kimi-k2.6',
+      name: 'Kimi K2.6',
+      contextWindowSize: 1000000
     },
+    {
+      id: 'kimi-k2.5',
+      name: 'Kimi K2.5',
+      contextWindowSize: 1000000
+    }
   ],
 };

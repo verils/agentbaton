@@ -3,12 +3,13 @@ import {bailian} from "./bailian";
 import {deepseek} from "./deepseek";
 import {xiaomiMimo} from "./xiaomi-mimo";
 import {volcengine} from "./volcengine";
+import { moonshot } from "./moonshot";
 
 export const providerPresets: ProviderPreset[] = [
   bailian,
   deepseek,
   // minimax,
-  // moonshot,
+  moonshot,
   // tencent,
   volcengine,
   xiaomiMimo,
