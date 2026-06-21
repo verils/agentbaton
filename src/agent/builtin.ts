@@ -4,9 +4,11 @@ import {codexCli} from "./codex-cli";
 import {geminiCli} from "./gemini-cli";
 import {opencode} from "./opencode";
 import { pi } from "./pi";
+import { cline } from "./cline";
 
 export const builtinAgents: AgentDefinition[] = [
   claudeCode,
+  cline,
   codexCli,
   geminiCli,
   opencode,
