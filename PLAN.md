@@ -159,12 +159,7 @@ Provider 与 Preset 没有持久引用关系。Preset 仅是模板，填充后 P
 
 | # | 问题 | 严重度 | 说明 |
 |---|------|--------|------|
-| 1 | ~~`expandHome('~')` 边界 bug~~ | ~~中~~ | ✅ 已修复：改用 `path.replace(/^~/, homedir())` |
-| 2 | ~~`pnpm lint` 无法执行~~ | ~~低~~ | ✅ 已修复：添加 `eslint.config.js`（flat config） |
-| 3 | ~~`vite.config.ts` external 残留~~ | ~~低~~ | ✅ 已修复：移除 `yaml`、`chalk` |
-| 4 | ~~`ProviderPreset` deprecated 字段~~ | ~~低~~ | ✅ 已修复：4 个 preset 迁移到 `pricing`，移除 `apiType`/`baseUrl` 字段和 fallback 代码 |
-| 5 | 4 个 agent 未注册 | 低 | `mimoCode`、`qoder`、`qoderCn`、`qwenCode` 被注释，需决定启用或删除 |
-| 6 | 数据模型文档过时 | 低 | PLAN.md 功能规格中的 Agent/Provider 类型定义与实际代码不一致 |
+| 1 | 数据模型文档过时 | 低 | PLAN.md 功能规格中的 Agent/Provider 类型定义与实际代码不一致 |
 
 ---
 
@@ -217,12 +212,6 @@ const action = await select({
 评估 `ProviderPreset.apiType` 和 `ProviderPreset.baseUrl` 的使用情况：
 - 若无调用方 → 直接移除
 - 若有调用方 → 迁移到 `pricing[].endpoints` 后移除
-
-**6. 处理未注册 agent**
-
-对 `mimoCode`、`qoder`、`qoderCn`、`qwenCode` 逐个评估：
-- 已可用 → 取消注释注册
-- 未完成 → 标记为开发中或删除文件
 
 #### P2 - 低优先级
 
