@@ -38,8 +38,7 @@ export const opencode: AgentDefinition = {
   models: [
     {
       slot: 'default',
-      name: 'model',
-      description: '默认模型',
+      name: 'Default',
     },
   ],
   async loadNativeConfig(): Promise<AgentNativeConfig> {

@@ -45,8 +45,7 @@ export const geminiCli: AgentDefinition = {
   models: [
     {
       slot: 'default',
-      name: 'model',
-      description: '默认模型',
+      name: 'Default',
     },
   ],
   async loadNativeConfig(): Promise<AgentNativeConfig | null> {

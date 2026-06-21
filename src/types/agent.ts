@@ -46,7 +46,7 @@ export interface AgentModelSlot {
   slot: string;
   /** 槽位名称 */
   name: string;
-  /** 描述 */
+  /** @deprecated */
   description?: string;
 }
 
