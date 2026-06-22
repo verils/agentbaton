@@ -1,6 +1,6 @@
 import {homedir} from 'node:os';
 import {resolve} from 'node:path';
-import type {Platform} from '../types';
+import type {Platform} from '../types/index.js';
 
 /**
  * 获取当前平台

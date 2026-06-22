@@ -1,4 +1,4 @@
-import { ApiType, ProviderModel, ProviderPreset } from "../../types";
+import { ApiType, ProviderModel, ProviderPreset } from "../../types/index.js";
 
 const FALLBACK_MODELS: ProviderModel[] = [
   {

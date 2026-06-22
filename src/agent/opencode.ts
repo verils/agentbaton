@@ -1,6 +1,6 @@
-import type { AgentNativeConfig, AgentProviderBinding, AgentDefinition, AgentModel } from '../types';
-import { expandHome } from '../utils';
-import { readJson, writeJson } from '../config';
+import type { AgentNativeConfig, AgentProviderBinding, AgentDefinition, AgentModel } from '../types/index.js';
+import { expandHome } from '../utils/index.js';
+import { readJson, writeJson } from '../config/index.js';
 
 interface OpenCodeProviderOptions {
   apiKey?: string;

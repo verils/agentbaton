@@ -1,10 +1,10 @@
 import { randomUUID } from 'node:crypto';
 import { confirm, isCancel, log, password, select, text } from '@clack/prompts';
-import { saveConfig } from '../config';
-import { backOption, mainMenuOption } from "./back";
-import { findProviderPreset, providerPresets } from "../provider/presets";
-import { builtinAgents } from "../agent/builtin";
-import { AgentBatonConfig, ApiType, Provider } from "../types";
+import { saveConfig } from '../config/index.js';
+import { backOption, mainMenuOption } from "./back.js";
+import { findProviderPreset, providerPresets } from "../provider/presets/index.js";
+import { builtinAgents } from "../agent/builtin.js";
+import { AgentBatonConfig, ApiType, Provider } from "../types/index.js";
 
 const DEFAULT_CONTEXT_WINDOW = 256000;
 

@@ -1,5 +1,5 @@
-import {builtinAgents} from "./builtin";
-import {AgentDefinition} from "../types";
+import {builtinAgents} from "./builtin.js";
+import {AgentDefinition} from "../types/index.js";
 
 const commandCache = new Map<string, boolean>();
 

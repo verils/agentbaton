@@ -1,4 +1,4 @@
-import type { ProviderPreset } from '../../types';
+import type { ProviderPreset } from '../../types/index.js';
 
 export const moonshot: ProviderPreset = {
   id: 'moonshot',

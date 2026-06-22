@@ -2,8 +2,8 @@ import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { dirname } from 'node:path';
 import { parse as parseToml, stringify as stringifyToml } from 'smol-toml';
-import { paths } from './paths';
-import type { AgentBatonConfig } from '../types';
+import { paths } from './paths.js';
+import type { AgentBatonConfig } from '../types/index.js';
 
 /** 默认空配置 */
 const DEFAULT_CONFIG: AgentBatonConfig = {

@@ -6,10 +6,13 @@
   "bin": {
     "agentbaton": "dist/cli.js"
   },
+  "exports": {
+    ".": "./dist/cli.js"
+  },
   "scripts": {
-    "build": "vite build",
+    "build": "tsc",
     "clean": "rm -rf dist",
-    "dev": "vite build --watch",
+    "dev": "tsc --watch",
     "lint": "eslint src",
     "start": "node dist/cli.js",
     "test": "vitest run",
@@ -35,7 +38,6 @@
     "eslint": "^10.5.0",
     "typescript": "^5.0.0",
     "typescript-eslint": "^8.61.1",
-    "vite": "^6.0.0",
     "vitest": "^4.0.0"
   },
   "dependencies": {

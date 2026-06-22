@@ -1,9 +1,9 @@
-import type {ProviderPreset} from "../../types";
-import {bailian} from "./bailian";
-import {deepseek} from "./deepseek";
-import {xiaomiMimo} from "./xiaomi-mimo";
-import {volcengine} from "./volcengine";
-import { moonshot } from "./moonshot";
+import type {ProviderPreset} from "../../types/index.js";
+import {bailian} from "./bailian.js";
+import {deepseek} from "./deepseek.js";
+import {xiaomiMimo} from "./xiaomi-mimo.js";
+import {volcengine} from "./volcengine.js";
+import { moonshot } from "./moonshot.js";
 
 export const providerPresets: ProviderPreset[] = [
   bailian,

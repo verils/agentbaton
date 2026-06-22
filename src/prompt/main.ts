@@ -1,10 +1,10 @@
 import { intro, isCancel, log, outro, select } from '@clack/prompts';
-import { loadConfig } from '../config';
-import { getStringWidth, isCommandAvailable, installStdinRecovery, maskApiKey, padEndWidth } from '../utils';
-import { openAgentMenu } from './agent';
-import { openProviderMenu } from './provider';
-import { builtinAgents } from "../agent/builtin";
-import { AgentBatonConfig } from "../types";
+import { loadConfig } from '../config/index.js';
+import { getStringWidth, isCommandAvailable, installStdinRecovery, maskApiKey, padEndWidth } from '../utils/index.js';
+import { openAgentMenu } from './agent.js';
+import { openProviderMenu } from './provider.js';
+import { builtinAgents } from "../agent/builtin.js";
+import { AgentBatonConfig } from "../types/index.js";
 
 export async function runPrompt(): Promise<void> {
   installStdinRecovery();

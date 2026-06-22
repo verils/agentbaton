@@ -1,4 +1,4 @@
-import { ApiType } from "./model";
+import { ApiType } from "./model.js";
 
 /**
  * 平台类型

@@ -1,10 +1,10 @@
-import type {AgentDefinition} from "../types";
-import {claudeCode} from "./claude-code";
-import {codexCli} from "./codex-cli";
-import {geminiCli} from "./gemini-cli";
-import {opencode} from "./opencode";
-import { pi } from "./pi";
-import { cline } from "./cline";
+import type {AgentDefinition} from "../types/index.js";
+import {claudeCode} from "./claude-code.js";
+import {codexCli} from "./codex-cli.js";
+import {geminiCli} from "./gemini-cli.js";
+import {opencode} from "./opencode.js";
+import { pi } from "./pi.js";
+import { cline } from "./cline.js";
 
 export const builtinAgents: AgentDefinition[] = [
   claudeCode,

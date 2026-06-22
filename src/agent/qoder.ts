@@ -1,4 +1,4 @@
-import type { AgentDefinition } from '../types';
+import type { AgentDefinition } from '../types/index.js';
 
 export const qoder: AgentDefinition = {
   id: 'qoder',
@@ -6,9 +6,9 @@ export const qoder: AgentDefinition = {
   command: 'qoder',
   apiType: 'openai',
   home: {
-    linux: '~/.config/qoder/config.json',
-    macos: '~/Library/Application Support/Qoder/config.json',
-    windows: '~/AppData/Roaming/Qoder/config.json',
+    linux: '~/.config/qoder/config/index.json',
+    macos: '~/Library/Application Support/Qoder/config/index.json',
+    windows: '~/AppData/Roaming/Qoder/config/index.json',
   },
   models: [
     {

@@ -1,4 +1,4 @@
-import type { ProviderPreset } from '../../types';
+import type { ProviderPreset } from '../../types/index.js';
 
 export const zhipu: ProviderPreset = {
   id: 'zhipu',

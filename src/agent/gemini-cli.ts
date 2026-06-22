@@ -1,7 +1,7 @@
 import { readFile, writeFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
-import type { AgentNativeConfig, AgentNativePaths, AgentDefinition, AgentModel } from '../types';
-import { resolvePlatformHome } from '../utils';
+import type { AgentNativeConfig, AgentNativePaths, AgentDefinition, AgentModel } from '../types/index.js';
+import { resolvePlatformHome } from '../utils/index.js';
 
 const GOOGLE_GEMINI_BASE_URL = 'GOOGLE_GEMINI_BASE_URL';
 const GEMINI_API_KEY = 'GEMINI_API_KEY';

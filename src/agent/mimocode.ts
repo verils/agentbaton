@@ -1,4 +1,4 @@
-import type { AgentDefinition } from '../types';
+import type { AgentDefinition } from '../types/index.js';
 
 export const mimoCode: AgentDefinition = {
   id: 'mimocode',
@@ -6,9 +6,9 @@ export const mimoCode: AgentDefinition = {
   command: 'mimo',
   apiType: 'openai',
   home: {
-    linux: '~/.config/qwen/config.json',
-    macos: '~/Library/Application Support/Qwen/config.json',
-    windows: '~/AppData/Roaming/Qwen/config.json',
+    linux: '~/.config/qwen/config/index.json',
+    macos: '~/Library/Application Support/Qwen/config/index.json',
+    windows: '~/AppData/Roaming/Qwen/config/index.json',
   },
   models: [
     {

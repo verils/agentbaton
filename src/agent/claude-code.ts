@@ -1,6 +1,6 @@
-import { AgentNativeConfig, AgentDefinition, AgentModel } from '../types';
-import { resolvePlatformHome } from "../utils";
-import { readJson, writeJson } from "../config";
+import { AgentNativeConfig, AgentDefinition, AgentModel } from '../types/index.js';
+import { resolvePlatformHome } from "../utils/index.js";
+import { readJson, writeJson } from "../config/index.js";
 
 interface AnthropicConfig {
   env: {

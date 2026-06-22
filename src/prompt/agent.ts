@@ -1,11 +1,11 @@
 import { confirm, isCancel, log, select, text } from '@clack/prompts';
-import { resolvePlatformHome, maskApiKey } from '../utils';
-import type { Agent, AgentBatonConfig, AgentNativeConfig, AgentProviderBinding, AgentDefinition, AgentModel } from '../types';
-import { detectInstalledAgents } from "../agent/detect";
-import { findAgent } from "../agent/builtin";
-import { backOption, mainMenuOption } from "./back";
-import { saveConfig } from "../config";
-import { handleAddProvider } from "./provider";
+import { resolvePlatformHome, maskApiKey } from '../utils/index.js';
+import type { Agent, AgentBatonConfig, AgentNativeConfig, AgentProviderBinding, AgentDefinition, AgentModel } from '../types/index.js';
+import { detectInstalledAgents } from "../agent/detect.js";
+import { findAgent } from "../agent/builtin.js";
+import { backOption, mainMenuOption } from "./back.js";
+import { saveConfig } from "../config/index.js";
+import { handleAddProvider } from "./provider.js";
 
 /**
  * 配置智能体子流程

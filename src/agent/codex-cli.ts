@@ -1,6 +1,6 @@
-import type { AgentNativeConfig, AgentDefinition, AgentModel } from '../types';
-import { resolvePlatformHome } from "../utils";
-import { readJson, readToml, writeJson, writeToml } from "../config";
+import type { AgentNativeConfig, AgentDefinition, AgentModel } from '../types/index.js';
+import { resolvePlatformHome } from "../utils/index.js";
+import { readJson, readToml, writeJson, writeToml } from "../config/index.js";
 
 interface CodexAuthConfig {
   OPENAI_API_KEY: string;

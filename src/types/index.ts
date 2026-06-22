@@ -1,5 +1,5 @@
-export * from './agent';
-export * from './provider';
-export * from './config';
-export { Model } from "./model";
-export { ApiType } from "./model";
+export * from './agent.js';
+export * from './provider.js';
+export * from './config.js';
+export { Model } from "./model.js";
+export { ApiType } from "./model.js";

@@ -1,2 +1,2 @@
-export * from './main';
-export { findProvider } from "./provider";
+export * from './main.js';
+export { findProvider } from "./provider.js";
