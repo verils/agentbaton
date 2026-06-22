@@ -175,11 +175,11 @@ Provider 与 Preset 没有持久引用关系。Preset 仅是模板，填充后 P
 
 涉及文件：`src/utils/path.ts`
 
-**~~2. 清理 vite.config.ts external 列表~~** ✅
+**~~2. 从 Vite 迁移到 tsc~~** ✅
 
-移除 `yaml`、`chalk`（`package.json` 中无依赖）。如未来需要再加回。
+移除 Vite 构建系统，改用 `tsc` 直接编译。所有 npm 依赖均为 external。
 
-涉及文件：`vite.config.ts`
+涉及文件：`tsconfig.json`、`package.json`
 
 #### P1 - 中优先级
 

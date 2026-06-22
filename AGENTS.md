@@ -4,7 +4,7 @@
 
 ## 项目简介
 
-CLI 工具 (ESM)，为编程智能体（Claude Code、Codex CLI 等）配置云厂商 API 密钥。TypeScript 编写，Vite 构建，目标 Node.js 22+。
+CLI 工具 (ESM)，为编程智能体（Claude Code、Codex CLI 等）配置云厂商 API 密钥。TypeScript 编写，tsc 构建，目标 Node.js 22+。
 
 ## 常用命令
 
@@ -67,7 +67,7 @@ src/
 - **配置持久化**：用户配置统一存储在 `~/.agentbaton/config.json`（JSON）。TOML 读写由独立的 `readToml`/`writeToml` 处理（用于 agent 原生配置文件）。
 - **API 类型匹配**：Agent 声明 `ApiType`（`'openai' | 'anthropic' | 'google'`）；Provider 通过 `pricing[].endpoints` 声明各端点的类型，仅匹配的 pair 可启用。
 - **多供应商模式**：Agent 可设置 `multiProvider: true`，此时通过 `AgentProviderBinding` 管理多个供应商绑定，而非单一模型槽位。
-- **Vite 构建**：Library 模式，target `node22`，ESM 格式，不压缩，所有 npm 依赖 externalized。新增依赖需加入 `vite.config.ts` 的 `rollupOptions.external`。
+- **tsc 构建**：target `node22`，ESM 格式，输出到 `dist/`。所有 npm 依赖均为 external（不打包）。
 - **菜单选项值**：选项对象（如 `backOption`、`mainMenuOption`）统一在 `src/prompt/back.ts` 定义，比较时用 `option.value`，不另设常量。
 - **代码风格**：`if` 后的单行语句必须加花括号，不省略。
 
