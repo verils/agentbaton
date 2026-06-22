@@ -50,6 +50,7 @@ interface Agent {
   currentProvider: string;                        // 当前绑定的 Provider ID
   modelSlots: Record<string, string>;             // 当前 Provider 下的模型槽位映射
   history?: Record<string, Record<string, string>>; // 历史 Provider 的模型槽位记忆
+  providers?: Record<string, AgentProviderBinding>; // 多供应商模式下的供应商绑定
 }
 ```
 
@@ -154,82 +155,6 @@ Provider 与 Preset 没有持久引用关系。Preset 仅是模板，填充后 P
 - 多付费模式（`ProviderPricing`）
 - 配置 I/O 测试（`tests/config-io.test.ts`）
 - Agent 元数据测试（`tests/agent/*.test.ts`）
-
-#### ⚠️ 已知问题
-
-| # | 问题 | 严重度 | 说明 |
-|---|------|--------|------|
-| 1 | 数据模型文档过时 | 低 | PLAN.md 功能规格中的 Agent/Provider 类型定义与实际代码不一致 |
-
----
-
-### 改进计划
-
-#### ~~P0 - 立即处理~~ ✅
-
-**~~1. 修复 `expandHome` 边界 bug~~** ✅
-
-```ts
-// 已修复：path.replace(/^~/, homedir())
-```
-
-涉及文件：`src/utils/path.ts`
-
-**~~2. 从 Vite 迁移到 tsc~~** ✅
-
-移除 Vite 构建系统，改用 `tsc` 直接编译。所有 npm 依赖均为 external。
-
-涉及文件：`tsconfig.json`、`package.json`
-
-#### P1 - 中优先级
-
-**~~3. 添加 eslint 配置~~** ✅
-
-二选一：
-- 添加 `eslint.config.js`（flat config，ESM 友好）
-- 或从 `package.json` 移除 lint 脚本，避免误导
-
-**~~4. 增加快捷返回主菜单~~** ✅
-
-在深层菜单中增加"返回主菜单"选项。
-
-```typescript
-const action = await select({
-  message: `${agent.name}：`,
-  options: [
-    { value: 'chooseProvider', label: '设置模型供应商' },
-    { value: 'chooseModel', label: '设置模型' },
-    { value: '__main_menu__', label: '↩ 返回主菜单' },
-    backOption,
-  ],
-});
-```
-
-涉及文件：`src/prompt/agent.ts`、`src/prompt/provider.ts`
-
-**~~5. 清理 deprecated 字段~~** ✅
-
-评估 `ProviderPreset.apiType` 和 `ProviderPreset.baseUrl` 的使用情况：
-- 若无调用方 → 直接移除
-- 若有调用方 → 迁移到 `pricing[].endpoints` 后移除
-
-#### P2 - 低优先级
-
-**7. 配置导入导出**
-
-- 导出当前配置到文件
-- 从文件导入配置
-- 合并或覆盖选项
-
-**8. 批量操作**
-
-- 选择多个智能体
-- 统一绑定同一供应商
-- 统一设置模型
-
-**9. 更新功能规格文档**
-
-PLAN.md 中的 Agent/Provider 类型定义与实际代码有差异，需同步更新。
 
 ---
 
