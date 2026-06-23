@@ -120,20 +120,22 @@ Provider 与 Preset 没有持久引用关系。Preset 仅是模板，填充后 P
 
 #### 智能体
 
-| 名称 | 命令 | API 类型 | 配置文件（Linux） | 模型槽位 |
-|------|------|----------|-------------------|----------|
-| Claude Code | `claude` | anthropic | `~/.claude` | Opus, Sonnet, Haiku |
-| Codex CLI | `codex` | openai | `~/.codex` | default |
-| Gemini CLI | `gemini` | google | `~/.gemini/settings.json` | default |
-| MiMoCode | `mimo` | openai | `~/.config/qwen/config.json` | default |
-| OpenCode | `opencode` | openai | `~/.config/opencode/config.json` | default |
-| Qwen Code | `qwen` | openai | `~/.config/qwen` | default |
-| Qoder | `qoder` | openai | `~/.config/qoder/config.json` | default |
-| Qoder CN | `qoder-cn` | openai | `~/.config/qoder-cn/config.json` | default |
+| 名称 | 命令 | API 类型 | 多供应商 | 配置文件（Linux） | 模型槽位 | 状态 |
+|------|------|----------|---------|-------------------|----------|------|
+| Claude Code | `claude` | anthropic | — | `~/.claude` | Opus, Sonnet, Haiku | ✅ |
+| Cline | `cline` | openai | ✅ | `~/.cline` | default | ✅ |
+| Codex CLI | `codex` | openai | — | `~/.codex` | default | ✅ |
+| Gemini CLI | `gemini` | google | — | `~/.gemini/settings.json` | default | ✅ |
+| OpenCode | `opencode` | openai | — | `~/.config/opencode/config.json` | default | ✅ |
+| Pi | `pi` | openai | — | `~/.pi/agent` | default | ✅ |
+| MiMoCode | `mimo` | openai | — | `~/.config/qwen/config/index.json` | default | 已注释 |
+| Qwen Code | `qwen` | openai | ✅ | `~/.qwen` | default | 已注释 |
+| Qoder | `qoder` | openai | — | `~/.config/qoder/config.json` | default | 已注释 |
+| Qoder CN | `qoder-cn` | openai | — | `~/.config/qoder-cn/config.json` | default | 已注释 |
 
 #### 模型供应商
 
-百炼、DeepSeek、MiniMax、Moonshot、腾讯云、火山引擎、小米 MiMo、智谱
+百炼、DeepSeek、Moonshot、火山引擎、小米 MiMo（已注释：MiniMax、腾讯云、智谱）
 
 ---
 

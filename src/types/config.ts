@@ -4,7 +4,7 @@ import { AgentProviderBinding } from "./agent.js";
 /**
  * 统一配置文件结构
  *
- * 所有配置存储在 ~/.agentbaton/config/index.json 中
+ * 所有配置存储在 ~/.agentbaton/config.json 中
  */
 export interface AgentBatonConfig {
   /** 已设置的智能体 */
