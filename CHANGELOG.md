@@ -2,6 +2,53 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased]
+
+### Added
+
+- **Multi-Provider Binding**: Added `providers` field to Agent config for multi-provider binding support
+
+### Changed
+
+- **Back Menu Label**: Updated back option label to use `↑` arrow icon
+- **Documentation**: Fixed stale config path references in `PLAN.md` and `config.ts`
+
+---
+
+## [v0.4.0] - 2026-06-23
+
+### Changed
+
+- **Build System**: Migrated from Vite to `tsc` (TypeScript compiler) for building
+- **Import Paths**: Updated all internal import paths from `.ts` to `.js` extensions for ESM compatibility
+- **TypeScript Config**: Updated `tsconfig.json` target to Node.js 22+, ESM output to `dist/`
+
+### Removed
+
+- **Vite**: Removed `vite.config.ts` and Vite build dependencies
+
+---
+
+## [v0.3.2] - 2026-06-21
+
+### Changed
+
+- **Version Bump**: Release version (no functional changes)
+
+---
+
+## [v0.3.1] - 2026-06-21
+
+### Added
+
+- **CLI Shebang**: Added `#!/usr/bin/env node` to CLI entry for direct execution on Unix systems
+
+### Changed
+
+- **Build Config**: Simplified Vite build configuration, removed redundant comments
+
+---
+
 ## [v0.3.0] - 2026-06-21
 
 ### Added
