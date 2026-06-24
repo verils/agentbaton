@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto';
-import { confirm, isCancel, log, password, select, text } from '@clack/prompts';
+import { confirm, isCancel, log, multiselect, password, select, text } from '@clack/prompts';
 import { saveConfig } from '../config/index.js';
 import { backOption, mainMenuOption } from "./back.js";
 import { findProviderPreset, providerPresets } from "../provider/presets/index.js";
@@ -122,24 +122,29 @@ async function handleAddCustomProvider(config: AgentBatonConfig) {
     return;
   }
 
-  const apiType = await select({
-    message: '选择 API 类型',
+  const apiTypes = await multiselect({
+    message: '选择支持的 API 类型（可多选）',
     options: [
       { value: 'openai', label: 'OpenAI' },
       { value: 'anthropic', label: 'Anthropic' },
       { value: 'google', label: 'Google' },
     ],
+    required: true,
   });
-  if (isCancel(apiType)) {
+  if (isCancel(apiTypes)) {
     return;
   }
 
-  const baseUrl = await text({
-    message: '输入 Base URL',
-    placeholder: '例如: https://api.example.com/v1',
-  });
-  if (isCancel(baseUrl)) {
-    return;
+  const endpoints: { type: ApiType; baseUrl: string }[] = [];
+  for (const apiType of apiTypes) {
+    const baseUrl = await text({
+      message: `输入 ${apiType} 的 Base URL`,
+      placeholder: apiType === 'openai' ? '例如: https://api.example.com/v1' : '例如: https://api.example.com',
+    });
+    if (isCancel(baseUrl)) {
+      return;
+    }
+    endpoints.push({ type: apiType as ApiType, baseUrl: baseUrl as string });
   }
 
   const apiKey = await password({
@@ -154,7 +159,7 @@ async function handleAddCustomProvider(config: AgentBatonConfig) {
     id: randomUUID(),
     name: name as string,
     apiKey: apiKey as string,
-    endpoints: [{ type: apiType as ApiType, baseUrl: baseUrl as string }],
+    endpoints,
     models: [],
   };
 
