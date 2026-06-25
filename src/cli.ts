@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import { Command } from 'commander';
-import { runPrompt } from './prompt/index.js';
+import { runPrompt } from './ui/index.js';
 
 const program = new Command();
 
