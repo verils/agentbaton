@@ -15,14 +15,14 @@ type Screen =
   | { type: 'addProvider' }
   | { type: 'modifyProvider'; providerId: string };
 
-export async function runPrompt(): Promise<void> {
+export async function openTUI(): Promise<void> {
   const { waitUntilExit } = render(<App />);
   await waitUntilExit();
 }
 
 function App() {
   const { exit } = useApp();
-  const [history, setHistory] = useState<Screen[]>([]);
+  const [, setHistory] = useState<Screen[]>([]);
   const [current, setCurrent] = useState<Screen>({ type: 'main' });
   const [config, setConfig] = useState<AgentBatonConfig | null>(null);
   const [error, setError] = useState<string | null>(null);

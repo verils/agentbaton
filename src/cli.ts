@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import { Command } from 'commander';
-import { runPrompt } from './ui/index.js';
+import { openTUI } from './ui/index.js';
 
 const program = new Command();
 
@@ -18,7 +18,7 @@ program
 
 // 默认动作：交互式配置
 program.action(async () => {
-  await runPrompt();
+  await openTUI();
 });
 
 // 解析命令行参数
