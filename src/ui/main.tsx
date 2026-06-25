@@ -9,7 +9,6 @@ import { SelectMenu } from './components/select-menu.js';
 
 type Screen =
   | { type: 'main' }
-  | { type: 'info' }
   | { type: 'agentSelect' }
   | { type: 'agentDetail'; agentId: string }
   | { type: 'providerSelect' }
@@ -79,8 +78,6 @@ function App() {
   switch (current.type) {
     case 'main':
       return <MainMenu config={config} nav={nav} />;
-    case 'info':
-      return <InfoScreen config={config} nav={nav} />;
     case 'agentSelect':
       return <AgentSelectScreen config={config} nav={nav} />;
     case 'providerSelect':
@@ -98,13 +95,15 @@ type NavProps = {
 };
 
 function MainMenu({ config, nav }: { config: AgentBatonConfig; nav: NavProps }) {
+  const [refreshKey, setRefreshKey] = useState(0);
+
   return (
     <Box flexDirection="column">
       <Box marginBottom={1}>
         <Text bold color="cyan">┌ </Text>
         <Text bold>AgentBaton — 智能体设置管理</Text>
       </Box>
-      <InfoPanel config={config} />
+      <InfoPanel config={config} key={refreshKey} />
       <SelectMenu
         message="选择菜单："
         options={[
@@ -122,28 +121,13 @@ function MainMenu({ config, nav }: { config: AgentBatonConfig; nav: NavProps }) 
               nav.navigate({ type: 'providerSelect' });
               break;
             case 'display':
-              nav.navigate({ type: 'info' });
+              setRefreshKey(k => k + 1);
               break;
             case 'exit':
               nav.exit();
               break;
           }
         }}
-      />
-    </Box>
-  );
-}
-
-function InfoScreen({ config, nav }: { config: AgentBatonConfig; nav: NavProps }) {
-  return (
-    <Box flexDirection="column">
-      <InfoPanel config={config} />
-      <SelectMenu
-        message=""
-        options={[
-          { value: 'back', label: '↑ 返回主菜单' },
-        ]}
-        onSubmit={() => nav.goToMainMenu()}
       />
     </Box>
   );
