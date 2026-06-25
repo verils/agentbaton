@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Box, Text, useInput } from 'ink';
-import { Select, type Option } from '@inkjs/ui';
+
+type Option = { value: string; label: string };
 
 type SelectMenuProps = {
   message: string;
@@ -9,23 +10,33 @@ type SelectMenuProps = {
 };
 
 export function SelectMenu({ message, options, onSubmit }: SelectMenuProps) {
-  const [value, setValue] = useState<string | undefined>();
+  const [focusIndex, setFocusIndex] = useState(0);
 
   useInput((_input, key) => {
-    if (key.return && value !== undefined) {
-      onSubmit(value);
+    if (key.upArrow) {
+      setFocusIndex(i => (i - 1 + options.length) % options.length);
+    } else if (key.downArrow) {
+      setFocusIndex(i => (i + 1) % options.length);
+    } else if (key.return) {
+      onSubmit(options[focusIndex].value);
     }
   });
 
   return (
     <Box flexDirection="column">
-      <Text bold>
-        <Text color="cyan">◆</Text> {message}
-      </Text>
-      <Select
-        options={options}
-        onChange={setValue}
-      />
+      {message && (
+        <Text bold>
+          <Text color="cyan">◆</Text> {message}
+        </Text>
+      )}
+      {options.map((opt, i) => (
+        <Text key={opt.value}>
+          <Text color={i === focusIndex ? 'green' : 'gray'}>
+            {i === focusIndex ? '● ' : '○ '}
+          </Text>
+          <Text bold={i === focusIndex}>{opt.label}</Text>
+        </Text>
+      ))}
     </Box>
   );
 }
