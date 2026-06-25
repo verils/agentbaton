@@ -6,13 +6,21 @@ import { builtinAgents } from '../agent/builtin.js';
 import { detectInstalledAgents } from '../agent/detect.js';
 import { AgentBatonConfig } from '../types/index.js';
 import { SelectMenu } from './components/select-menu.js';
+import { AgentDetailScreen, ChooseProviderScreen, ConfirmProviderSwitchScreen, PromptChooseModelScreen, ChooseModelScreen, AddProviderBindingScreen, RemoveProviderBindingScreen } from './agent.js';
+import { AddProviderScreen, ModifyProviderScreen } from './provider.js';
 
 type Screen =
   | { type: 'main' }
   | { type: 'agentSelect' }
   | { type: 'agentDetail'; agentId: string }
+  | { type: 'chooseProvider'; agentId: string }
+  | { type: 'confirmProviderSwitch'; agentId: string; providerId: string }
+  | { type: 'promptChooseModel'; agentId: string }
+  | { type: 'chooseModel'; agentId: string }
+  | { type: 'addProviderBinding'; agentId: string }
+  | { type: 'removeProviderBinding'; agentId: string }
   | { type: 'providerSelect' }
-  | { type: 'addProvider' }
+  | { type: 'addProvider'; returnTo?: Screen }
   | { type: 'modifyProvider'; providerId: string };
 
 export async function openTUI(): Promise<void> {
@@ -55,11 +63,6 @@ function App() {
     setCurrent({ type: 'main' });
   }, []);
 
-  const handleSaveConfig = useCallback(async (cfg: AgentBatonConfig) => {
-    await saveConfig(cfg);
-    setConfig({ ...cfg });
-  }, []);
-
   if (error) {
     return (
       <Box flexDirection="column">
@@ -80,8 +83,26 @@ function App() {
       return <MainMenu config={config} nav={nav} />;
     case 'agentSelect':
       return <AgentSelectScreen config={config} nav={nav} />;
+    case 'agentDetail':
+      return <AgentDetailScreen agentId={current.agentId} config={config} nav={nav} />;
+    case 'chooseProvider':
+      return <ChooseProviderScreen agentId={current.agentId} config={config} nav={nav} />;
+    case 'confirmProviderSwitch':
+      return <ConfirmProviderSwitchScreen agentId={current.agentId} providerId={current.providerId} config={config} nav={nav} />;
+    case 'promptChooseModel':
+      return <PromptChooseModelScreen agentId={current.agentId} nav={nav} />;
+    case 'chooseModel':
+      return <ChooseModelScreen agentId={current.agentId} config={config} nav={nav} />;
+    case 'addProviderBinding':
+      return <AddProviderBindingScreen agentId={current.agentId} config={config} nav={nav} />;
+    case 'removeProviderBinding':
+      return <RemoveProviderBindingScreen agentId={current.agentId} config={config} nav={nav} />;
     case 'providerSelect':
       return <ProviderSelectScreen config={config} nav={nav} />;
+    case 'addProvider':
+      return <AddProviderScreen config={config} nav={nav} returnTo={current.returnTo} />;
+    case 'modifyProvider':
+      return <ModifyProviderScreen providerId={current.providerId} config={config} nav={nav} />;
     default:
       return <MainMenu config={config} nav={nav} />;
   }
@@ -144,37 +165,25 @@ function AgentSelectScreen({ config, nav }: { config: AgentBatonConfig; nav: Nav
     return (
       <Box flexDirection="column">
         <Text color="yellow">未检测到已安装的智能体</Text>
-        <SelectMenu
-          message=""
-          options={[
-            { value: 'back', label: '↑ 返回上一级菜单' },
-            { value: 'main', label: '↩ 返回主菜单' },
-          ]}
-          onSubmit={(v) => v === 'main' ? nav.goToMainMenu() : nav.goBack()}
-        />
+        <SelectMenu message="" options={[
+          { value: 'back', label: '↑ 返回上一级菜单' },
+          { value: 'main', label: '↩ 返回主菜单' },
+        ]} onSubmit={v => v === 'main' ? nav.goToMainMenu() : nav.goBack()} />
       </Box>
     );
   }
 
   return (
     <Box flexDirection="column">
-      <SelectMenu
-        message="选择智能体："
-        options={[
-          ...agents.map(a => ({ value: a.id, label: a.name })),
-          { value: '__back__', label: '↑ 返回上一级菜单' },
-          { value: '__main_menu__', label: '↩ 返回主菜单' },
-        ]}
-        onSubmit={(value) => {
-          if (value === '__back__') {
-            nav.goBack();
-          } else if (value === '__main_menu__') {
-            nav.goToMainMenu();
-          } else {
-            nav.navigate({ type: 'agentDetail', agentId: value });
-          }
-        }}
-      />
+      <SelectMenu message="选择智能体：" options={[
+        ...agents.map(a => ({ value: a.id, label: a.name })),
+        { value: '__back__', label: '↑ 返回上一级菜单' },
+        { value: '__main_menu__', label: '↩ 返回主菜单' },
+      ]} onSubmit={value => {
+        if (value === '__back__') { nav.goBack(); return; }
+        if (value === '__main_menu__') { nav.goToMainMenu(); return; }
+        nav.navigate({ type: 'agentDetail', agentId: value });
+      }} />
     </Box>
   );
 }
@@ -182,26 +191,20 @@ function AgentSelectScreen({ config, nav }: { config: AgentBatonConfig; nav: Nav
 function ProviderSelectScreen({ config, nav }: { config: AgentBatonConfig; nav: NavProps }) {
   return (
     <Box flexDirection="column">
-      <SelectMenu
-        message="选择模型供应商："
-        options={[
-          ...config.providers.map(p => ({ value: p.id, label: p.name })),
-          { value: 'addProvider', label: '添加模型供应商' },
-          { value: '__back__', label: '↑ 返回上一级菜单' },
-          { value: '__main_menu__', label: '↩ 返回主菜单' },
-        ]}
-        onSubmit={(value) => {
-          if (value === '__back__') {
-            nav.goBack();
-          } else if (value === '__main_menu__') {
-            nav.goToMainMenu();
-          } else if (value === 'addProvider') {
-            nav.navigate({ type: 'addProvider' });
-          } else {
-            nav.navigate({ type: 'modifyProvider', providerId: value });
-          }
-        }}
-      />
+      <SelectMenu message="选择模型供应商：" options={[
+        ...config.providers.map(p => ({ value: p.id, label: p.name })),
+        { value: 'addProvider', label: '添加模型供应商' },
+        { value: '__back__', label: '↑ 返回上一级菜单' },
+        { value: '__main_menu__', label: '↩ 返回主菜单' },
+      ]} onSubmit={value => {
+        if (value === '__back__') { nav.goBack(); return; }
+        if (value === '__main_menu__') { nav.goToMainMenu(); return; }
+        if (value === 'addProvider') {
+          nav.navigate({ type: 'addProvider' });
+        } else {
+          nav.navigate({ type: 'modifyProvider', providerId: value });
+        }
+      }} />
     </Box>
   );
 }
