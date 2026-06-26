@@ -4,14 +4,19 @@ import { SelectMenu } from './components/SelectMenu.js';
 import { InfoPanel } from './InfoPanel.js';
 import type { AgentBatonConfig } from '../types/index.js';
 
-type NavProps = {
-  navigate: (screen: any) => void;
+interface NavProps {
+  navigate: (screen: unknown) => void;
   goBack: () => void;
   goToMainMenu: () => void;
   exit: () => void;
-};
+}
 
-export function MainScreen({ config, nav }: { config: AgentBatonConfig; nav: NavProps }) {
+interface MainScreenProps {
+  config: AgentBatonConfig;
+  nav: NavProps
+}
+
+export function MainScreen({ config, nav }: MainScreenProps) {
   const [refreshKey, setRefreshKey] = useState(0);
 
   return (
@@ -20,7 +25,7 @@ export function MainScreen({ config, nav }: { config: AgentBatonConfig; nav: Nav
         <Text bold color="cyan">┌ </Text>
         <Text bold>AgentBaton — 智能体设置管理</Text>
       </Box>
-      <InfoPanel config={config} key={refreshKey} />
+      <InfoPanel config={config} key={refreshKey}/>
       <SelectMenu
         message="选择菜单："
         options={[
