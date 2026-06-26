@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Text } from 'ink';
-import { SelectMenu } from './components/SelectMenu.js';
-import { detectInstalledAgents } from '../agent/detect.js';
-import type { AgentBatonConfig } from '../types/index.js';
+import { SelectMenu } from '../components/SelectMenu.js';
+import { detectInstalledAgents } from '../../agent/detect.js';
+import type { AgentBatonConfig } from '../../types/index.js';
 
 type NavProps = {
   navigate: (screen: any) => void;

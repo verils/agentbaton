@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { Box, Text } from 'ink';
-import { SelectMenu } from './components/SelectMenu.js';
-import { InfoPanel } from './InfoPanel.js';
-import type { AgentBatonConfig } from '../types/index.js';
+import { SelectMenu } from '../components/SelectMenu.js';
+import { InfoPanel } from '../InfoPanel.js';
+import type { AgentBatonConfig } from '../../types/index.js';
 
 interface NavProps {
-  navigate: (screen: unknown) => void;
+  navigate: (screen: any) => void;
   goBack: () => void;
   goToMainMenu: () => void;
   exit: () => void;

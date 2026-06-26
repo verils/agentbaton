@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { Box, Text } from 'ink';
-import { SelectMenu } from './components/SelectMenu.js';
-import { TextInput } from './components/TextInput.js';
-import { saveConfig } from '../config/index.js';
-import { findProviderPreset, providerPresets } from '../provider/presets/index.js';
-import { builtinAgents } from '../agent/builtin.js';
-import type { AgentBatonConfig, ApiType, Provider } from '../types/index.js';
+import { SelectMenu } from '../components/SelectMenu.js';
+import { TextInput } from '../components/TextInput.js';
+import { saveConfig } from '../../config/index.js';
+import { findProviderPreset, providerPresets } from '../../provider/presets/index.js';
+import { builtinAgents } from '../../agent/builtin.js';
+import type { AgentBatonConfig, ApiType, Provider } from '../../types/index.js';
 import { randomUUID } from 'node:crypto';
 
 type NavProps = {

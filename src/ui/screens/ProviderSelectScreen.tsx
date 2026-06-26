@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box } from 'ink';
-import { SelectMenu } from './components/SelectMenu.js';
-import type { AgentBatonConfig } from '../types/index.js';
+import { SelectMenu } from '../components/SelectMenu.js';
+import type { AgentBatonConfig } from '../../types/index.js';
 
 type NavProps = {
   navigate: (screen: any) => void;

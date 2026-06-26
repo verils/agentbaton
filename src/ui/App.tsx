@@ -2,11 +2,11 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { render, Box, Text, useApp } from 'ink';
 import { loadConfig } from '../config/index.js';
 import { AgentBatonConfig } from '../types/index.js';
-import { MainScreen } from './MainScreen.js';
-import { AgentSelectScreen } from './AgentSelectScreen.js';
-import { ProviderSelectScreen } from './ProviderSelectScreen.js';
-import { AgentDetailScreen, ChooseProviderScreen, ConfirmProviderSwitchScreen, PromptChooseModelScreen, ChooseModelScreen, AddProviderBindingScreen, RemoveProviderBindingScreen } from './agent.js';
-import { AddProviderScreen, ModifyProviderScreen } from './provider.js';
+import { MainScreen } from './screens/MainScreen.js';
+import { AgentSelectScreen } from './screens/AgentSelectScreen.js';
+import { ProviderSelectScreen } from './screens/ProviderSelectScreen.js';
+import { AgentDetailScreen, ChooseProviderScreen, ConfirmProviderSwitchScreen, PromptChooseModelScreen, ChooseModelScreen, AddProviderBindingScreen, RemoveProviderBindingScreen } from './screens/agent.js';
+import { AddProviderScreen, ModifyProviderScreen } from './screens/provider.js';
 
 type Screen =
   | { type: 'main' }

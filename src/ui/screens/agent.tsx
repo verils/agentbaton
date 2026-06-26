@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { Box, Text } from 'ink';
-import { SelectMenu } from './components/SelectMenu.js';
-import { TextInput } from './components/TextInput.js';
-import type { AgentBatonConfig, AgentDefinition, AgentModel } from '../types/index.js';
-import { findAgent } from '../agent/builtin.js';
-import { resolvePlatformHome, maskApiKey } from '../utils/index.js';
-import { saveConfig } from '../config/index.js';
+import { SelectMenu } from '../components/SelectMenu.js';
+import { TextInput } from '../components/TextInput.js';
+import type { AgentBatonConfig, AgentDefinition, AgentModel } from '../../types/index.js';
+import { findAgent } from '../../agent/builtin.js';
+import { resolvePlatformHome, maskApiKey } from '../../utils/index.js';
+import { saveConfig } from '../../config/index.js';
 
 type NavProps = {
   navigate: (screen: any) => void;
