@@ -5,7 +5,7 @@ import { getStringWidth, isCommandAvailable, maskApiKey, padEndWidth } from '../
 import { builtinAgents } from '../agent/builtin.js';
 import { detectInstalledAgents } from '../agent/detect.js';
 import { AgentBatonConfig } from '../types/index.js';
-import { SelectMenu } from './components/select-menu.js';
+import { SelectMenu } from './components/SelectMenu.js';
 import { AgentDetailScreen, ChooseProviderScreen, ConfirmProviderSwitchScreen, PromptChooseModelScreen, ChooseModelScreen, AddProviderBindingScreen, RemoveProviderBindingScreen } from './agent.js';
 import { AddProviderScreen, ModifyProviderScreen } from './provider.js';
 
@@ -168,7 +168,7 @@ function AgentSelectScreen({ config, nav }: { config: AgentBatonConfig; nav: Nav
         <SelectMenu message="" options={[
           { value: 'back', label: '↑ 返回上一级菜单' },
           { value: 'main', label: '↩ 返回主菜单' },
-        ]} onSubmit={v => v === 'main' ? nav.goToMainMenu() : nav.goBack()} />
+        ]} onSubmit={v => v === 'main' ? nav.goToMainMenu() : nav.goBack()} onEscape={() => nav.goBack()} />
       </Box>
     );
   }
@@ -183,7 +183,7 @@ function AgentSelectScreen({ config, nav }: { config: AgentBatonConfig; nav: Nav
         if (value === '__back__') { nav.goBack(); return; }
         if (value === '__main_menu__') { nav.goToMainMenu(); return; }
         nav.navigate({ type: 'agentDetail', agentId: value });
-      }} />
+      }} onEscape={() => nav.goBack()} />
     </Box>
   );
 }
@@ -204,7 +204,7 @@ function ProviderSelectScreen({ config, nav }: { config: AgentBatonConfig; nav: 
         } else {
           nav.navigate({ type: 'modifyProvider', providerId: value });
         }
-      }} />
+      }} onEscape={() => nav.goBack()} />
     </Box>
   );
 }

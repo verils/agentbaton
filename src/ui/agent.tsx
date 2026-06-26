@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Box, Text } from 'ink';
-import { SelectMenu } from './components/select-menu.js';
-import { TextInput } from './components/text-input.js';
+import { SelectMenu } from './components/SelectMenu.js';
+import { TextInput } from './components/TextInput.js';
 import type { AgentBatonConfig, AgentDefinition, AgentModel } from '../types/index.js';
 import { findAgent } from '../agent/builtin.js';
 import { resolvePlatformHome, maskApiKey } from '../utils/index.js';
@@ -31,7 +31,7 @@ export function AgentDetailScreen({ agentId, config, nav }: {
         <SelectMenu message="" options={[
           { value: '__back__', label: '↑ 返回上一级菜单' },
           { value: '__main_menu__', label: '↩ 返回主菜单' },
-        ]} onSubmit={v => v === '__main_menu__' ? nav.goToMainMenu() : nav.goBack()} />
+        ]} onSubmit={v => v === '__main_menu__' ? nav.goToMainMenu() : nav.goBack()} onEscape={() => nav.goBack()} />
       </Box>
     );
   }
@@ -82,7 +82,7 @@ function SingleProviderAgentMenu({ agentId, config, nav }: {
         } else if (value === 'chooseModel') {
           nav.navigate({ type: 'chooseModel', agentId });
         }
-      }} />
+      }} onEscape={() => nav.goBack()} />
     </Box>
   );
 }
@@ -131,7 +131,7 @@ export function ChooseProviderScreen({ agentId, config, nav }: {
         if (value === '__back__') { nav.goBack(); return; }
         if (value === '__main_menu__') { nav.goToMainMenu(); return; }
         nav.navigate({ type: 'confirmProviderSwitch', agentId, providerId: value });
-      }} />
+      }} onEscape={() => nav.goBack()} />
     </Box>
   );
 }
@@ -378,7 +378,7 @@ function MultiProviderAgentMenu({ agentId, config, nav }: {
         } else {
           nav.navigate({ type: 'removeProviderBinding', agentId });
         }
-      }} />
+      }} onEscape={() => nav.goBack()} />
     </Box>
   );
 }
@@ -474,7 +474,7 @@ export function AddProviderBindingScreen({ agentId, config, nav }: {
         if (value === '__back__') { nav.goBack(); return; }
         setSelectedId(value);
         setStep('confirm');
-      }} />
+      }} onEscape={() => nav.goBack()} />
     </Box>
   );
 }
@@ -566,7 +566,7 @@ export function RemoveProviderBindingScreen({ agentId, config, nav }: {
         if (value === '__main_menu__') { nav.goToMainMenu(); return; }
         setSelectedId(value);
         setStep('confirm');
-      }} />
+      }} onEscape={() => nav.goBack()} />
     </Box>
   );
 }

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Box, Text } from 'ink';
-import { SelectMenu } from './components/select-menu.js';
-import { TextInput } from './components/text-input.js';
+import { SelectMenu } from './components/SelectMenu.js';
+import { TextInput } from './components/TextInput.js';
 import { saveConfig } from '../config/index.js';
 import { findProviderPreset, providerPresets } from '../provider/presets/index.js';
 import { builtinAgents } from '../agent/builtin.js';
@@ -67,7 +67,7 @@ export function AddProviderScreen({ config, nav, returnTo }: {
         if (value === '__custom__') { setStep('custom'); return; }
         setSelectedPreset(value);
         setStep('preset');
-      }} />
+      }} onEscape={() => nav.goBack()} />
     </Box>
   );
 }
@@ -343,7 +343,7 @@ export function ModifyProviderScreen({ providerId, config, nav }: {
         if (value === '__back__') { nav.goBack(); return; }
         if (value === '__main_menu__') { nav.goToMainMenu(); return; }
         setAction(value);
-      }} />
+      }} onEscape={() => nav.goBack()} />
     </Box>
   );
 }
@@ -440,7 +440,7 @@ function SetModelsScreen({ provider, config, nav }: {
           }
           setStep('done');
         }
-      }} />
+      }} onEscape={() => nav.goBack()} />
     </Box>
   );
 }

@@ -7,13 +7,16 @@ type SelectMenuProps = {
   message: string;
   options: Option[];
   onSubmit: (value: string) => void;
+  onEscape?: () => void;
 };
 
-export function SelectMenu({ message, options, onSubmit }: SelectMenuProps) {
+export function SelectMenu({ message, options, onSubmit, onEscape }: SelectMenuProps) {
   const [focusIndex, setFocusIndex] = useState(0);
 
   useInput((_input, key) => {
-    if (key.upArrow) {
+    if (key.escape) {
+      onEscape?.();
+    } else if (key.upArrow) {
       setFocusIndex(i => (i - 1 + options.length) % options.length);
     } else if (key.downArrow) {
       setFocusIndex(i => (i + 1) % options.length);
