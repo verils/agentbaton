@@ -1,11 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { render, Box, Text, useApp } from 'ink';
-import { loadConfig, saveConfig } from '../config/index.js';
-import { getStringWidth, isCommandAvailable, maskApiKey, padEndWidth } from '../utils/index.js';
-import { builtinAgents } from '../agent/builtin.js';
+import { loadConfig } from '../config/index.js';
 import { detectInstalledAgents } from '../agent/detect.js';
 import { AgentBatonConfig } from '../types/index.js';
 import { SelectMenu } from './components/SelectMenu.js';
+import { MainScreen } from './MainScreen.js';
 import { AgentDetailScreen, ChooseProviderScreen, ConfirmProviderSwitchScreen, PromptChooseModelScreen, ChooseModelScreen, AddProviderBindingScreen, RemoveProviderBindingScreen } from './agent.js';
 import { AddProviderScreen, ModifyProviderScreen } from './provider.js';
 
@@ -80,7 +79,7 @@ function App() {
 
   switch (current.type) {
     case 'main':
-      return <MainMenu config={config} nav={nav} />;
+      return <MainScreen config={config} nav={nav} />;
     case 'agentSelect':
       return <AgentSelectScreen config={config} nav={nav} />;
     case 'agentDetail':
@@ -104,7 +103,7 @@ function App() {
     case 'modifyProvider':
       return <ModifyProviderScreen providerId={current.providerId} config={config} nav={nav} />;
     default:
-      return <MainMenu config={config} nav={nav} />;
+      return <MainScreen config={config} nav={nav} />;
   }
 }
 
@@ -115,44 +114,7 @@ type NavProps = {
   exit: () => void;
 };
 
-function MainMenu({ config, nav }: { config: AgentBatonConfig; nav: NavProps }) {
-  const [refreshKey, setRefreshKey] = useState(0);
 
-  return (
-    <Box flexDirection="column">
-      <Box marginBottom={1}>
-        <Text bold color="cyan">┌ </Text>
-        <Text bold>AgentBaton — 智能体设置管理</Text>
-      </Box>
-      <InfoPanel config={config} key={refreshKey} />
-      <SelectMenu
-        message="选择菜单："
-        options={[
-          { value: 'agent', label: '智能体' },
-          { value: 'provider', label: '模型供应商' },
-          { value: 'display', label: '查看当前设置' },
-          { value: 'exit', label: '退出' },
-        ]}
-        onSubmit={(value) => {
-          switch (value) {
-            case 'agent':
-              nav.navigate({ type: 'agentSelect' });
-              break;
-            case 'provider':
-              nav.navigate({ type: 'providerSelect' });
-              break;
-            case 'display':
-              setRefreshKey(k => k + 1);
-              break;
-            case 'exit':
-              nav.exit();
-              break;
-          }
-        }}
-      />
-    </Box>
-  );
-}
 
 function AgentSelectScreen({ config, nav }: { config: AgentBatonConfig; nav: NavProps }) {
   const [agents, setAgents] = useState<Array<{ id: string; name: string }>>([]);
@@ -205,53 +167,6 @@ function ProviderSelectScreen({ config, nav }: { config: AgentBatonConfig; nav: 
           nav.navigate({ type: 'modifyProvider', providerId: value });
         }
       }} onEscape={() => nav.goBack()} />
-    </Box>
-  );
-}
-
-function InfoPanel({ config }: { config: AgentBatonConfig }) {
-  const [agentStatuses, setAgentStatuses] = useState<Array<{ name: string; installed: boolean }>>([]);
-
-  useEffect(() => {
-    Promise.all(
-      builtinAgents.map(async a => ({
-        name: a.name,
-        installed: await isCommandAvailable(a.command),
-      }))
-    ).then(setAgentStatuses);
-  }, []);
-
-  const agentWidth = agentStatuses.length > 0
-    ? Math.max(...agentStatuses.map(a => getStringWidth(a.name)))
-    : 0;
-
-  return (
-    <Box flexDirection="column" paddingLeft={1} borderStyle="round" borderColor="gray" marginBottom={1}>
-      <Box flexDirection="column" marginBottom={1}>
-        <Text>
-          <Text color="blue">●</Text> 智能体 🤖
-        </Text>
-        {agentStatuses.map(a => (
-          <Text key={a.name} color="gray">
-            │  {padEndWidth(a.name, agentWidth)} （{a.installed ? '✅ 已安装' : '❌ 未安装'}）
-          </Text>
-        ))}
-      </Box>
-      <Box flexDirection="column">
-        <Text>
-          <Text color="blue">●</Text> 模型供应商 🔌
-        </Text>
-        {config.providers.length === 0 ? (
-          <Text color="gray">│  （暂无供应商，请先添加）</Text>
-        ) : (() => {
-          const pw = Math.max(...config.providers.map(p => getStringWidth(p.name)));
-          return config.providers.map(p => (
-            <Text key={p.id} color="gray">
-              │  {padEndWidth(p.name, pw)} （{maskApiKey(p.apiKey)}）
-            </Text>
-          ));
-        })()}
-      </Box>
     </Box>
   );
 }
