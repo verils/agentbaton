@@ -6,8 +6,12 @@ import type { Screen, NavProps } from './types.js';
 import { MainScreen } from './screens/MainScreen.js';
 import { AgentSelectScreen } from './screens/AgentSelectScreen.js';
 import { ProviderSelectScreen } from './screens/ProviderSelectScreen.js';
-import { AgentDetailScreen, ChooseProviderScreen, ConfirmProviderSwitchScreen, PromptChooseModelScreen, ChooseModelScreen, AddProviderBindingScreen, RemoveProviderBindingScreen } from './screens/agent.js';
-import { AddProviderScreen, ModifyProviderScreen } from './screens/provider.js';
+import { AgentDetailScreen } from './screens/AgentDetailScreen.js';
+import { ChooseProviderScreen, ConfirmProviderSwitchScreen, PromptChooseModelScreen } from './screens/ChooseProviderScreen.js';
+import { ChooseModelScreen } from './screens/ChooseModelScreen.js';
+import { AddProviderBindingScreen, RemoveProviderBindingScreen } from './screens/ProviderBindingScreen.js';
+import { AddProviderScreen } from './screens/AddProviderScreen.js';
+import { ModifyProviderScreen } from './screens/ModifyProviderScreen.js';
 
 export async function openTUI(): Promise<void> {
   const { waitUntilExit } = render(<App />);
