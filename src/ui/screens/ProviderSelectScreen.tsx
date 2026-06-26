@@ -2,13 +2,7 @@ import React from 'react';
 import { Box } from 'ink';
 import { SelectMenu } from '../components/SelectMenu.js';
 import type { AgentBatonConfig } from '../../types/index.js';
-
-type NavProps = {
-  navigate: (screen: any) => void;
-  goBack: () => void;
-  goToMainMenu: () => void;
-  exit: () => void;
-};
+import type { NavProps } from '../types.js';
 
 export function ProviderSelectScreen({ config, nav }: { config: AgentBatonConfig; nav: NavProps }) {
   return (

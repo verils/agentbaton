@@ -3,13 +3,7 @@ import { Box, Text } from 'ink';
 import { SelectMenu } from '../components/SelectMenu.js';
 import { detectInstalledAgents } from '../../agent/detect.js';
 import type { AgentBatonConfig } from '../../types/index.js';
-
-type NavProps = {
-  navigate: (screen: any) => void;
-  goBack: () => void;
-  goToMainMenu: () => void;
-  exit: () => void;
-};
+import type { NavProps } from '../types.js';
 
 export function AgentSelectScreen({ config, nav }: { config: AgentBatonConfig; nav: NavProps }) {
   const [agents, setAgents] = useState<Array<{ id: string; name: string }>>([]);

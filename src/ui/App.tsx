@@ -2,25 +2,12 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { render, Box, Text, useApp } from 'ink';
 import { loadConfig } from '../config/index.js';
 import { AgentBatonConfig } from '../types/index.js';
+import type { Screen, NavProps } from './types.js';
 import { MainScreen } from './screens/MainScreen.js';
 import { AgentSelectScreen } from './screens/AgentSelectScreen.js';
 import { ProviderSelectScreen } from './screens/ProviderSelectScreen.js';
 import { AgentDetailScreen, ChooseProviderScreen, ConfirmProviderSwitchScreen, PromptChooseModelScreen, ChooseModelScreen, AddProviderBindingScreen, RemoveProviderBindingScreen } from './screens/agent.js';
 import { AddProviderScreen, ModifyProviderScreen } from './screens/provider.js';
-
-type Screen =
-  | { type: 'main' }
-  | { type: 'agentSelect' }
-  | { type: 'agentDetail'; agentId: string }
-  | { type: 'chooseProvider'; agentId: string }
-  | { type: 'confirmProviderSwitch'; agentId: string; providerId: string }
-  | { type: 'promptChooseModel'; agentId: string }
-  | { type: 'chooseModel'; agentId: string }
-  | { type: 'addProviderBinding'; agentId: string }
-  | { type: 'removeProviderBinding'; agentId: string }
-  | { type: 'providerSelect' }
-  | { type: 'addProvider'; returnTo?: Screen }
-  | { type: 'modifyProvider'; providerId: string };
 
 export async function openTUI(): Promise<void> {
   const { waitUntilExit } = render(<App />);
@@ -75,7 +62,7 @@ function App() {
     return <Text color="cyan">加载中...</Text>;
   }
 
-  const nav = { navigate, goBack, goToMainMenu, exit };
+  const nav: NavProps = { navigate, goBack, goToMainMenu, exit };
 
   switch (current.type) {
     case 'main':

@@ -7,13 +7,7 @@ import { findProviderPreset, providerPresets } from '../../provider/presets/inde
 import { builtinAgents } from '../../agent/builtin.js';
 import type { AgentBatonConfig, ApiType, Provider } from '../../types/index.js';
 import { randomUUID } from 'node:crypto';
-
-type NavProps = {
-  navigate: (screen: any) => void;
-  goBack: () => void;
-  goToMainMenu: () => void;
-  exit: () => void;
-};
+import type { NavProps } from '../types.js';
 
 export function findProvider(config: AgentBatonConfig, providerId: string) {
   return config.providers.find(p => p.id === providerId);

@@ -6,13 +6,7 @@ import type { AgentBatonConfig, AgentDefinition, AgentModel } from '../../types/
 import { findAgent } from '../../agent/builtin.js';
 import { resolvePlatformHome, maskApiKey } from '../../utils/index.js';
 import { saveConfig } from '../../config/index.js';
-
-type NavProps = {
-  navigate: (screen: any) => void;
-  goBack: () => void;
-  goToMainMenu: () => void;
-  exit: () => void;
-};
+import type { NavProps } from '../types.js';
 
 function getCurrentModel(models: AgentModel[] | undefined, slot: string): string | null {
   return models?.find(m => m.slot === slot)?.id ?? null;
