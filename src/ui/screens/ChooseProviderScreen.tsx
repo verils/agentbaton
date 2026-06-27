@@ -12,8 +12,8 @@ export function ChooseProviderScreen({ agentId, config, nav }: {
   nav: NavProps;
 }) {
   const agent = findAgent(agentId)!;
-  const compatible = config.providers.filter(p => p.endpoints.some(e => e.type === agent.apiType));
-  const noProviders = compatible.length === 0;
+  const compatibleProviders = config.providers.filter(p => p.endpoints.some(e => e.type === agent.apiType));
+  const noProviders = compatibleProviders.length === 0;
 
   if (noProviders) {
     return (
@@ -33,12 +33,10 @@ export function ChooseProviderScreen({ agentId, config, nav }: {
     );
   }
 
-  const providers = compatible;
-
   return (
     <Box flexDirection="column">
       <SelectMenu message="切换到：" options={[
-        ...providers.map(p => ({ value: p.id, label: p.name })),
+        ...compatibleProviders.map(p => ({ value: p.id, label: p.name })),
         { value: '__back__', label: '↑ 返回上一级菜单' },
         { value: '__main_menu__', label: '↩ 返回主菜单' },
       ]} onSubmit={value => {
