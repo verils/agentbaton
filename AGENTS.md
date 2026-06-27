@@ -44,7 +44,6 @@ src/
   ui/
     main.tsx            # Ink App 组件 + 导航状态机 + 主菜单
     agent.tsx           # 智能体详情屏幕（单/多供应商模式）
-    provider.tsx        # findProvider 等纯逻辑
     back.ts             # 返回选项常量
     index.tsx           # re-export
     components/
