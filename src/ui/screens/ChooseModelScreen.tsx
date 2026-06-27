@@ -16,7 +16,7 @@ export function ChooseModelScreen({ agentId, config, nav }: {
   const agentEntry = config.agents[agentId];
   const [slotIndex, setSlotIndex] = useState(0);
   const [assignments, setAssignments] = useState<AgentModel[]>([]);
-  const [noProvider, setNoProvider] = useState(!agentEntry?.currentProvider);
+  const noProvider = !agentEntry?.currentProvider;
   const [showManual, setShowManual] = useState(false);
   const [done, setDone] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);

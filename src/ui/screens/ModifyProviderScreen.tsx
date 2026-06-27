@@ -24,7 +24,6 @@ export function ModifyProviderScreen({ providerId, config, nav }: {
     );
   }
 
-  const isUsed = Object.values(config.agents).some(a => a.currentProvider === provider.id);
   const [action, setAction] = useState<string | null>(null);
   const [doneMsg, setDoneMsg] = useState<string | null>(null);
 

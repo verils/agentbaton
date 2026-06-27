@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Box, Text } from 'ink';
 import { SelectMenu } from '../components/SelectMenu.js';
 import type { AgentBatonConfig, AgentModel } from '../../types/index.js';
@@ -13,10 +13,9 @@ export function ChooseProviderScreen({ agentId, config, nav }: {
 }) {
   const agent = findAgent(agentId)!;
   const compatible = config.providers.filter(p => p.endpoints.some(e => e.type === agent.apiType));
-  const [noProviders, setNoProviders] = useState(compatible.length === 0);
-  const [justAdded, setJustAdded] = useState(false);
+  const noProviders = compatible.length === 0;
 
-  if (noProviders && !justAdded) {
+  if (noProviders) {
     return (
       <Box flexDirection="column">
         <Text color="yellow">没有兼容 {agent.apiType} 类型的供应商</Text>
@@ -34,9 +33,7 @@ export function ChooseProviderScreen({ agentId, config, nav }: {
     );
   }
 
-  const providers = justAdded
-    ? config.providers.filter(p => p.endpoints.some(e => e.type === agent.apiType))
-    : compatible;
+  const providers = compatible;
 
   return (
     <Box flexDirection="column">
