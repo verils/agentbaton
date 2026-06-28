@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { Box, Text } from 'ink';
 import { SelectMenu } from '../components/SelectMenu.js';
-import { InfoPanel } from '../InfoPanel.js';
 import type { AgentBatonConfig } from '../../types/index.js';
 import type { NavProps } from '../types.js';
+import { InfoPanel } from "../components/InfoPanel.js";
 
 interface MainScreenProps {
   config: AgentBatonConfig;

@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Text } from 'ink';
-import { builtinAgents } from '../agent/builtin.js';
-import { getStringWidth, isCommandAvailable, maskApiKey, padEndWidth } from '../utils/index.js';
-import type { AgentBatonConfig } from '../types/index.js';
+import { AgentBatonConfig } from "../../types/index.js";
+import { builtinAgents } from "../../agent/builtin.js";
+import { isCommandAvailable } from "../../agent/detect.js";
+import { getStringWidth, maskApiKey, padEndWidth } from "../../utils/index.js";
 
 export function InfoPanel({ config }: { config: AgentBatonConfig }) {
   const [agentStatuses, setAgentStatuses] = useState<Array<{ name: string; installed: boolean }>>([]);
